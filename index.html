@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>课程设计工作台</title>
+  <script src="https://unpkg.com/docx@8.5.0/build/index.umd.min.js"></script>
+  <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f0f2f5;display:flex;flex-direction:column;min-height:100vh;}
+
+    /* HEADER */
+    header{background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:12px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.15);flex-shrink:0;position:sticky;top:0;z-index:200;}
+    header h1{font-size:17px;font-weight:600;letter-spacing:1px;}
+    header .sub{font-size:11px;opacity:.75;}
+    .hbtns{display:flex;gap:7px;flex-shrink:0;flex-wrap:wrap;}
+    .hbtn{background:rgba(255,255,255,.18);color:white;border:1px solid rgba(255,255,255,.35);padding:6px 12px;font-size:12px;border-radius:7px;cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500;transition:background .15s;}
+    .hbtn:hover{background:rgba(255,255,255,.28);}
+    .export-wrap{position:relative;}
+    .export-menu{display:none;position:absolute;right:0;top:calc(100% + 5px);background:white;border:1px solid #e5e5e5;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.12);min-width:160px;overflow:hidden;z-index:300;}
+    .export-menu.open{display:block;}
+    .export-menu a{display:block;padding:10px 15px;font-size:13px;color:#333;cursor:pointer;}
+    .export-menu a:hover{background:#f5f5f5;}
+    .export-menu a+a{border-top:1px solid #f0f0f0;}
+
+    /* MAIN */
+    .main{flex:1;padding:16px;max-width:1400px;margin:0 auto;width:100%;}
+
+    /* LESSON CARD */
+    .lesson-card{background:white;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:16px;overflow:hidden;}
+    .lesson-header{background:#f8f7ff;padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;border-bottom:1px solid #ede9ff;}
+    .lesson-header:hover{background:#f0eeff;}
+    .collapse-icon{font-size:12px;color:#8b6fd4;transition:transform .2s;flex-shrink:0;}
+    .collapse-icon.collapsed{transform:rotate(-90deg);}
+    .lesson-title-wrap{flex:1;display:flex;align-items:center;gap:8px;}
+    .lesson-title{font-size:15px;font-weight:700;color:#3d2b8e;outline:none;border:none;background:transparent;font-family:inherit;min-width:80px;}
+    .lesson-title:focus{background:#ede9ff;border-radius:4px;padding:0 6px;}
+    .lesson-title-hint{font-size:11px;color:#b39ddb;}
+    .lesson-actions{display:flex;gap:8px;flex-shrink:0;}
+    .l-btn{border:none;border-radius:7px;padding:5px 11px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;}
+    .l-btn-add{background:#ede9ff;color:#7c4dff;}
+    .l-btn-add:hover{background:#d1c4e9;}
+    .l-btn-del{background:#ffeaea;color:#e53935;}
+    .l-btn-del:hover{background:#ffcdd2;}
+
+    .lesson-body{overflow:hidden;transition:max-height .25s ease;}
+    .lesson-body.collapsed{display:none;}
+
+    /* COL HEADER */
+    .col-header{display:grid;grid-template-columns:60px 1fr 1fr 1fr;background:#f0eeff;border-bottom:2px solid #d1c4e9;}
+    .col-header-cell{padding:8px 12px;font-size:12px;font-weight:700;color:#5c35b5;text-align:center;}
+    .col-header-cell:first-child{border-right:1px solid #d1c4e9;}
+    .col-header-cell+.col-header-cell{border-left:1px solid #ddd;}
+
+    /* MODULE ROW */
+    .module-row{display:grid;grid-template-columns:60px 1fr 1fr 1fr;border-top:1px solid #f0f0f0;transition:background .15s;}
+    .module-row:nth-child(even){background:#fafafa;}
+    .module-row:nth-child(odd){background:white;}
+    .module-row.drag-over{background:#f0eeff;border-top:2px solid #7c4dff;}
+
+    /* SEQUENCE CELL */
+    .seq-cell{background:#f8f8f8;border-right:1px solid #efefef;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px 4px;cursor:grab;}
+    .seq-cell:active{cursor:grabbing;}
+    .seq-num{font-size:10px;font-weight:700;color:#8b6fd4;text-align:center;line-height:1.3;}
+    .mod-name-input{font-size:11px;color:#555;border:none;background:transparent;outline:none;text-align:center;width:52px;font-family:inherit;cursor:text;border-bottom:1px dashed transparent;}
+    .mod-name-input:hover{border-bottom-color:#c5b8f0;}
+    .mod-name-input:focus{border-bottom-color:#7c4dff;background:#f0eeff;border-radius:3px;}
+    .drag-handle{font-size:16px;color:#ccc;cursor:grab;line-height:1;}
+    .drag-handle:hover{color:#8b6fd4;}
+    .del-mod-btn{background:none;border:none;font-size:13px;cursor:pointer;color:#ffcdd2;padding:2px;}
+    .del-mod-btn:hover{color:#e53935;}
+
+    /* TEXT CELL */
+    .text-cell{display:flex;flex-direction:column;border-left:1px solid #f0f0f0;}
+    .text-cell textarea{flex:1;border:none;outline:none;padding:10px 12px;font-size:13px;line-height:1.85;color:#333;resize:none;font-family:inherit;background:transparent;min-height:160px;}
+    .text-cell textarea::placeholder{color:#ccc;}
+    .cell-footer{padding:3px 12px 6px;display:flex;align-items:center;justify-content:space-between;background:inherit;}
+    .char-count{font-size:11px;color:#ccc;}
+    .tts-bar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+    .tts-btn{border:none;border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:500;}
+    .tts-play{background:linear-gradient(135deg,#f4511e,#ff7043);color:white;}
+    .tts-play.playing{background:linear-gradient(135deg,#e53935,#c62828);}
+    .tts-stop{background:#f5f5f5;color:#888;}
+    .tts-speed{border:1px solid #eee;border-radius:5px;padding:3px 6px;font-size:11px;background:white;color:#666;}
+    .tts-status{font-size:10px;color:#bbb;}
+    .tts-status.active{color:#f4511e;}
+
+    /* ADD MODULE BTN */
+    .add-module-row{padding:8px 12px;border-top:1px solid #f5f5f5;}
+    .add-module-btn{width:100%;border:1px dashed #c5b8f0;background:transparent;color:#8b6fd4;border-radius:7px;padding:7px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s;}
+    .add-module-btn:hover{background:#f0eeff;border-color:#7c4dff;}
+
+    /* PPT 图片区 */
+    .ppt-img-area{display:flex;flex-wrap:wrap;gap:8px;padding:8px 12px;min-height:0;}
+    .ppt-img-area:empty{display:none;}
+    .img-thumb{position:relative;display:inline-flex;border:1px solid #eee;border-radius:6px;overflow:hidden;}
+    .img-thumb img{width:90px;height:70px;object-fit:cover;display:block;}
+    .img-thumb-del{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.55);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;opacity:0;transition:opacity .15s;}
+    .img-thumb:hover .img-thumb-del{opacity:1;}
+    .img-thumb-del:hover{background:rgba(229,57,53,.85);}
+    .ppt-img-toolbar{display:flex;align-items:center;gap:8px;}
+    .img-upload-btn{background:#f0eeff;color:#7c4dff;border:1px solid #d1c4e9;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+    .img-upload-btn:hover{background:#ede9ff;}
+    .img-paste-hint{font-size:11px;color:#ccc;}
+    .text-cell.img-drag-over{background:#f0eeff;outline:2px dashed #7c4dff;}
+
+    /* ADD LESSON BTN */
+    .add-lesson-wrap{padding:4px 0 8px;}
+    .add-lesson-btn{width:100%;border:2px dashed #c5b8f0;background:white;color:#8b6fd4;border-radius:10px;padding:13px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s;}
+    .add-lesson-btn:hover{background:#f0eeff;border-color:#7c4dff;color:#5c35b5;}
+    .add-group-btn{width:100%;border:2px dashed #b2dfdb;background:white;color:#00897b;border-radius:10px;padding:11px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s;margin-top:8px;}
+    .add-group-btn:hover{background:#e0f2f1;border-color:#00897b;}
+
+    /* GROUP CARD */
+    .group-card{border:2px solid #d1c4e9;border-radius:14px;background:#faf8ff;margin-bottom:20px;overflow:hidden;}
+    .group-hd{background:linear-gradient(135deg,#ede9ff,#d8d0f5);padding:11px 16px;display:flex;align-items:center;gap:10px;}
+    .group-title-input{font-size:16px;font-weight:700;color:#3d2b8e;border:none;background:transparent;outline:none;font-family:inherit;flex:1;min-width:80px;}
+    .group-title-input:focus{background:rgba(255,255,255,.5);border-radius:4px;padding:0 6px;}
+    .g-btn{border:none;border-radius:7px;padding:5px 11px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;}
+    .g-btn-add{background:#ede9ff;color:#7c4dff;}
+    .g-btn-add:hover{background:#d1c4e9;}
+    .g-btn-del{background:#ffeaea;color:#e53935;}
+    .g-btn-del:hover{background:#ffcdd2;}
+    .group-body{padding:14px 16px;}
+    .group-overview{display:grid;grid-template-columns:1fr 1.6fr;gap:14px;margin-bottom:12px;}
+    .group-desc-wrap label{font-size:12px;font-weight:600;color:#5c35b5;display:block;margin-bottom:5px;}
+    .group-desc-ta{width:100%;height:150px;border:1px solid #e0d8ff;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;font-family:inherit;outline:none;resize:vertical;color:#333;}
+    .group-desc-ta:focus{border-color:#7c4dff;}
+    .group-mindmap-wrap{display:flex;flex-direction:column;gap:6px;}
+    .group-mindmap-wrap label{font-size:12px;font-weight:600;color:#5c35b5;display:flex;align-items:center;justify-content:space-between;}
+    .mm-refresh-btn{background:#ede9ff;color:#7c4dff;border:none;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;}
+    .mm-refresh-btn:hover{background:#d1c4e9;}
+    .mindmap-svg-wrap{border:1px solid #e0d8ff;border-radius:8px;background:white;overflow:auto;min-height:150px;}
+    .group-lesson-tags{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0 4px;border-top:1px solid #e8e2ff;}
+    .group-lesson-tags-label{font-size:12px;color:#9c6fd4;font-weight:600;}
+    .lesson-tag{background:#ede9ff;color:#5c35b5;border-radius:20px;padding:4px 10px 4px 12px;font-size:12px;display:flex;align-items:center;gap:6px;}
+    .lesson-tag-del{background:none;border:none;color:#b39ddb;cursor:pointer;font-size:13px;line-height:1;padding:0;}
+    .lesson-tag-del:hover{color:#e53935;}
+    .add-lesson-to-group-btn{background:white;color:#7c4dff;border:1px dashed #c5b8f0;border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:inherit;}
+    .add-lesson-to-group-btn:hover{background:#f0eeff;}
+    .group-lessons-area{border-top:1px solid #e8e2ff;margin-top:12px;padding-top:12px;}
+
+    /* 未分组区 */
+    .ungrouped-label{font-size:12px;color:#bbb;font-weight:600;padding:4px 0 10px;letter-spacing:.5px;}
+
+    /* 课时选择下拉 */
+    .lesson-picker{position:relative;display:inline-block;}
+    .lesson-picker-menu{display:none;position:absolute;left:0;top:calc(100%+4px);background:white;border:1px solid #e0d8ff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.12);min-width:160px;overflow:hidden;z-index:300;}
+    .lesson-picker-menu.open{display:block;}
+    .lesson-picker-item{padding:9px 14px;font-size:13px;color:#333;cursor:pointer;}
+    .lesson-picker-item:hover{background:#f0eeff;}
+    .lesson-picker-empty{padding:10px 14px;font-size:12px;color:#bbb;}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:white;border-radius:14px;padding:28px;width:420px;max-width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+    .modal h2{font-size:17px;margin-bottom:18px;color:#1a1a2e;}
+    .modal label{font-size:13px;color:#555;display:block;margin-bottom:5px;}
+    .modal input,.modal .mta{width:100%;border:1px solid #ddd;border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;margin-bottom:14px;resize:vertical;}
+    .modal input:focus,.modal .mta:focus{border-color:#667eea;}
+    .modal-btns{display:flex;gap:10px;justify-content:flex-end;}
+    .mbtn-cancel{background:#f5f5f5;color:#666;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit;}
+    .mbtn-save{background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;}
+
+    /* DRAWER */
+    .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:400;}
+    .drawer-overlay.open{display:block;}
+    .drawer{position:fixed;top:0;right:-440px;width:420px;height:100vh;background:white;box-shadow:-4px 0 24px rgba(0,0,0,.15);z-index:401;display:flex;flex-direction:column;transition:right .25s cubic-bezier(.4,0,.2,1);}
+    .drawer.open{right:0;}
+    .drawer-hd{padding:18px 20px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .drawer-hd h2{font-size:16px;color:#1a1a2e;}
+    .drawer-close{background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1;}
+    .drawer-body{flex:1;overflow-y:auto;padding:14px;}
+    .ver-card{border:1px solid #efefef;border-radius:10px;padding:14px;margin-bottom:10px;}
+    .ver-card:hover{border-color:#c5b8f0;}
+    .ver-title{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:4px;}
+    .ver-desc{font-size:12px;color:#888;margin-bottom:6px;line-height:1.5;}
+    .ver-meta{font-size:11px;color:#bbb;margin-bottom:10px;}
+    .ver-actions{display:flex;gap:8px;}
+    .vbtn{border:none;border-radius:7px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;}
+    .vbtn-load{background:linear-gradient(135deg,#667eea,#764ba2);color:white;}
+    .vbtn-del{background:#ffeaea;color:#e53935;}
+    .drawer-empty{text-align:center;color:#bbb;padding:40px 20px;font-size:14px;line-height:1.8;}
+
+    @media(max-width:800px){
+      .col-header,.module-row{grid-template-columns:40px 1fr;}
+      .col-header .ch-ppt,.col-header .ch-script,.text-cell.ppt,.text-cell.script{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="flex:1;">
+    <h1>📚 课程设计工作台</h1>
+    <div class="sub">课时 · 模块 · 三栏对应创作</div>
+  </div>
+  <div class="hbtns">
+    <button class="hbtn" onclick="window.open('catalog.html','_blank')">📋 课程目录</button>
+    <button class="hbtn" onclick="openDrawer()">🕐 版本历史</button>
+    <button class="hbtn" onclick="openSaveModal()">💾 保存版本</button>
+    <div class="export-wrap">
+      <button class="hbtn" onclick="toggleExportMenu()">导出 ▾</button>
+      <div class="export-menu" id="export-menu">
+        <a onclick="exportDocx()">📄 Word (.docx)</a>
+        <a onclick="exportPDF()">🖨️ PDF（打印）</a>
+        <a onclick="exportExcel()">📊 Excel (.xlsx)</a>
+        <a onclick="exportMd()">📝 Markdown (.md)</a>
+      </div>
+    </div>
+    <button class="hbtn" onclick="exportShare()">📤 导出分享</button>
+  </div>
+</header>
+
+<div class="main">
+  <div id="groups-container"></div>
+  <div id="ungrouped-container"></div>
+  <div class="add-lesson-wrap">
+    <button class="add-lesson-btn" onclick="addLesson()">＋ 添加课时</button>
+    <button class="add-group-btn" onclick="addGroup()">＋ 新建分组</button>
+  </div>
+</div>
+
+<!-- 保存弹窗 -->
+<div class="modal-overlay" id="save-modal">
+  <div class="modal">
+    <h2>💾 保存当前版本</h2>
+    <label>版本标题 *</label>
+    <input type="text" id="v-title" placeholder="例：第3课 动物的家" maxlength="60"/>
+    <label>简介（可选）</label>
+    <textarea class="mta" id="v-desc" placeholder="简要描述本节课内容..." rows="3"></textarea>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeSaveModal()">取消</button>
+      <button class="mbtn-save" onclick="saveVersion()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 版本历史抽屉 -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="version-drawer">
+  <div class="drawer-hd">
+    <h2>🕐 版本历史</h2>
+    <button class="drawer-close" onclick="closeDrawer()">×</button>
+  </div>
+  <div class="drawer-body" id="version-list"></div>
+</div>
+
+<script>
+// ============================================================
+// 数据管理
+// ============================================================
+let data = { groups: [], lessons: [] };
+let ttsState = {};
+
+function genId(prefix) { return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,6); }
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('course_data');
+    if (saved) { data = JSON.parse(saved); }
+  } catch(e) {}
+  if (!data.lessons || !data.lessons.length) data.lessons = [createLesson()];
+  if (!data.groups) data.groups = [];
+}
+
+function saveData() { localStorage.setItem('course_data', JSON.stringify(data)); }
+
+function createLesson() {
+  return { id: genId('l'), title: '课时一', collapsed: false, modules: [createModule()] };
+}
+function createModule() {
+  return { id: genId('m'), name: '', design: '', ppt: '', script: '', images: [] };
+}
+function createGroup() {
+  return { id: genId('g'), title: '第一单元', desc: '', lessonIds: [] };
+}
+
+function getLessonIndex(lessonId) { return data.lessons.findIndex(l => l.id === lessonId); }
+function getModuleIndex(lessonId, moduleId) {
+  const li = getLessonIndex(lessonId);
+  if (li < 0) return -1;
+  return data.lessons[li].modules.findIndex(m => m.id === moduleId);
+}
+function getGroupIndex(groupId) { return data.groups.findIndex(g => g.id === groupId); }
+function getGroupedLessonIds() {
+  const ids = new Set();
+  data.groups.forEach(g => g.lessonIds.forEach(id => ids.add(id)));
+  return ids;
+}
+
+// ============================================================
+// 渲染
+// ============================================================
+function render() {
+  // 分组区
+  const gc = document.getElementById('groups-container');
+  gc.innerHTML = '';
+  data.groups.forEach(g => gc.appendChild(renderGroup(g)));
+
+  // 未分组区
+  const uc = document.getElementById('ungrouped-container');
+  uc.innerHTML = '';
+  const groupedIds = getGroupedLessonIds();
+  const ungrouped = data.lessons.filter(l => !groupedIds.has(l.id));
+  if (ungrouped.length) {
+    const label = document.createElement('div');
+    label.className = 'ungrouped-label';
+    label.textContent = '📋 未分组课时';
+    uc.appendChild(label);
+    ungrouped.forEach((lesson, li) => uc.appendChild(renderLesson(lesson, data.lessons.indexOf(lesson))));
+  }
+}
+
+// ============================================================
+// 分组渲染
+// ============================================================
+function renderGroup(group) {
+  const card = document.createElement('div');
+  card.className = 'group-card';
+  card.dataset.groupId = group.id;
+
+  // 标题栏
+  const hd = document.createElement('div');
+  hd.className = 'group-hd';
+  hd.innerHTML = `
+    <input class="group-title-input" value="${escHtml(group.title)}" placeholder="分组名称"
+      onblur="updateGroupTitle('${group.id}',this.value)"
+      onkeydown="if(event.key==='Enter')this.blur()"/>
+    <button class="g-btn g-btn-del" onclick="deleteGroup('${group.id}')">🗑 删除分组</button>`;
+  card.appendChild(hd);
+
+  // 主体
+  const body = document.createElement('div');
+  body.className = 'group-body';
+
+  // 说明 + 思维导图
+  const overview = document.createElement('div');
+  overview.className = 'group-overview';
+  overview.innerHTML = `
+    <div class="group-desc-wrap">
+      <label>📄 课程说明</label>
+      <textarea class="group-desc-ta" placeholder="在此填写本单元课程说明..."
+        onblur="updateGroupDesc('${group.id}',this.value)">${escHtml(group.desc||'')}</textarea>
+    </div>
+    <div class="group-mindmap-wrap">
+      <label>🧠 思维导图
+        <button class="mm-refresh-btn" onclick="refreshMindmap('${group.id}')">🔄 刷新</button>
+      </label>
+      <div class="mindmap-svg-wrap" id="mm-${group.id}"></div>
+    </div>`;
+  body.appendChild(overview);
+
+  // 课时标签区
+  const tagArea = document.createElement('div');
+  tagArea.className = 'group-lesson-tags';
+  tagArea.dataset.tagArea = group.id;
+  tagArea.innerHTML = `<span class="group-lesson-tags-label">包含课时：</span>`;
+  group.lessonIds.forEach(lid => {
+    const lesson = data.lessons.find(l => l.id === lid);
+    if (lesson) tagArea.appendChild(renderLessonTag(group.id, lesson));
+  });
+  const addBtn = document.createElement('div');
+  addBtn.className = 'lesson-picker';
+  addBtn.dataset.pickerGroup = group.id;
+  addBtn.innerHTML = `<button class="add-lesson-to-group-btn" onclick="toggleLessonPicker('${group.id}')">＋ 添加课时</button>
+    <div class="lesson-picker-menu" id="picker-${group.id}"></div>`;
+  tagArea.appendChild(addBtn);
+  body.appendChild(tagArea);
+
+  // 组内课时
+  const lessonsArea = document.createElement('div');
+  lessonsArea.className = 'group-lessons-area';
+  lessonsArea.dataset.groupLessons = group.id;
+  group.lessonIds.forEach(lid => {
+    const lesson = data.lessons.find(l => l.id === lid);
+    if (lesson) lessonsArea.appendChild(renderLesson(lesson, data.lessons.indexOf(lesson)));
+  });
+  body.appendChild(lessonsArea);
+
+  card.appendChild(body);
+
+  // 渲染思维导图
+  setTimeout(() => refreshMindmap(group.id), 50);
+  return card;
+}
+
+function renderLessonTag(groupId, lesson) {
+  const tag = document.createElement('span');
+  tag.className = 'lesson-tag';
+  tag.dataset.tagLesson = lesson.id;
+  tag.innerHTML = `${escHtml(lesson.title)}
+    <button class="lesson-tag-del" onclick="removeLessonFromGroup('${groupId}','${lesson.id}')" title="移出分组">×</button>`;
+  return tag;
+}
+
+// ============================================================
+// 分组操作
+// ============================================================
+function addGroup() {
+  const g = createGroup();
+  g.title = `第${data.groups.length + 1}单元`;
+  data.groups.push(g);
+  saveData();
+  const gc = document.getElementById('groups-container');
+  gc.appendChild(renderGroup(g));
+}
+
+function deleteGroup(groupId) {
+  const g = data.groups.find(x => x.id === groupId);
+  if (!g || !confirm(`删除分组「${g.title}」？课时内容不会删除。`)) return;
+  data.groups = data.groups.filter(x => x.id !== groupId);
+  saveData();
+  document.querySelector(`[data-group-id="${groupId}"]`)?.remove();
+  render(); // 重新渲染未分组区
+}
+
+function updateGroupTitle(groupId, title) {
+  const gi = getGroupIndex(groupId);
+  if (gi < 0) return;
+  data.groups[gi].title = title;
+  saveData();
+}
+
+function updateGroupDesc(groupId, desc) {
+  const gi = getGroupIndex(groupId);
+  if (gi < 0) return;
+  data.groups[gi].desc = desc;
+  saveData();
+}
+
+function toggleLessonPicker(groupId) {
+  const menu = document.getElementById('picker-' + groupId);
+  if (!menu) return;
+  const isOpen = menu.classList.contains('open');
+  document.querySelectorAll('.lesson-picker-menu').forEach(m => m.classList.remove('open'));
+  if (!isOpen) {
+    // 填充可用课时（未被本组占用）
+    const gi = getGroupIndex(groupId);
+    const groupedIds = getGroupedLessonIds();
+    // 本组已有的也可排除
+    const available = data.lessons.filter(l => !groupedIds.has(l.id) || (gi >= 0 && data.groups[gi].lessonIds.includes(l.id) === false));
+    // 实际上：未被任何组占用的
+    const truly = data.lessons.filter(l => !groupedIds.has(l.id));
+    if (!truly.length) {
+      menu.innerHTML = '<div class="lesson-picker-empty">所有课时已分组</div>';
+    } else {
+      menu.innerHTML = truly.map(l =>
+        `<div class="lesson-picker-item" onclick="addLessonToGroup('${groupId}','${l.id}')">${escHtml(l.title)}</div>`
+      ).join('');
+    }
+    menu.classList.add('open');
+  }
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.lesson-picker')) {
+    document.querySelectorAll('.lesson-picker-menu').forEach(m => m.classList.remove('open'));
+  }
+});
+
+function addLessonToGroup(groupId, lessonId) {
+  const gi = getGroupIndex(groupId);
+  if (gi < 0) return;
+  if (!data.groups[gi].lessonIds.includes(lessonId)) {
+    data.groups[gi].lessonIds.push(lessonId);
+    saveData();
+  }
+  document.getElementById('picker-' + groupId)?.classList.remove('open');
+
+  // 更新标签区
+  const tagArea = document.querySelector(`[data-tag-area="${groupId}"]`);
+  if (tagArea) {
+    const lesson = data.lessons.find(l => l.id === lessonId);
+    if (lesson) {
+      const picker = tagArea.querySelector('.lesson-picker');
+      tagArea.insertBefore(renderLessonTag(groupId, lesson), picker);
+    }
+  }
+  // 更新课时列表
+  const lessonsArea = document.querySelector(`[data-group-lessons="${groupId}"]`);
+  if (lessonsArea) {
+    const lesson = data.lessons.find(l => l.id === lessonId);
+    if (lesson) lessonsArea.appendChild(renderLesson(lesson, data.lessons.indexOf(lesson)));
+  }
+  // 从未分组区移除
+  render();
+  refreshMindmap(groupId);
+}
+
+function removeLessonFromGroup(groupId, lessonId) {
+  const gi = getGroupIndex(groupId);
+  if (gi < 0) return;
+  data.groups[gi].lessonIds = data.groups[gi].lessonIds.filter(id => id !== lessonId);
+  saveData();
+  // 移除标签
+  document.querySelector(`[data-tag-area="${groupId}"] [data-tag-lesson="${lessonId}"]`)?.remove();
+  // 移除课时卡片（从组内）
+  const lessonsArea = document.querySelector(`[data-group-lessons="${groupId}"]`);
+  if (lessonsArea) {
+    const card = lessonsArea.querySelector(`[data-lesson-id="${lessonId}"]`);
+    card?.remove();
+  }
+  render(); // 更新未分组区
+  refreshMindmap(groupId);
+}
+
+// ============================================================
+// 思维导图（纯 SVG）
+// ============================================================
+function buildMindmapTree(groupId) {
+  const gi = getGroupIndex(groupId);
+  if (gi < 0) return null;
+  const group = data.groups[gi];
+  const root = { label: group.title || '分组', children: [] };
+
+  group.lessonIds.forEach(lid => {
+    const lesson = data.lessons.find(l => l.id === lid);
+    if (!lesson) return;
+    const lessonNode = { label: lesson.title, children: [] };
+    lesson.modules.forEach((mod, mi) => {
+      const modLabel = mod.name || `模块${mi + 1}`;
+      const modNode = { label: modLabel, children: [] };
+      // 解析课程设计内容
+      if (mod.design) {
+        const lines = mod.design.split('\n').map(l => l.trim()).filter(Boolean);
+        lines.forEach(line => {
+          // 去掉前缀符号
+          const text = line.replace(/^[•\-\*\d+\.、【】\[\]]+\s*/, '').trim();
+          if (text) modNode.children.push({ label: text.slice(0, 16) + (text.length > 16 ? '…' : ''), children: [] });
+        });
+      }
+      lessonNode.children.push(modNode);
+    });
+    root.children.push(lessonNode);
+  });
+  return root;
+}
+
+function refreshMindmap(groupId) {
+  const wrap = document.getElementById('mm-' + groupId);
+  if (!wrap) return;
+  const tree = buildMindmapTree(groupId);
+  if (!tree) return;
+
+  const NODE_W = 110, NODE_H = 28, H_GAP = 36, V_GAP = 10;
+
+  // 计算每个节点高度（考虑子节点）
+  function calcHeight(node) {
+    if (!node.children.length) return NODE_H;
+    const childrenH = node.children.reduce((s, c) => s + calcHeight(c) + V_GAP, 0) - V_GAP;
+    return Math.max(NODE_H, childrenH);
+  }
+
+  // 计算最大深度
+  function maxDepth(node, d = 0) {
+    if (!node.children.length) return d;
+    return Math.max(...node.children.map(c => maxDepth(c, d + 1)));
+  }
+
+  const depth = maxDepth(tree);
+  const totalH = calcHeight(tree);
+  const svgW = (depth + 1) * (NODE_W + H_GAP) + 20;
+  const svgH = totalH + 40;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width', svgW);
+  svg.setAttribute('height', svgH);
+  svg.style.display = 'block';
+
+  const COLORS = ['#667eea', '#764ba2', '#9c6fd4', '#b39ddb'];
+  const LEAF_FILL = '#f0eeff';
+
+  function drawNode(node, x, y, level) {
+    const isLeaf = node.children.length === 0;
+    const fill = isLeaf ? LEAF_FILL : COLORS[Math.min(level, COLORS.length - 1)];
+    const textColor = isLeaf ? '#5c35b5' : 'white';
+
+    const g = document.createElementNS(ns, 'g');
+    const rect = document.createElementNS(ns, 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y);
+    rect.setAttribute('width', NODE_W); rect.setAttribute('height', NODE_H);
+    rect.setAttribute('rx', 6); rect.setAttribute('ry', 6);
+    rect.setAttribute('fill', fill);
+    rect.setAttribute('stroke', COLORS[Math.min(level, COLORS.length - 1)]);
+    rect.setAttribute('stroke-width', '1.5');
+    g.appendChild(rect);
+
+    const text = document.createElementNS(ns, 'text');
+    text.setAttribute('x', x + NODE_W / 2);
+    text.setAttribute('y', y + NODE_H / 2 + 1);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('fill', textColor);
+    text.setAttribute('font-size', '11');
+    text.setAttribute('font-family', '"PingFang SC","Microsoft YaHei",sans-serif');
+    const label = node.label.length > 12 ? node.label.slice(0, 12) + '…' : node.label;
+    text.textContent = label;
+    g.appendChild(text);
+    svg.appendChild(g);
+
+    // 递归绘制子节点
+    if (node.children.length) {
+      const childX = x + NODE_W + H_GAP;
+      let childY = y + NODE_H / 2 - calcHeight(node) / 2 + 20;
+
+      // 修正 childY 使子节点居中
+      const totalChildH = node.children.reduce((s, c) => s + calcHeight(c) + V_GAP, 0) - V_GAP;
+      childY = y + NODE_H / 2 - totalChildH / 2;
+
+      node.children.forEach(child => {
+        const ch = calcHeight(child);
+        const cy = childY + ch / 2 - NODE_H / 2;
+        // 连接线（贝塞尔）
+        const startX = x + NODE_W, startY = y + NODE_H / 2;
+        const endX = childX, endY = cy + NODE_H / 2;
+        const midX = (startX + endX) / 2;
+        const path = document.createElementNS(ns, 'path');
+        path.setAttribute('d', `M${startX},${startY} C${midX},${startY} ${midX},${endY} ${endX},${endY}`);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', COLORS[Math.min(level + 1, COLORS.length - 1)]);
+        path.setAttribute('stroke-width', '1.5');
+        path.setAttribute('opacity', '0.5');
+        svg.insertBefore(path, svg.firstChild);
+        drawNode(child, childX, cy, level + 1);
+        childY += ch + V_GAP;
+      });
+    }
+  }
+
+  const rootY = svgH / 2 - NODE_H / 2;
+  drawNode(tree, 10, rootY, 0);
+
+  wrap.innerHTML = '';
+  wrap.appendChild(svg);
+  wrap.style.height = Math.max(160, svgH) + 'px';
+}
+
+function renderLesson(lesson, li) {
+  const card = document.createElement('div');
+  card.className = 'lesson-card';
+  card.dataset.lessonId = lesson.id;
+
+  // header
+  const hdr = document.createElement('div');
+  hdr.className = 'lesson-header';
+  hdr.innerHTML = `
+    <span class="collapse-icon ${lesson.collapsed ? 'collapsed' : ''}">▼</span>
+    <div class="lesson-title-wrap">
+      <input class="lesson-title" value="${escHtml(lesson.title)}" 
+        onclick="event.stopPropagation()"
+        onblur="updateLessonTitle('${lesson.id}', this.value)"
+        onkeydown="if(event.key==='Enter')this.blur()"
+        title="双击编辑课时名称"/>
+      <span class="lesson-title-hint">点击标题可编辑</span>
+    </div>
+    <div class="lesson-actions">
+      <button class="l-btn l-btn-add" onclick="event.stopPropagation();addModule('${lesson.id}')">＋ 添加模块</button>
+      <button class="l-btn l-btn-del" onclick="event.stopPropagation();deleteLesson('${lesson.id}')">🗑 删除课时</button>
+    </div>`;
+  hdr.addEventListener('click', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+    toggleLesson(lesson.id);
+  });
+  card.appendChild(hdr);
+
+  // body
+  const body = document.createElement('div');
+  body.className = 'lesson-body' + (lesson.collapsed ? ' collapsed' : '');
+  body.dataset.lessonBody = lesson.id;
+
+  // col header
+  body.innerHTML = `<div class="col-header">
+    <div class="col-header-cell"></div>
+    <div class="col-header-cell">📝 课程设计</div>
+    <div class="col-header-cell ch-ppt">🖼️ PPT 内容</div>
+    <div class="col-header-cell ch-script">🎙️ 逐字稿</div>
+  </div>`;
+
+  // modules
+  lesson.modules.forEach((mod, mi) => {
+    body.appendChild(renderModule(lesson.id, mod, mi + 1));
+  });
+
+  // add module btn
+  const addRow = document.createElement('div');
+  addRow.className = 'add-module-row';
+  addRow.innerHTML = `<button class="add-module-btn" onclick="addModule('${lesson.id}')">＋ 添加模块</button>`;
+  body.appendChild(addRow);
+
+  card.appendChild(body);
+  return card;
+}
+
+function renderModule(lessonId, mod, num) {
+  const row = document.createElement('div');
+  row.className = 'module-row';
+  row.dataset.moduleId = mod.id;
+  row.draggable = true;
+
+  // drag events
+  row.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', JSON.stringify({ lessonId, moduleId: mod.id }));
+    row.style.opacity = '0.5';
+  });
+  row.addEventListener('dragend', () => row.style.opacity = '1');
+  row.addEventListener('dragover', (e) => { e.preventDefault(); row.classList.add('drag-over'); });
+  row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+  row.addEventListener('drop', (e) => {
+    e.preventDefault(); row.classList.remove('drag-over');
+    try {
+      const src = JSON.parse(e.dataTransfer.getData('text/plain'));
+      if (src.lessonId === lessonId && src.moduleId !== mod.id) {
+        reorderModule(lessonId, src.moduleId, mod.id);
+      }
+    } catch(err) {}
+  });
+
+  // seq cell
+  const seq = document.createElement('div');
+  seq.className = 'seq-cell';
+  seq.innerHTML = `<span class="seq-num">模块${num}</span>
+    <input class="mod-name-input" value="${escHtml(mod.name||'')}" placeholder="命名..." maxlength="20"
+      title="点击编辑模块名称"
+      onclick="event.stopPropagation()"
+      onblur="updateModuleName('${lessonId}','${mod.id}',this.value)"
+      onkeydown="if(event.key==='Enter')this.blur()"/>
+    <span class="drag-handle" title="拖拽排序">⠿</span>
+    <button class="del-mod-btn" onclick="deleteModule('${lessonId}','${mod.id}')" title="删除模块">✕</button>`;
+  row.appendChild(seq);
+
+  // text cells
+  ['design','ppt','script'].forEach(field => {
+    const cell = document.createElement('div');
+    cell.className = 'text-cell' + (field === 'ppt' ? ' ppt' : field === 'script' ? ' script' : '');
+    const placeholder = field === 'design' ? '课程设计内容...' : field === 'ppt' ? 'PPT内容...' : '逐字稿内容...';
+
+    if (field === 'ppt') {
+      // PPT列：文字区 + 图片区
+      cell.innerHTML = `
+        <textarea placeholder="${placeholder}" data-field="ppt" data-lesson="${lessonId}" data-module="${mod.id}">${escHtml(mod.ppt)}</textarea>
+        <div class="ppt-img-area" id="imgarea-${mod.id}"></div>
+        <div class="cell-footer">
+          <div class="ppt-img-toolbar">
+            <label class="img-upload-btn" title="上传图片">
+              🖼 插入图片
+              <input type="file" accept="image/*" multiple style="display:none" onchange="handleImgUpload('${lessonId}','${mod.id}',this)"/>
+            </label>
+            <span class="img-paste-hint">或 Ctrl+V 粘贴</span>
+          </div>
+          <span class="char-count" id="cc-${mod.id}-ppt">${(mod.ppt||'').length} 字 · ${(mod.images||[]).length} 图</span>
+        </div>`;
+      // 渲染已有图片
+      const imgArea = cell.querySelector(`#imgarea-${mod.id}`);
+      (mod.images || []).forEach((img, idx) => renderImgThumb(imgArea, img, lessonId, mod.id, idx));
+      // 粘贴监听（在 textarea 上）
+      const ta = cell.querySelector('textarea');
+      ta.addEventListener('input', () => {
+        const li = getLessonIndex(lessonId); const mi = getModuleIndex(lessonId, mod.id);
+        if (li >= 0 && mi >= 0) {
+          data.lessons[li].modules[mi].ppt = ta.value;
+          const cc = document.getElementById(`cc-${mod.id}-ppt`);
+          if (cc) cc.textContent = ta.value.length + ' 字 · ' + (data.lessons[li].modules[mi].images||[]).length + ' 图';
+          saveData();
+        }
+      });
+      ta.addEventListener('paste', (e) => handlePasteImg(e, lessonId, mod.id));
+      // 拖拽图片到 ppt 列
+      cell.addEventListener('dragover', (e) => {
+        if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); cell.classList.add('img-drag-over'); }
+      });
+      cell.addEventListener('dragleave', () => cell.classList.remove('img-drag-over'));
+      cell.addEventListener('drop', (e) => {
+        if (e.dataTransfer.types.includes('Files')) {
+          e.preventDefault(); cell.classList.remove('img-drag-over');
+          Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')).forEach(f => readImgFile(f, lessonId, mod.id));
+        }
+      });
+    } else {
+      cell.innerHTML = `<textarea placeholder="${placeholder}" data-field="${field}" data-lesson="${lessonId}" data-module="${mod.id}">${escHtml(mod[field])}</textarea>
+        <div class="cell-footer">
+          ${field === 'script' ? `<div class="tts-bar">
+            <button class="tts-btn tts-play" id="tts-play-${mod.id}" onclick="toggleTTS('${mod.id}')">▶</button>
+            <button class="tts-btn tts-stop" onclick="stopTTS('${mod.id}')">■</button>
+            <select class="tts-speed" id="tts-speed-${mod.id}">
+              <option value="0.7">慢</option><option value="0.85">较慢</option>
+              <option value="1.0" selected>正常</option><option value="1.2">快</option><option value="1.5">很快</option>
+            </select>
+            <span class="tts-status" id="tts-status-${mod.id}"></span>
+          </div>` : '<span></span>'}
+          <span class="char-count" id="cc-${mod.id}-${field}">${mod[field].length} 字</span>
+        </div>`;
+      const ta = cell.querySelector('textarea');
+      ta.addEventListener('input', () => {
+        const li = getLessonIndex(lessonId); const mi = getModuleIndex(lessonId, mod.id);
+        if (li >= 0 && mi >= 0) {
+          data.lessons[li].modules[mi][field] = ta.value;
+          const cc = document.getElementById(`cc-${mod.id}-${field}`);
+          if (cc) cc.textContent = ta.value.length + ' 字';
+          saveData();
+        }
+      });
+    }
+    row.appendChild(cell);
+  });
+
+  return row;
+}
+
+// ============================================================
+// 课时操作
+// ============================================================
+function toggleLesson(lessonId) {
+  const li = getLessonIndex(lessonId);
+  if (li < 0) return;
+  data.lessons[li].collapsed = !data.lessons[li].collapsed;
+  saveData();
+  const icon = document.querySelector(`[data-lesson-id="${lessonId}"] .collapse-icon`);
+  const body = document.querySelector(`[data-lesson-body="${lessonId}"]`);
+  if (icon) icon.classList.toggle('collapsed', data.lessons[li].collapsed);
+  if (body) body.classList.toggle('collapsed', data.lessons[li].collapsed);
+}
+
+function updateLessonTitle(lessonId, title) {
+  const li = getLessonIndex(lessonId);
+  if (li < 0) return;
+  data.lessons[li].title = title;
+  saveData();
+}
+
+function updateModuleName(lessonId, moduleId, name) {
+  const li = getLessonIndex(lessonId);
+  const mi = getModuleIndex(lessonId, moduleId);
+  if (li < 0 || mi < 0) return;
+  data.lessons[li].modules[mi].name = name;
+  saveData();
+}
+
+// ============================================================
+// 图片处理
+// ============================================================
+function handleImgUpload(lessonId, moduleId, input) {
+  Array.from(input.files).forEach(file => readImgFile(file, lessonId, moduleId));
+  input.value = '';
+}
+
+function handlePasteImg(e, lessonId, moduleId) {
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  let hasImg = false;
+  Array.from(items).forEach(item => {
+    if (item.type.startsWith('image/')) {
+      hasImg = true;
+      readImgFile(item.getAsFile(), lessonId, moduleId);
+    }
+  });
+  if (hasImg) e.preventDefault();
+}
+
+function readImgFile(file, lessonId, moduleId) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    const li = getLessonIndex(lessonId);
+    const mi = getModuleIndex(lessonId, moduleId);
+    if (li < 0 || mi < 0) return;
+    if (!data.lessons[li].modules[mi].images) data.lessons[li].modules[mi].images = [];
+    const imgObj = { id: genId('img'), src: dataUrl, name: file.name || 'image' };
+    data.lessons[li].modules[mi].images.push(imgObj);
+    saveData();
+    // 更新字数统计
+    const imgs = data.lessons[li].modules[mi].images;
+    const pptLen = (data.lessons[li].modules[mi].ppt || '').length;
+    const cc = document.getElementById(`cc-${moduleId}-ppt`);
+    if (cc) cc.textContent = pptLen + ' 字 · ' + imgs.length + ' 图';
+    // 渲染缩略图
+    const imgArea = document.getElementById('imgarea-' + moduleId);
+    if (imgArea) renderImgThumb(imgArea, imgObj, lessonId, moduleId, imgs.length - 1);
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderImgThumb(container, imgObj, lessonId, moduleId, idx) {
+  const wrap = document.createElement('div');
+  wrap.className = 'img-thumb';
+  wrap.dataset.imgId = imgObj.id;
+  wrap.innerHTML = `<img src="${imgObj.src}" title="${escHtml(imgObj.name)}" onclick="previewImg('${imgObj.id}','${escHtml(imgObj.src)}')"/>
+    <button class="img-thumb-del" onclick="deleteImg('${lessonId}','${moduleId}','${imgObj.id}')" title="删除图片">×</button>`;
+  container.appendChild(wrap);
+}
+
+function deleteImg(lessonId, moduleId, imgId) {
+  const li = getLessonIndex(lessonId);
+  const mi = getModuleIndex(lessonId, moduleId);
+  if (li < 0 || mi < 0) return;
+  data.lessons[li].modules[mi].images = (data.lessons[li].modules[mi].images || []).filter(i => i.id !== imgId);
+  saveData();
+  const thumb = document.querySelector(`[data-img-id="${imgId}"]`);
+  if (thumb) thumb.remove();
+  const imgs = data.lessons[li].modules[mi].images;
+  const pptLen = (data.lessons[li].modules[mi].ppt || '').length;
+  const cc = document.getElementById(`cc-${moduleId}-ppt`);
+  if (cc) cc.textContent = pptLen + ' 字 · ' + imgs.length + ' 图';
+}
+
+function previewImg(imgId, src) {
+  let overlay = document.getElementById('img-preview-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'img-preview-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1000;display:flex;align-items:center;justify-content:center;cursor:zoom-out;';
+    overlay.onclick = () => overlay.remove();
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 4px 32px rgba(0,0,0,.5);"/>`;
+  document.body.appendChild(overlay);
+}
+
+function addLesson() {
+  const lesson = createLesson();
+  lesson.title = `课时${data.lessons.length + 1}`;
+  data.lessons.push(lesson);
+  saveData();
+  render(); // 重新渲染，新课时出现在未分组区
+}
+
+function deleteLesson(lessonId) {
+  if (data.lessons.length === 1) { alert('至少保留一个课时'); return; }
+  const lesson = data.lessons.find(l => l.id === lessonId);
+  if (!lesson || !confirm(`确定删除「${lesson.title}」？`)) return;
+  // 从所有分组中移除
+  data.groups.forEach(g => { g.lessonIds = g.lessonIds.filter(id => id !== lessonId); });
+  data.lessons = data.lessons.filter(l => l.id !== lessonId);
+  saveData();
+  render();
+}
+
+// ============================================================
+// 模块操作
+// ============================================================
+function addModule(lessonId) {
+  const li = getLessonIndex(lessonId);
+  if (li < 0) return;
+  const mod = createModule();
+  data.lessons[li].modules.push(mod);
+  saveData();
+  const body = document.querySelector(`[data-lesson-body="${lessonId}"]`);
+  if (!body) return;
+  const addRow = body.querySelector('.add-module-row');
+  const modEl = renderModule(lessonId, mod, data.lessons[li].modules.length);
+  body.insertBefore(modEl, addRow);
+  // renumber
+  renumberModules(lessonId);
+}
+
+function deleteModule(lessonId, moduleId) {
+  const li = getLessonIndex(lessonId);
+  if (li < 0) return;
+  if (data.lessons[li].modules.length === 1) { alert('至少保留一个模块'); return; }
+  data.lessons[li].modules = data.lessons[li].modules.filter(m => m.id !== moduleId);
+  saveData();
+  const row = document.querySelector(`[data-module-id="${moduleId}"]`);
+  if (row) row.remove();
+  renumberModules(lessonId);
+}
+
+function renumberModules(lessonId) {
+  const body = document.querySelector(`[data-lesson-body="${lessonId}"]`);
+  if (!body) return;
+  const rows = body.querySelectorAll('.module-row');
+  rows.forEach((row, i) => {
+    const span = row.querySelector('.seq-num');
+    if (span) span.textContent = `模块${i + 1}`;
+  });
+}
+
+function reorderModule(lessonId, srcId, targetId) {
+  const li = getLessonIndex(lessonId);
+  if (li < 0) return;
+  const mods = data.lessons[li].modules;
+  const srcIdx = mods.findIndex(m => m.id === srcId);
+  const tgtIdx = mods.findIndex(m => m.id === targetId);
+  if (srcIdx < 0 || tgtIdx < 0) return;
+  const [srcMod] = mods.splice(srcIdx, 1);
+  mods.splice(tgtIdx, 0, srcMod);
+  data.lessons[li].modules = mods;
+  saveData();
+  // re-render lesson body
+  const card = document.querySelector(`[data-lesson-id="${lessonId}"]`);
+  if (card) {
+    const newCard = renderLesson(data.lessons[li], li);
+    card.replaceWith(newCard);
+  }
+}
+
+// ============================================================
+// TTS
+// ============================================================
+const synth = window.speechSynthesis;
+let voices = [];
+function loadVoices() {
+  const doLoad = () => { voices = synth.getVoices(); };
+  doLoad();
+  if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = doLoad;
+}
+
+function toggleTTS(moduleId) {
+  const st = ttsState[moduleId];
+  // find text
+  let text = '';
+  data.lessons.forEach(l => l.modules.forEach(m => { if (m.id === moduleId) text = m.script; }));
+  if (!text.trim()) { setTTSStatus(moduleId, '无内容'); return; }
+
+  if (st && st.speaking && !st.paused) {
+    synth.pause();
+    ttsState[moduleId] = { ...st, paused: true, speaking: true };
+    updateTTSBtn(moduleId, 'paused');
+    setTTSStatus(moduleId, '已暂停');
+    return;
+  }
+  if (st && st.paused) {
+    synth.resume();
+    ttsState[moduleId] = { ...st, paused: false, speaking: true };
+    updateTTSBtn(moduleId, 'playing');
+    setTTSStatus(moduleId, '播放中...', true);
+    return;
+  }
+  // stop all others
+  Object.keys(ttsState).forEach(id => { if (id !== moduleId) stopTTS(id); });
+  synth.cancel();
+
+  const utt = new SpeechSynthesisUtterance(text);
+  const speedEl = document.getElementById('tts-speed-' + moduleId);
+  utt.rate = speedEl ? parseFloat(speedEl.value) : 1.0;
+  const zhVoice = voices.find(v => v.lang.startsWith('zh'));
+  if (zhVoice) utt.voice = zhVoice;
+
+  utt.onstart = () => { ttsState[moduleId] = { speaking: true, paused: false }; updateTTSBtn(moduleId, 'playing'); setTTSStatus(moduleId, '播放中...', true); };
+  utt.onend = () => { ttsState[moduleId] = {}; updateTTSBtn(moduleId, 'idle'); setTTSStatus(moduleId, '完毕 ✓'); };
+  utt.onerror = () => { ttsState[moduleId] = {}; updateTTSBtn(moduleId, 'idle'); setTTSStatus(moduleId, '出错'); };
+  synth.speak(utt);
+}
+
+function stopTTS(moduleId) {
+  synth.cancel();
+  ttsState[moduleId] = {};
+  updateTTSBtn(moduleId, 'idle');
+  setTTSStatus(moduleId, '');
+}
+
+function updateTTSBtn(moduleId, state) {
+  const btn = document.getElementById('tts-play-' + moduleId);
+  if (!btn) return;
+  btn.innerHTML = state === 'playing' ? '⏸' : state === 'paused' ? '▶ 继续' : '▶';
+  btn.classList.toggle('playing', state === 'playing');
+}
+
+function setTTSStatus(moduleId, msg, active) {
+  const el = document.getElementById('tts-status-' + moduleId);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'tts-status' + (active ? ' active' : '');
+}
+
+// ============================================================
+// 版本保存
+// ============================================================
+function openSaveModal() {
+  document.getElementById('v-title').value = '';
+  document.getElementById('v-desc').value = '';
+  document.getElementById('save-modal').classList.add('open');
+  setTimeout(() => document.getElementById('v-title').focus(), 100);
+}
+function closeSaveModal() { document.getElementById('save-modal').classList.remove('open'); }
+document.getElementById('save-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('save-modal')) closeSaveModal();
+});
+
+function saveVersion() {
+  const title = document.getElementById('v-title').value.trim();
+  if (!title) { alert('请填写版本标题'); return; }
+  const version = {
+    id: genId('v'), title,
+    desc: document.getElementById('v-desc').value.trim(),
+    createdAt: new Date().toISOString(),
+    lessons: JSON.parse(JSON.stringify(data.lessons))
+  };
+  const versions = getVersions();
+  versions.unshift(version);
+  localStorage.setItem('course_versions', JSON.stringify(versions));
+  closeSaveModal();
+  showToast('✅ 已保存：' + title);
+}
+
+function getVersions() {
+  try { return JSON.parse(localStorage.getItem('course_versions') || '[]'); } catch { return []; }
+}
+
+// ============================================================
+// 版本历史抽屉
+// ============================================================
+function openDrawer() {
+  renderVersionList();
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('version-drawer').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('version-drawer').classList.remove('open');
+}
+function renderVersionList() {
+  const versions = getVersions();
+  const el = document.getElementById('version-list');
+  if (!versions.length) {
+    el.innerHTML = '<div class="drawer-empty">📭 还没有保存版本<br>填写内容后点「💾 保存版本」</div>';
+    return;
+  }
+  el.innerHTML = versions.map(v => {
+    const d = new Date(v.createdAt);
+    const dt = d.toLocaleDateString('zh-CN') + ' ' + d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    const lessonCount = (v.lessons || []).length;
+    const totalWords = (v.lessons || []).reduce((s,l) => s + l.modules.reduce((ms,m) => ms + m.design.length + m.ppt.length + m.script.length, 0), 0);
+    return `<div class="ver-card">
+      <div class="ver-title">${escHtml(v.title)}</div>
+      ${v.desc ? `<div class="ver-desc">${escHtml(v.desc)}</div>` : ''}
+      <div class="ver-meta">${dt} · ${lessonCount}个课时 · 共${totalWords}字</div>
+      <div class="ver-actions">
+        <button class="vbtn vbtn-load" onclick="loadVersion('${v.id}')">📂 加载</button>
+        <button class="vbtn vbtn-del" onclick="deleteVersion('${v.id}')">🗑 删除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadVersion(id) {
+  const v = getVersions().find(x => x.id === id);
+  if (!v || !confirm(`加载「${v.title}」？当前内容将被覆盖。`)) return;
+  data.lessons = v.lessons || [createLesson()];
+  saveData();
+  render();
+  closeDrawer();
+  showToast('📂 已加载：' + v.title);
+}
+
+function deleteVersion(id) {
+  const versions = getVersions();
+  const v = versions.find(x => x.id === id);
+  if (!v || !confirm(`删除「${v.title}」？`)) return;
+  localStorage.setItem('course_versions', JSON.stringify(versions.filter(x => x.id !== id)));
+  renderVersionList();
+}
+
+// ============================================================
+// 导出
+// ============================================================
+function toggleExportMenu() {
+  document.getElementById('export-menu').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.export-wrap')) document.getElementById('export-menu').classList.remove('open');
+});
+
+function getDateStr() {
+  return new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'-');
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+async function exportDocx() {
+  document.getElementById('export-menu').classList.remove('open');
+  if (typeof docx === 'undefined') { alert('Word库加载中，稍后再试'); return; }
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+  const children = [];
+  data.lessons.forEach(lesson => {
+    children.push(new Paragraph({ text: lesson.title, heading: HeadingLevel.HEADING_1 }));
+    lesson.modules.forEach((mod, mi) => {
+      children.push(new Paragraph({ text: `模块${mi+1}`, heading: HeadingLevel.HEADING_2 }));
+      [['课程设计', mod.design], ['PPT内容', mod.ppt], ['逐字稿', mod.script]].forEach(([label, text]) => {
+        children.push(new Paragraph({ text: label, heading: HeadingLevel.HEADING_3 }));
+        text.split('\n').forEach(line => children.push(new Paragraph({ children: [new TextRun({ text: line, size: 24 })] })));
+      });
+    });
+  });
+  const doc = new Document({ sections: [{ properties: {}, children }] });
+  const blob = await Packer.toBlob(doc);
+  triggerDownload(blob, '课程设计-' + getDateStr() + '.docx');
+}
+
+function exportPDF() {
+  document.getElementById('export-menu').classList.remove('open');
+  const win = window.open('', '_blank');
+  let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>课程设计</title>
+  <style>body{font-family:"PingFang SC",sans-serif;padding:32px;color:#222;}
+  h1{color:#3d2b8e;border-bottom:2px solid #667eea;padding-bottom:8px;margin:24px 0 16px;}
+  h2{color:#5c35b5;margin:20px 0 10px;}h3{color:#666;margin:12px 0 6px;font-size:14px;}
+  p{line-height:1.9;font-size:13px;white-space:pre-wrap;margin-bottom:8px;}</style></head><body>`;
+  data.lessons.forEach(lesson => {
+    html += `<h1>${lesson.title}</h1>`;
+    lesson.modules.forEach((mod, mi) => {
+      html += `<h2>模块${mi+1}</h2>`;
+      [['课程设计', mod.design], ['PPT内容', mod.ppt], ['逐字稿', mod.script]].forEach(([l, t]) => {
+        html += `<h3>${l}</h3><p>${t.replace(/</g,'&lt;').replace(/>/g,'&gt;') || '（无内容）'}</p>`;
+      });
+    });
+  });
+  html += `<script>window.onload=()=>window.print()<\/script></body></html>`;
+  win.document.write(html); win.document.close();
+}
+
+function exportExcel() {
+  document.getElementById('export-menu').classList.remove('open');
+  if (typeof XLSX === 'undefined') { alert('Excel库加载中，稍后再试'); return; }
+  const rows = [['课时', '模块', '课程设计', 'PPT内容', '逐字稿']];
+  data.lessons.forEach(lesson => {
+    lesson.modules.forEach((mod, mi) => {
+      rows.push([lesson.title, `模块${mi+1}`, mod.design, mod.ppt, mod.script]);
+    });
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:12},{wch:8},{wch:40},{wch:40},{wch:50}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '课程设计');
+  XLSX.writeFile(wb, '课程设计-' + getDateStr() + '.xlsx');
+}
+
+function exportMd() {
+  document.getElementById('export-menu').classList.remove('open');
+  let md = `# 课程设计\n\n> 导出时间：${getDateStr()}\n\n`;
+  data.lessons.forEach(lesson => {
+    md += `# ${lesson.title}\n\n`;
+    lesson.modules.forEach((mod, mi) => {
+      md += `## 模块${mi+1}\n\n### 课程设计\n\n${mod.design || '（无内容）'}\n\n### PPT内容\n\n${mod.ppt || '（无内容）'}\n\n### 逐字稿\n\n${mod.script || '（无内容）'}\n\n---\n\n`;
+    });
+  });
+  triggerDownload(new Blob([md], {type:'text/markdown;charset=utf-8'}), '课程设计-' + getDateStr() + '.md');
+}
+
+function exportShare() {
+  const dateStr = getDateStr();
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  let body = '';
+  data.lessons.forEach(lesson => {
+    body += `<div class="lcard"><div class="lh" onclick="this.nextElementSibling.classList.toggle('hidden')">
+      <span>▼</span><strong>${esc(lesson.title)}</strong></div><div class="lb">
+      <div class="ch"><div></div><div>📝 课程设计</div><div>🖼️ PPT内容</div><div>🎙️ 逐字稿</div></div>`;
+    lesson.modules.forEach((mod, mi) => {
+      body += `<div class="mr"><div class="sn">模块${mi+1}</div>
+        <div class="tc">${esc(mod.design)||'<em style="color:#ccc">无</em>'}</div>
+        <div class="tc">${esc(mod.ppt)||'<em style="color:#ccc">无</em>'}</div>
+        <div class="tc sc">${esc(mod.script)||'<em style="color:#ccc">无</em>'}
+          <div class="tb"><button class="bp" onclick="tp('${mod.id}')">▶</button>
+          <button class="bs" onclick="st('${mod.id}')">■</button>
+          <select class="sp" id="sp-${mod.id}"><option value="0.7">慢</option><option value="1.0" selected>正常</option><option value="1.5">快</option></select>
+          <span id="ts-${mod.id}" style="font-size:10px;color:#bbb"></span></div>
+        </div></div>`;
+    });
+    body += `</div></div>`;
+  });
+  const scripts = JSON.stringify(data.lessons.reduce((o,l) => { l.modules.forEach(m => { o[m.id] = m.script; }); return o; }, {}));
+  const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"/>
+<title>课程设计 - ${dateStr}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:"PingFang SC",sans-serif;background:#f0f2f5;}
+header{background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:14px 24px;}
+h1{font-size:18px;font-weight:600;}.sub{font-size:12px;opacity:.8;margin-top:2px;}
+.main{padding:16px;max-width:1200px;margin:0 auto;}
+.lcard{background:white;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:14px;overflow:hidden;}
+.lh{background:#f8f7ff;padding:12px 16px;cursor:pointer;font-size:15px;font-weight:700;color:#3d2b8e;display:flex;align-items:center;gap:8px;}
+.lb{}.lb.hidden{display:none;}
+.ch{display:grid;grid-template-columns:60px 1fr 1fr 1fr;background:#f0eeff;border-bottom:2px solid #d1c4e9;}
+.ch>div{padding:7px 12px;font-size:12px;font-weight:700;color:#5c35b5;}
+.mr{display:grid;grid-template-columns:60px 1fr 1fr 1fr;border-top:1px solid #f0f0f0;}
+.sn{background:#f8f8f8;border-right:1px solid #efefef;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#8b6fd4;padding:8px;}
+.tc{border-left:1px solid #f0f0f0;padding:10px 12px;font-size:13px;line-height:1.8;color:#333;white-space:pre-wrap;word-break:break-word;vertical-align:top;}
+.sc{display:flex;flex-direction:column;gap:6px;}
+.tb{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.bp{background:linear-gradient(135deg,#f4511e,#ff7043);color:white;border:none;border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;}
+.bs{background:#f5f5f5;color:#888;border:none;border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;}
+.sp{border:1px solid #eee;border-radius:5px;padding:3px 6px;font-size:11px;}
+</style></head><body>
+<header><h1>📚 课程设计</h1><div class="sub">导出时间：${dateStr} · 只读预览</div></header>
+<div class="main">${body}</div>
+<script>
+const SCRIPTS=${scripts};
+const sy=window.speechSynthesis;let ts={};
+function tp(id){const tx=SCRIPTS[id]||'';if(!tx)return;
+if(ts[id]&&ts[id].p){sy.resume();ts[id].p=false;return;}
+if(ts[id]&&ts[id].s){sy.pause();ts[id].p=true;document.getElementById('ts-'+id).textContent='暂停';return;}
+sy.cancel();const u=new SpeechSynthesisUtterance(tx);
+u.rate=parseFloat(document.getElementById('sp-'+id).value);
+u.onstart=()=>{ts[id]={s:true,p:false};document.getElementById('ts-'+id).textContent='播放中...';};
+u.onend=()=>{ts[id]={};document.getElementById('ts-'+id).textContent='完毕';};
+sy.speak(u);}
+function st(id){sy.cancel();ts[id]={};if(document.getElementById('ts-'+id))document.getElementById('ts-'+id).textContent='';}
+<\/script></body></html>`;
+  triggerDownload(new Blob([html],{type:'text/html;charset=utf-8'}), '课程设计-' + dateStr + '.html');
+}
+
+// ============================================================
+// 工具函数
+// ============================================================
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer;
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div'); t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:10px 20px;border-radius:8px;font-size:13px;z-index:1000;transition:opacity .3s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.style.opacity = '0', 2500);
+}
+
+// ============================================================
+// 初始化
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  render();
+  loadVoices();
+  // URL 参数加载版本
+  const params = new URLSearchParams(location.search);
+  const loadId = params.get('load');
+  if (loadId) {
+    const v = getVersions().find(x => x.id === loadId);
+    if (v) {
+      data.lessons = v.lessons || [createLesson()];
+      saveData(); render();
+      history.replaceState(null, '', location.pathname);
+      showToast('📂 已加载：' + v.title);
+    }
+  }
+});
+</script>
+</body>
+</html>

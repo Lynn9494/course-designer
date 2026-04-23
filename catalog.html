@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>课程目录</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "PingFang SC","Microsoft YaHei",sans-serif; background: #f0f2f5; min-height: 100vh; display: flex; flex-direction: column; }
+
+    header {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white; padding: 16px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15); flex-shrink: 0;
+    }
+    header h1 { font-size: 20px; font-weight: 600; letter-spacing: 1px; }
+    header .sub { font-size: 13px; opacity: .8; margin-top: 3px; }
+    .back-btn {
+      background: rgba(255,255,255,.2); color: white;
+      border: 1px solid rgba(255,255,255,.4);
+      padding: 8px 16px; font-size: 13px; border-radius: 8px;
+      cursor: pointer; font-family: inherit; font-weight: 500;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+      transition: background .15s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,.3); }
+
+    .main { flex: 1; padding: 24px 28px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .count-label { font-size: 14px; color: #888; }
+    .count-label strong { color: #667eea; }
+
+    /* 排序 */
+    .sort-bar { display: flex; gap: 8px; }
+    .sort-btn {
+      border: 1px solid #ddd; background: white; color: #666;
+      padding: 6px 12px; font-size: 12px; border-radius: 7px; cursor: pointer; font-family: inherit;
+    }
+    .sort-btn.active { background: #667eea; color: white; border-color: #667eea; }
+
+    /* 网格 */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+
+    .card {
+      background: white; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      border: 2px solid transparent;
+      cursor: pointer; transition: all .2s;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .card:hover { border-color: #c5b8f0; box-shadow: 0 4px 20px rgba(102,126,234,.15); transform: translateY(-2px); }
+
+    .card-num {
+      font-size: 11px; font-weight: 700; color: #b39ddb;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .card-title { font-size: 16px; font-weight: 700; color: #1a1a2e; line-height: 1.4; }
+    .card-desc { font-size: 13px; color: #777; line-height: 1.6; flex: 1; }
+    .card-meta { font-size: 11px; color: #bbb; }
+
+    .card-counts { display: flex; gap: 6px; flex-wrap: wrap; }
+    .cc { font-size: 11px; padding: 2px 8px; border-radius: 12px; }
+    .cc1 { background: #e8f4fd; color: #1a73e8; }
+    .cc2 { background: #e8f8f0; color: #0f9d58; }
+    .cc3 { background: #fef3e8; color: #f4511e; }
+
+    .card-footer { border-top: 1px solid #f5f5f5; padding-top: 12px; display: flex; gap: 8px; }
+    .cbtn {
+      border: none; border-radius: 7px; padding: 7px 14px; font-size: 12px;
+      cursor: pointer; font-family: inherit; font-weight: 500;
+    }
+    .cbtn-open { background: linear-gradient(135deg,#667eea,#764ba2); color: white; flex: 1; }
+    .cbtn-open:hover { opacity: .9; }
+    .cbtn-del { background: #ffeaea; color: #e53935; }
+    .cbtn-del:hover { background: #ffcdd2; }
+
+    /* 空状态 */
+    .empty-state {
+      text-align: center; padding: 80px 20px; color: #bbb;
+    }
+    .empty-state .emoji { font-size: 60px; margin-bottom: 16px; }
+    .empty-state p { font-size: 16px; margin-bottom: 8px; color: #999; }
+    .empty-state small { font-size: 13px; }
+    .empty-state a {
+      display: inline-block; margin-top: 20px;
+      background: linear-gradient(135deg,#667eea,#764ba2); color: white;
+      padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      .main { padding: 16px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>📚 课程目录</h1>
+    <div class="sub">所有已保存的课程版本</div>
+  </div>
+  <a class="back-btn" href="index.html">← 返回工作台</a>
+</header>
+
+<div class="main">
+  <div class="toolbar">
+    <div class="count-label">共 <strong id="total-count">0</strong> 个版本</div>
+    <div class="sort-bar">
+      <button class="sort-btn active" id="sort-new" onclick="setSortNew()">最新优先</button>
+      <button class="sort-btn" id="sort-old" onclick="setSortOld()">最早优先</button>
+    </div>
+  </div>
+  <div class="grid" id="catalog-grid"></div>
+</div>
+
+<script>
+  let sortNew = true;
+
+  function getVersions() {
+    try { return JSON.parse(localStorage.getItem('course_versions') || '[]'); } catch { return []; }
+  }
+
+  function render() {
+    let versions = getVersions();
+    if (!sortNew) versions = [...versions].reverse();
+    document.getElementById('total-count').textContent = versions.length;
+    const grid = document.getElementById('catalog-grid');
+
+    if (!versions.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+        <div class="emoji">📭</div>
+        <p>还没有保存任何版本</p>
+        <small>去工作台创作并保存定稿后，在这里查看所有课程</small>
+        <br><a href="index.html">去工作台创建 →</a>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = versions.map((v, i) => {
+      const d = new Date(v.createdAt);
+      const dateStr = d.toLocaleDateString('zh-CN') + ' ' + d.toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+      const totalWords = v.design.length + v.ppt.length + v.script.length;
+      return `<div class="card" onclick="openVersion('${v.id}')">
+        <div class="card-num">第 ${sortNew ? i+1 : versions.length - i} 课</div>
+        <div class="card-title">${escHtml(v.title)}</div>
+        ${v.desc ? `<div class="card-desc">${escHtml(v.desc)}</div>` : '<div class="card-desc" style="color:#ddd;">暂无简介</div>'}
+        <div class="card-counts">
+          <span class="cc cc1">课程设计 ${v.design.length}字</span>
+          <span class="cc cc2">PPT ${v.ppt.length}字</span>
+          <span class="cc cc3">逐字稿 ${v.script.length}字</span>
+        </div>
+        <div class="card-meta">💾 ${dateStr} · 共 ${totalWords} 字</div>
+        <div class="card-footer" onclick="event.stopPropagation()">
+          <button class="cbtn cbtn-open" onclick="openVersion('${v.id}')">📂 在工作台中打开</button>
+          <button class="cbtn cbtn-del" onclick="deleteVersion('${v.id}')">🗑</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function openVersion(id) {
+    window.location.href = 'index.html?load=' + encodeURIComponent(id);
+  }
+
+  function deleteVersion(id) {
+    const versions = getVersions();
+    const v = versions.find(x => x.id === id);
+    if (!v || !confirm(`确定删除「${v.title}」？此操作不可恢复。`)) return;
+    localStorage.setItem('course_versions', JSON.stringify(versions.filter(x => x.id !== id)));
+    render();
+  }
+
+  function setSortNew() {
+    sortNew = true;
+    document.getElementById('sort-new').classList.add('active');
+    document.getElementById('sort-old').classList.remove('active');
+    render();
+  }
+  function setSortOld() {
+    sortNew = false;
+    document.getElementById('sort-old').classList.add('active');
+    document.getElementById('sort-new').classList.remove('active');
+    render();
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  render();
+</script>
+</body>
+</html>
