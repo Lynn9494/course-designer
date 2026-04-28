@@ -28,7 +28,7 @@
     .main{flex:1;padding:16px;max-width:1400px;margin:0 auto;width:100%;}
 
     /* LESSON CARD */
-    .lesson-card{background:white;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:16px;overflow:hidden;}
+    .lesson-card{background:white;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:16px;overflow:visible;}
     .lesson-header{background:#f8f7ff;padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;border-bottom:1px solid #ede9ff;}
     .lesson-header:hover{background:#f0eeff;}
     .collapse-icon{font-size:12px;color:#8b6fd4;transition:transform .2s;flex-shrink:0;}
@@ -113,7 +113,7 @@
     .add-group-btn:hover{background:#e0f2f1;border-color:#00897b;}
 
     /* GROUP CARD */
-    .group-card{border:2px solid #d1c4e9;border-radius:14px;background:#faf8ff;margin-bottom:20px;overflow:hidden;}
+    .group-card{border:2px solid #d1c4e9;border-radius:14px;background:#faf8ff;margin-bottom:20px;overflow:visible;}
     .group-hd{background:linear-gradient(135deg,#ede9ff,#d8d0f5);padding:11px 16px;display:flex;align-items:center;gap:10px;}
     .group-title-input{font-size:16px;font-weight:700;color:#3d2b8e;border:none;background:transparent;outline:none;font-family:inherit;flex:1;min-width:80px;}
     .group-title-input:focus{background:rgba(255,255,255,.5);border-radius:4px;padding:0 6px;}
@@ -420,13 +420,19 @@ function renderGroup(group) {
     <div class="group-mindmap-wrap">
       <label>🧠 思维导图
         <span>
-          <button class="mm-refresh-btn" onclick="refreshMindmap('${group.id}')">🔄 刷新</button>
-          <button class="mm-expand-btn" onclick="openMmModal('${group.id}')">⛶ 放大编辑</button>
+          <button class="mm-refresh-btn" data-mm-refresh="${group.id}">🔄 刷新</button>
+          <button class="mm-expand-btn" data-mm-expand="${group.id}">⛶ 放大编辑</button>
         </span>
       </label>
       <div class="mindmap-svg-wrap" id="mm-${group.id}"></div>
     </div>`;
   body.appendChild(overview);
+
+  // 绑定事件（避免 CSP 阻止 inline onclick）
+  overview.querySelector(`[data-mm-refresh="${group.id}"]`)
+    .addEventListener('click', () => refreshMindmap(group.id));
+  overview.querySelector(`[data-mm-expand="${group.id}"]`)
+    .addEventListener('click', () => openMmModal(group.id));
 
   // 课时标签区
   const tagArea = document.createElement('div');
