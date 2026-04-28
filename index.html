@@ -213,6 +213,191 @@
       .col-header,.module-row{grid-template-columns:90px 1fr;}
       .col-header .ch-ppt,.col-header .ch-script,.text-cell.ppt,.text-cell.script{display:none;}
     }
+
+    /* ===== 手机端响应式适配 ===== */
+    @media (max-width: 768px) {
+      /* 整体字体和间距缩小 */
+      body { font-size: 13px; }
+
+      /* HEADER：标题和按钮组换行 */
+      header {
+        flex-wrap: wrap;
+        padding: 10px 12px;
+        gap: 8px;
+      }
+      header h1 { font-size: 15px; }
+      header > div:first-child { flex: 1 1 100%; }
+      .hbtns {
+        width: 100%;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+      .hbtn {
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+      /* 导出按钮仅显示图标 */
+      .export-wrap .hbtn .export-text { display: none; }
+      .export-menu {
+        right: auto;
+        left: 0;
+        min-width: 140px;
+      }
+
+      /* MAIN：从左右两栏变为上下堆叠 */
+      .main {
+        flex-direction: column;
+        padding: 10px 10px;
+      }
+
+      /* SIDEBAR：折叠在上方，限制高度 */
+      .sidebar {
+        width: 100% !important;
+        min-width: unset !important;
+        max-height: 200px;
+        overflow-y: auto;
+        border-right: none !important;
+        border-bottom: 1px solid #e0d8ff;
+        padding-bottom: 8px;
+        margin-bottom: 10px;
+      }
+
+      /* WORKSPACE：占满宽度 */
+      .workspace {
+        width: 100% !important;
+        min-width: unset !important;
+        padding-left: 0 !important;
+      }
+
+      /* GROUP CARD */
+      .group-card { margin-bottom: 14px; }
+      .group-hd { padding: 9px 12px; gap: 7px; flex-wrap: wrap; }
+      .group-title-input { font-size: 14px; min-width: 60px; }
+      .g-btn { padding: 4px 8px; font-size: 11px; }
+      .group-body { padding: 10px 10px; }
+
+      /* GROUP OVERVIEW：从两列变为单列 */
+      .group-overview {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+      }
+
+      /* LESSON CARD */
+      .lesson-card { border-radius: 10px; margin-bottom: 12px; }
+      .lesson-header { padding: 10px 12px; gap: 8px; flex-wrap: wrap; }
+      .lesson-title { font-size: 13px; }
+      .lesson-actions { gap: 5px; }
+      .l-btn { padding: 4px 8px; font-size: 11px; }
+
+      /* COL HEADER：手机端隐藏（模块行自带标签） */
+      .col-header { display: none !important; }
+
+      /* MODULE ROW：改为纵向堆叠卡片式 */
+      .module-row {
+        display: flex !important;
+        flex-direction: column !important;
+        border: 1px solid #e8e2ff;
+        border-radius: 8px;
+        margin: 6px 8px;
+        background: white !important;
+        overflow: hidden;
+      }
+      .module-row:nth-child(even),
+      .module-row:nth-child(odd) { background: white !important; }
+
+      /* SEQ CELL：横排显示在顶部 */
+      .seq-cell {
+        flex-direction: row !important;
+        min-height: unset !important;
+        padding: 7px 10px;
+        background: #f0eeff;
+        border-right: none !important;
+        border-bottom: 1px solid #e0d8ff;
+        justify-content: flex-start;
+        gap: 10px;
+        cursor: default;
+      }
+      .seq-num { font-size: 12px; }
+      .mod-name-input {
+        width: auto;
+        min-width: 60px;
+        text-align: left;
+        font-size: 13px;
+      }
+      .drag-handle { font-size: 18px; margin-left: auto; }
+      .del-mod-btn { margin-left: 4px; }
+
+      /* TEXT CELL：各占一行，label显示在左侧 */
+      .text-cell {
+        flex-direction: row !important;
+        align-items: stretch;
+        border-left: none !important;
+        border-top: 1px solid #f0f0f0;
+        min-height: 80px;
+      }
+      .text-cell::before {
+        content: "";
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        font-size: 11px;
+        font-weight: 700;
+        color: #8b6fd4;
+        background: #f8f7ff;
+        padding: 6px 5px;
+        min-width: 28px;
+        border-right: 1px solid #ede9ff;
+        flex-shrink: 0;
+      }
+      .text-cell.design::before { content: "课程设计"; }
+      .text-cell:not(.ppt):not(.script)::before { content: "课程设计"; }
+      .text-cell.ppt::before    { content: "PPT"; }
+      .text-cell.script::before { content: "逐字稿"; }
+      /* 手机端显示所有列（覆盖800px媒体查询的隐藏） */
+      .text-cell.ppt,
+      .text-cell.script { display: flex !important; }
+      .text-cell textarea {
+        min-height: 80px;
+        height: auto;
+        font-size: 12px;
+        padding: 8px 10px;
+        flex: 1;
+      }
+      .cell-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 4px 10px 6px;
+      }
+      .tts-bar { gap: 4px; }
+      .tts-btn { padding: 3px 7px; font-size: 10px; }
+
+      /* ADD MODULE BTN */
+      .add-module-row { padding: 6px 10px; }
+      .add-module-btn { font-size: 11px; padding: 6px; }
+
+      /* ADD LESSON BTN */
+      .add-lesson-btn { font-size: 13px; padding: 11px; }
+      .add-group-btn  { font-size: 12px; padding: 9px; }
+
+      /* MODAL */
+      .modal { padding: 20px 16px; width: 96vw; }
+
+      /* DRAWER */
+      .drawer { width: 92vw; right: -92vw; }
+      .drawer.open { right: 0; }
+
+      /* MINDMAP MODAL */
+      .mm-modal { width: 99vw; }
+      .mm-modal-body { flex-direction: column; }
+      .mm-edit-panel { width: 100%; max-height: 200px; border-right: none; border-bottom: 1px solid #eee; }
+
+      /* PPT 图片区 */
+      .ppt-img-area { gap: 6px; padding: 6px 8px; }
+      .img-thumb img { width: 70px; height: 55px; }
+    }
   </style>
 </head>
 <body>
