@@ -73,7 +73,7 @@
 
     /* TEXT CELL */
     .text-cell{display:flex;flex-direction:column;border-left:1px solid #f0f0f0;}
-    .text-cell textarea{flex:1;border:none;outline:none;padding:10px 12px;font-size:13px;line-height:1.85;color:#333;resize:vertical;font-family:inherit;background:transparent;min-height:160px;}
+    .text-cell textarea{width:100%;box-sizing:border-box;border:none;outline:none;padding:10px 12px;font-size:13px;line-height:1.85;color:#333;resize:vertical;font-family:inherit;background:transparent;min-height:160px;height:160px;display:block;flex:none;}
     .text-cell textarea::placeholder{color:#ccc;}
     .cell-footer{padding:3px 12px 6px;display:flex;align-items:center;justify-content:space-between;background:inherit;}
     .char-count{font-size:11px;color:#ccc;}
@@ -1347,36 +1347,18 @@ function openMmModal(groupId) {
   if (gi < 0) return;
   const group = data.groups[gi];
   document.getElementById('mm-modal-title').textContent = '🧠 思维导图 · ' + (group.title || '');
-  // 把课程说明填入编辑框
-  document.getElementById('mm-edit-ta').value = group.desc || '';
-  // 渲染预览
+  // 渲染完整5层预览
   renderMmModalPreview(groupId);
   document.getElementById('mm-modal').classList.add('open');
 }
 
 function closeMmModal() {
   document.getElementById('mm-modal').classList.remove('open');
-  // 保存编辑内容到 group.desc
-  if (_mmModalGroupId !== null) {
-    const gi = getGroupIndex(_mmModalGroupId);
-    if (gi >= 0) {
-      data.groups[gi].desc = document.getElementById('mm-edit-ta').value;
-      saveData();
-      // 同步更新页面上的课程说明 textarea
-      const ta = document.querySelector(`[data-group-desc="${_mmModalGroupId}"]`);
-      if (ta) ta.value = data.groups[gi].desc;
-      refreshMindmap(_mmModalGroupId);
-    }
-  }
   _mmModalGroupId = null;
 }
 
 function onMmEditInput() {
-  if (!_mmModalGroupId) return;
-  const gi = getGroupIndex(_mmModalGroupId);
-  if (gi < 0) return;
-  data.groups[gi].desc = document.getElementById('mm-edit-ta').value;
-  renderMmModalPreview(_mmModalGroupId);
+  // textarea已移除，保留空函数避免报错
 }
 
 function renderMmModalPreview(groupId) {
