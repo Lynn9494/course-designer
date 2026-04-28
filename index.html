@@ -583,7 +583,7 @@ function removeLessonFromGroup(groupId, lessonId) {
 }
 
 // ============================================================
-// 思维导图（纯 SVG）
+// 思维导图（横向树形，仿XMind样式）
 // ============================================================
 function buildMindmapTree(groupId) {
   const gi = getGroupIndex(groupId);
@@ -598,13 +598,22 @@ function buildMindmapTree(groupId) {
     lesson.modules.forEach((mod, mi) => {
       const modLabel = mod.name || `模块${mi + 1}`;
       const modNode = { label: modLabel, children: [] };
-      // 解析课程设计内容
       if (mod.design) {
         const lines = mod.design.split('\n').map(l => l.trim()).filter(Boolean);
         lines.forEach(line => {
-          // 去掉前缀符号
-          const text = line.replace(/^[•\-\*\d+\.、【】\[\]]+\s*/, '').trim();
-          if (text) modNode.children.push({ label: text.slice(0, 16) + (text.length > 16 ? '…' : ''), children: [] });
+          const text = line.replace(/^[•\-\*\d+\.、【】\[\]「」『』]+\s*/, '').trim();
+          if (text && text.length > 1) {
+            // 进一步拆分子项（冒号后内容作为子节点）
+            const colonIdx = text.indexOf('：');
+            if (colonIdx > 0 && colonIdx < 15 && text.length > colonIdx + 2) {
+              const key = text.slice(0, colonIdx + 1);
+              const val = text.slice(colonIdx + 1).trim();
+              const subNode = { label: key, children: val ? [{ label: val, children: [] }] : [] };
+              modNode.children.push(subNode);
+            } else {
+              modNode.children.push({ label: text, children: [] });
+            }
+          }
         });
       }
       lessonNode.children.push(modNode);
@@ -614,104 +623,169 @@ function buildMindmapTree(groupId) {
   return root;
 }
 
+// 测量文字宽度（近似）
+function measureText(text, fontSize) {
+  const canvas = measureText._canvas || (measureText._canvas = document.createElement('canvas'));
+  const ctx = canvas.getContext('2d');
+  ctx.font = `${fontSize}px "PingFang SC","Microsoft YaHei",sans-serif`;
+  return ctx.measureText(text).width;
+}
+
+function drawMindmap(svgEl, tree, cfg) {
+  const {
+    FONT_SIZE = 12,
+    V_GAP = 6,       // 同层节点垂直间距
+    H_GAP = 48,      // 层与层之间水平间距
+    PAD_X = 10,      // 节点文字左右padding
+    PAD_Y = 5,       // 节点文字上下padding
+    LINE_COLOR = '#999',
+    ROOT_COLOR = '#3d2b8e',
+    L1_COLOR = '#5c35b5',
+    L2_COLOR = '#764ba2',
+    LEAF_COLOR = '#555',
+    SHOW_BOX = true, // 是否显示节点框
+  } = cfg || {};
+
+  const ns = 'http://www.w3.org/2000/svg';
+
+  // 计算节点自身高度
+  function nodeH(node) {
+    return FONT_SIZE + PAD_Y * 2;
+  }
+
+  // 计算子树总高度（含自身）
+  function subtreeH(node) {
+    if (!node.children.length) return nodeH(node);
+    const childTotal = node.children.reduce((s, c) => s + subtreeH(c), 0)
+                       + V_GAP * (node.children.length - 1);
+    return Math.max(nodeH(node), childTotal);
+  }
+
+  // 计算节点文字宽度
+  function nodeW(node) {
+    return Math.ceil(measureText(node.label, FONT_SIZE)) + PAD_X * 2;
+  }
+
+  // 计算每层最大宽度
+  function layerWidths(node, depth, widths) {
+    widths[depth] = Math.max(widths[depth] || 0, nodeW(node));
+    node.children.forEach(c => layerWidths(c, depth + 1, widths));
+    return widths;
+  }
+
+  const widths = layerWidths(tree, 0, []);
+  const totalH = subtreeH(tree);
+
+  // 计算 SVG 尺寸
+  let totalW = widths.reduce((s, w) => s + w + H_GAP, 0) + 20;
+  const svgH = totalH + 40;
+
+  svgEl.setAttribute('width', totalW);
+  svgEl.setAttribute('height', svgH);
+
+  // 计算各层 x 起点
+  const layerX = [];
+  let x = 10;
+  widths.forEach((w, i) => { layerX[i] = x; x += w + H_GAP; });
+
+  // 递归绘制
+  function draw(node, depth, cy) {
+    const x0 = layerX[depth];
+    const w = nodeW(node);
+    const h = nodeH(node);
+    const nh = subtreeH(node);
+    const yCentered = cy + nh / 2 - h / 2; // 节点垂直居中于子树
+    const textY = yCentered + h / 2;        // 文字基线中心
+
+    const color = depth === 0 ? ROOT_COLOR : depth === 1 ? L1_COLOR : depth === 2 ? L2_COLOR : LEAF_COLOR;
+    const fontW = depth <= 1 ? 'bold' : 'normal';
+
+    // 绘制节点框（叶节点只画底线，中间节点画完整框）
+    if (depth === 0) {
+      // 根节点：圆角矩形填色
+      const rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('x', x0); rect.setAttribute('y', yCentered);
+      rect.setAttribute('width', w); rect.setAttribute('height', h);
+      rect.setAttribute('rx', 4); rect.setAttribute('fill', '#ede9ff');
+      rect.setAttribute('stroke', ROOT_COLOR); rect.setAttribute('stroke-width', '1.5');
+      svgEl.appendChild(rect);
+    } else if (depth === 1) {
+      // 一级节点：只画底线
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', x0); line.setAttribute('y1', yCentered + h);
+      line.setAttribute('x2', x0 + w); line.setAttribute('y2', yCentered + h);
+      line.setAttribute('stroke', L1_COLOR); line.setAttribute('stroke-width', '1.5');
+      svgEl.appendChild(line);
+    } else if (depth >= 2 && node.children.length > 0) {
+      // 中间节点：只画底线（细）
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', x0); line.setAttribute('y1', yCentered + h);
+      line.setAttribute('x2', x0 + w); line.setAttribute('y2', yCentered + h);
+      line.setAttribute('stroke', '#ccc'); line.setAttribute('stroke-width', '1');
+      svgEl.appendChild(line);
+    }
+    // 叶节点：纯文字，无框
+
+    // 文字
+    const text = document.createElementNS(ns, 'text');
+    text.setAttribute('x', x0 + PAD_X);
+    text.setAttribute('y', textY + 1);
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('fill', color);
+    text.setAttribute('font-size', FONT_SIZE);
+    text.setAttribute('font-weight', fontW);
+    text.setAttribute('font-family', '"PingFang SC","Microsoft YaHei",sans-serif');
+    text.textContent = node.label;
+    svgEl.appendChild(text);
+
+    // 连接线到子节点（L形折线）
+    if (node.children.length) {
+      const parentMidX = x0 + w;
+      const parentMidY = yCentered + h / 2;
+      const childX = layerX[depth + 1];
+      const midX = parentMidX + H_GAP / 2;
+
+      // 从父节点右边出发，画水平线到折点，再画垂直线到各子节点高度，再折到子节点
+      let childCy = cy;
+      node.children.forEach(child => {
+        const chTotal = subtreeH(child);
+        const chH = nodeH(child);
+        const chCentered = childCy + chTotal / 2 - chH / 2;
+        const chMidY = chCentered + chH / 2;
+
+        const path = document.createElementNS(ns, 'path');
+        path.setAttribute('d', `M${parentMidX},${parentMidY} H${midX} V${chMidY} H${childX}`);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', LINE_COLOR);
+        path.setAttribute('stroke-width', '1');
+        svgEl.insertBefore(path, svgEl.firstChild);
+
+        draw(child, depth + 1, childCy);
+        childCy += chTotal + V_GAP;
+      });
+    }
+
+    return { x: x0, y: yCentered, w, h };
+  }
+
+  draw(tree, 0, 20);
+}
+
 function refreshMindmap(groupId) {
   const wrap = document.getElementById('mm-' + groupId);
   if (!wrap) return;
   const tree = buildMindmapTree(groupId);
   if (!tree) return;
 
-  const NODE_W = 110, NODE_H = 28, H_GAP = 36, V_GAP = 10;
-
-  // 计算每个节点高度（考虑子节点）
-  function calcHeight(node) {
-    if (!node.children.length) return NODE_H;
-    const childrenH = node.children.reduce((s, c) => s + calcHeight(c) + V_GAP, 0) - V_GAP;
-    return Math.max(NODE_H, childrenH);
-  }
-
-  // 计算最大深度
-  function maxDepth(node, d = 0) {
-    if (!node.children.length) return d;
-    return Math.max(...node.children.map(c => maxDepth(c, d + 1)));
-  }
-
-  const depth = maxDepth(tree);
-  const totalH = calcHeight(tree);
-  const svgW = (depth + 1) * (NODE_W + H_GAP) + 20;
-  const svgH = totalH + 40;
-
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('width', svgW);
-  svg.setAttribute('height', svgH);
   svg.style.display = 'block';
-
-  const COLORS = ['#667eea', '#764ba2', '#9c6fd4', '#b39ddb'];
-  const LEAF_FILL = '#f0eeff';
-
-  function drawNode(node, x, y, level) {
-    const isLeaf = node.children.length === 0;
-    const fill = isLeaf ? LEAF_FILL : COLORS[Math.min(level, COLORS.length - 1)];
-    const textColor = isLeaf ? '#5c35b5' : 'white';
-
-    const g = document.createElementNS(ns, 'g');
-    const rect = document.createElementNS(ns, 'rect');
-    rect.setAttribute('x', x); rect.setAttribute('y', y);
-    rect.setAttribute('width', NODE_W); rect.setAttribute('height', NODE_H);
-    rect.setAttribute('rx', 6); rect.setAttribute('ry', 6);
-    rect.setAttribute('fill', fill);
-    rect.setAttribute('stroke', COLORS[Math.min(level, COLORS.length - 1)]);
-    rect.setAttribute('stroke-width', '1.5');
-    g.appendChild(rect);
-
-    const text = document.createElementNS(ns, 'text');
-    text.setAttribute('x', x + NODE_W / 2);
-    text.setAttribute('y', y + NODE_H / 2 + 1);
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('dominant-baseline', 'middle');
-    text.setAttribute('fill', textColor);
-    text.setAttribute('font-size', '11');
-    text.setAttribute('font-family', '"PingFang SC","Microsoft YaHei",sans-serif');
-    const label = node.label.length > 12 ? node.label.slice(0, 12) + '…' : node.label;
-    text.textContent = label;
-    g.appendChild(text);
-    svg.appendChild(g);
-
-    // 递归绘制子节点
-    if (node.children.length) {
-      const childX = x + NODE_W + H_GAP;
-      let childY = y + NODE_H / 2 - calcHeight(node) / 2 + 20;
-
-      // 修正 childY 使子节点居中
-      const totalChildH = node.children.reduce((s, c) => s + calcHeight(c) + V_GAP, 0) - V_GAP;
-      childY = y + NODE_H / 2 - totalChildH / 2;
-
-      node.children.forEach(child => {
-        const ch = calcHeight(child);
-        const cy = childY + ch / 2 - NODE_H / 2;
-        // 连接线（贝塞尔）
-        const startX = x + NODE_W, startY = y + NODE_H / 2;
-        const endX = childX, endY = cy + NODE_H / 2;
-        const midX = (startX + endX) / 2;
-        const path = document.createElementNS(ns, 'path');
-        path.setAttribute('d', `M${startX},${startY} C${midX},${startY} ${midX},${endY} ${endX},${endY}`);
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', COLORS[Math.min(level + 1, COLORS.length - 1)]);
-        path.setAttribute('stroke-width', '1.5');
-        path.setAttribute('opacity', '0.5');
-        svg.insertBefore(path, svg.firstChild);
-        drawNode(child, childX, cy, level + 1);
-        childY += ch + V_GAP;
-      });
-    }
-  }
-
-  const rootY = svgH / 2 - NODE_H / 2;
-  drawNode(tree, 10, rootY, 0);
+  drawMindmap(svg, tree, { FONT_SIZE: 11, V_GAP: 5, H_GAP: 40 });
 
   wrap.innerHTML = '';
   wrap.appendChild(svg);
-  wrap.style.height = Math.max(160, svgH) + 'px';
+  const h = parseInt(svg.getAttribute('height')) || 160;
+  wrap.style.height = Math.max(160, Math.min(h, 400)) + 'px';
 }
 
 function renderLesson(lesson, li) {
@@ -1221,99 +1295,15 @@ function renderMmModalPreview(groupId) {
   const tree = buildMindmapTree(groupId);
   if (!tree) return;
 
-  const NODE_W = 130, NODE_H = 32, H_GAP = 44, V_GAP = 12;
-  function calcHeight(node) {
-    if (!node.children.length) return NODE_H;
-    const ch = node.children.reduce((s, c) => s + calcHeight(c) + V_GAP, 0) - V_GAP;
-    return Math.max(NODE_H, ch);
-  }
-  function maxDepth(node, d = 0) {
-    if (!node.children.length) return d;
-    return Math.max(...node.children.map(c => maxDepth(c, d + 1)));
-  }
-  const depth = maxDepth(tree);
-  const totalH = calcHeight(tree);
-  const svgW = (depth + 1) * (NODE_W + H_GAP) + 40;
-  const svgH = totalH + 60;
-
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('width', svgW);
-  svg.setAttribute('height', svgH);
   svg.style.display = 'block';
+  // 放大Modal里用更大字号
+  drawMindmap(svg, tree, { FONT_SIZE: 13, V_GAP: 8, H_GAP: 52 });
 
-  const COLORS = ['#667eea', '#764ba2', '#9c6fd4', '#b39ddb'];
-  const LEAF_FILL = '#f0eeff';
-
-  function drawNode(node, x, y, level) {
-    const isLeaf = node.children.length === 0;
-    const fill = isLeaf ? LEAF_FILL : COLORS[Math.min(level, COLORS.length - 1)];
-    const textColor = isLeaf ? '#5c35b5' : 'white';
-    const g = document.createElementNS(ns, 'g');
-    const rect = document.createElementNS(ns, 'rect');
-    rect.setAttribute('x', x); rect.setAttribute('y', y);
-    rect.setAttribute('width', NODE_W); rect.setAttribute('height', NODE_H);
-    rect.setAttribute('rx', 7); rect.setAttribute('ry', 7);
-    rect.setAttribute('fill', fill);
-    rect.setAttribute('stroke', COLORS[Math.min(level, COLORS.length - 1)]);
-    rect.setAttribute('stroke-width', '1.5');
-    g.appendChild(rect);
-    // 多行文字（最多显示2行）
-    const label = node.label;
-    const maxChars = 10;
-    const line1 = label.slice(0, maxChars);
-    const line2 = label.length > maxChars ? label.slice(maxChars, maxChars * 2) + (label.length > maxChars * 2 ? '…' : '') : '';
-    const text1 = document.createElementNS(ns, 'text');
-    text1.setAttribute('x', x + NODE_W / 2);
-    text1.setAttribute('y', line2 ? y + NODE_H / 2 - 5 : y + NODE_H / 2 + 1);
-    text1.setAttribute('text-anchor', 'middle');
-    text1.setAttribute('dominant-baseline', 'middle');
-    text1.setAttribute('fill', textColor);
-    text1.setAttribute('font-size', '12');
-    text1.setAttribute('font-family', '"PingFang SC","Microsoft YaHei",sans-serif');
-    text1.textContent = line1;
-    g.appendChild(text1);
-    if (line2) {
-      const text2 = document.createElementNS(ns, 'text');
-      text2.setAttribute('x', x + NODE_W / 2);
-      text2.setAttribute('y', y + NODE_H / 2 + 10);
-      text2.setAttribute('text-anchor', 'middle');
-      text2.setAttribute('dominant-baseline', 'middle');
-      text2.setAttribute('fill', textColor);
-      text2.setAttribute('font-size', '12');
-      text2.setAttribute('font-family', '"PingFang SC","Microsoft YaHei",sans-serif');
-      text2.textContent = line2;
-      g.appendChild(text2);
-    }
-    svg.appendChild(g);
-    if (node.children.length) {
-      const childX = x + NODE_W + H_GAP;
-      const totalChildH = node.children.reduce((s, c) => s + calcHeight(c) + V_GAP, 0) - V_GAP;
-      let childY = y + NODE_H / 2 - totalChildH / 2;
-      node.children.forEach(child => {
-        const ch = calcHeight(child);
-        const cy = childY + ch / 2 - NODE_H / 2;
-        const startX = x + NODE_W, startY = y + NODE_H / 2;
-        const endX = childX, endY = cy + NODE_H / 2;
-        const midX = (startX + endX) / 2;
-        const path = document.createElementNS(ns, 'path');
-        path.setAttribute('d', `M${startX},${startY} C${midX},${startY} ${midX},${endY} ${endX},${endY}`);
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', COLORS[Math.min(level + 1, COLORS.length - 1)]);
-        path.setAttribute('stroke-width', '1.5');
-        path.setAttribute('opacity', '0.5');
-        svg.insertBefore(path, svg.firstChild);
-        drawNode(child, childX, cy, level + 1);
-        childY += ch + V_GAP;
-      });
-    }
-  }
-  const rootY = svgH / 2 - NODE_H / 2;
-  drawNode(tree, 20, rootY, 0);
   scroll.innerHTML = '';
   scroll.appendChild(svg);
 }
-
 
   if (!title) { alert('请填写版本标题'); return; }
   const version = {
