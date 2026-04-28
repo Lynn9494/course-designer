@@ -123,15 +123,15 @@
     .g-btn-del{background:#ffeaea;color:#e53935;}
     .g-btn-del:hover{background:#ffcdd2;}
     .group-body{padding:14px 16px;}
-    .group-overview{display:grid;grid-template-columns:1fr 1.6fr;gap:14px;margin-bottom:12px;}
+    .group-overview{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;}
     .group-desc-wrap label{font-size:12px;font-weight:600;color:#5c35b5;display:block;margin-bottom:5px;}
-    .group-desc-ta{width:100%;height:150px;border:1px solid #e0d8ff;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;font-family:inherit;outline:none;resize:vertical;color:#333;}
+    .group-desc-ta{width:100%;height:240px;border:1px solid #e0d8ff;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;font-family:inherit;outline:none;resize:vertical;color:#333;}
     .group-desc-ta:focus{border-color:#7c4dff;}
     .group-mindmap-wrap{display:flex;flex-direction:column;gap:6px;}
     .group-mindmap-wrap label{font-size:12px;font-weight:600;color:#5c35b5;display:flex;align-items:center;justify-content:space-between;}
     .mm-refresh-btn{background:#ede9ff;color:#7c4dff;border:none;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;}
     .mm-refresh-btn:hover{background:#d1c4e9;}
-    .mindmap-svg-wrap{border:1px solid #e0d8ff;border-radius:8px;background:white;overflow:auto;min-height:150px;}
+    .mindmap-svg-wrap{border:1px solid #e0d8ff;border-radius:8px;background:white;overflow:auto;min-height:150px;max-height:320px;}
     .group-lesson-tags{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0 4px;border-top:1px solid #e8e2ff;}
     .group-lesson-tags-label{font-size:12px;color:#9c6fd4;font-weight:600;}
     .lesson-tag{background:#ede9ff;color:#5c35b5;border-radius:20px;padding:4px 10px 4px 12px;font-size:12px;display:flex;align-items:center;gap:6px;}
@@ -783,15 +783,22 @@ function refreshMindmap(groupId) {
   const tree = buildMindmapTree(groupId);
   if (!tree) return;
 
+  // 小卡片版：只展示到第2层（根→课时→模块），不展示模块细节
+  function trimTree(node, depth) {
+    if (depth >= 2) return { label: node.label, children: [] };
+    return { label: node.label, children: node.children.map(c => trimTree(c, depth + 1)) };
+  }
+  const trimmed = trimTree(tree, 0);
+
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
   svg.style.display = 'block';
-  drawMindmap(svg, tree, { FONT_SIZE: 11, V_GAP: 5, H_GAP: 40 });
+  drawMindmap(svg, trimmed, { FONT_SIZE: 11, V_GAP: 6, H_GAP: 36 });
 
   wrap.innerHTML = '';
   wrap.appendChild(svg);
   const h = parseInt(svg.getAttribute('height')) || 160;
-  wrap.style.height = Math.max(160, Math.min(h, 400)) + 'px';
+  wrap.style.height = Math.max(150, Math.min(h, 320)) + 'px';
 }
 
 function renderLesson(lesson, li) {
