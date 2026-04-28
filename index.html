@@ -1305,6 +1305,8 @@ function renderMmModalPreview(groupId) {
   scroll.appendChild(svg);
 }
 
+function saveVersion() {
+  const title = document.getElementById('v-title').value.trim();
   if (!title) { alert('请填写版本标题'); return; }
   const version = {
     id: genId('v'), title,
