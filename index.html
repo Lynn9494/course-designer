@@ -125,8 +125,9 @@
     .group-body{padding:14px 16px;}
     .group-overview{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;}
     .group-desc-wrap label{font-size:12px;font-weight:600;color:#5c35b5;display:block;margin-bottom:5px;}
-    .group-desc-ta{width:100%;height:240px;border:1px solid #e0d8ff;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;font-family:inherit;outline:none;resize:vertical;color:#333;}
+    .group-desc-ta{width:100%;border:1px solid #e0d8ff;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;font-family:inherit;outline:none;resize:vertical;color:#333;}
     .group-desc-ta:focus{border-color:#7c4dff;}
+    .group-desc-wrap{display:flex;flex-direction:column;gap:10px;}
     .group-mindmap-wrap{display:flex;flex-direction:column;gap:6px;}
     .group-mindmap-wrap label{font-size:12px;font-weight:600;color:#5c35b5;display:flex;align-items:center;justify-content:space-between;}
     .mm-refresh-btn{background:#ede9ff;color:#7c4dff;border:none;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;}
@@ -353,7 +354,7 @@ function createModule() {
   return { id: genId('m'), name: '', design: '', ppt: '', script: '', images: [] };
 }
 function createGroup() {
-  return { id: genId('g'), title: '第一单元', desc: '', lessonIds: [] };
+  return { id: genId('g'), title: '第一单元', desc: '', objective: '', lessonIds: [] };
 }
 
 function getLessonIndex(lessonId) { return data.lessons.findIndex(l => l.id === lessonId); }
@@ -419,10 +420,18 @@ function renderGroup(group) {
   overview.className = 'group-overview';
   overview.innerHTML = `
     <div class="group-desc-wrap">
-      <label>📄 课程说明</label>
-      <textarea class="group-desc-ta" placeholder="在此填写本单元课程说明..."
-        data-group-desc="${group.id}"
-        onblur="updateGroupDesc('${group.id}',this.value)">${escHtml(group.desc||'')}</textarea>
+      <div>
+        <label>📄 课程说明</label>
+        <textarea class="group-desc-ta" placeholder="在此填写本单元课程说明..." style="height:120px;"
+          data-group-desc="${group.id}"
+          onblur="updateGroupDesc('${group.id}',this.value)">${escHtml(group.desc||'')}</textarea>
+      </div>
+      <div>
+        <label>🎯 教学目标</label>
+        <textarea class="group-desc-ta" placeholder="在此填写本单元教学目标..." style="height:120px;"
+          data-group-objective="${group.id}"
+          onblur="updateGroupObjective('${group.id}',this.value)">${escHtml(group.objective||'')}</textarea>
+      </div>
     </div>
     <div class="group-mindmap-wrap">
       <label>🧠 思维导图
@@ -516,6 +525,13 @@ function updateGroupDesc(groupId, desc) {
   const gi = getGroupIndex(groupId);
   if (gi < 0) return;
   data.groups[gi].desc = desc;
+  saveData();
+}
+
+function updateGroupObjective(groupId, objective) {
+  const gi = getGroupIndex(groupId);
+  if (gi < 0) return;
+  data.groups[gi].objective = objective;
   saveData();
 }
 
@@ -1528,17 +1544,55 @@ async function exportDocx() {
   }
   try {
     const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
-  const children = [];
-  data.lessons.forEach(lesson => {
-    children.push(new Paragraph({ text: lesson.title, heading: HeadingLevel.HEADING_1 }));
-    lesson.modules.forEach((mod, mi) => {
-      children.push(new Paragraph({ text: `模块${mi+1}`, heading: HeadingLevel.HEADING_2 }));
-      [['课程设计', mod.design], ['PPT内容', mod.ppt], ['逐字稿', mod.script]].forEach(([label, text]) => {
-        children.push(new Paragraph({ text: label, heading: HeadingLevel.HEADING_3 }));
-        (text || '').split('\n').forEach(line => children.push(new Paragraph({ children: [new TextRun({ text: line, size: 24 })] })));
+    const children = [];
+    const para = (text, opts) => new Paragraph({ children: [new TextRun({ text: text||'', size: 24, ...opts })], spacing: { after: 100 } });
+
+    // 按分组导出
+    data.groups.forEach(group => {
+      // 分组标题
+      children.push(new Paragraph({ text: group.title || '单元', heading: HeadingLevel.HEADING_1 }));
+      // 课程说明
+      if (group.desc) {
+        children.push(new Paragraph({ text: '📄 课程说明', heading: HeadingLevel.HEADING_2 }));
+        (group.desc || '').split('\n').forEach(line => children.push(para(line)));
+      }
+      // 教学目标
+      if (group.objective) {
+        children.push(new Paragraph({ text: '🎯 教学目标', heading: HeadingLevel.HEADING_2 }));
+        (group.objective || '').split('\n').forEach(line => children.push(para(line)));
+      }
+      // 课时
+      group.lessonIds.forEach(lid => {
+        const lesson = data.lessons.find(l => l.id === lid);
+        if (!lesson) return;
+        children.push(new Paragraph({ text: lesson.title, heading: HeadingLevel.HEADING_2 }));
+        lesson.modules.forEach((mod, mi) => {
+          children.push(new Paragraph({ text: (mod.name || `模块${mi+1}`), heading: HeadingLevel.HEADING_3 }));
+          [['课程设计', mod.design], ['PPT内容', mod.ppt], ['逐字稿', mod.script]].forEach(([label, text]) => {
+            if (!text) return;
+            children.push(new Paragraph({ text: label, heading: HeadingLevel.HEADING_3 }));
+            (text || '').split('\n').forEach(line => children.push(para(line)));
+          });
+        });
       });
     });
-  });
+    // 未分组课时
+    const groupedIds = data.groups.flatMap(g => g.lessonIds);
+    const ungrouped = data.lessons.filter(l => !groupedIds.includes(l.id));
+    if (ungrouped.length) {
+      children.push(new Paragraph({ text: '未分组课时', heading: HeadingLevel.HEADING_1 }));
+      ungrouped.forEach(lesson => {
+        children.push(new Paragraph({ text: lesson.title, heading: HeadingLevel.HEADING_2 }));
+        lesson.modules.forEach((mod, mi) => {
+          children.push(new Paragraph({ text: (mod.name || `模块${mi+1}`), heading: HeadingLevel.HEADING_3 }));
+          [['课程设计', mod.design], ['PPT内容', mod.ppt], ['逐字稿', mod.script]].forEach(([label, text]) => {
+            if (!text) return;
+            children.push(new Paragraph({ text: label, heading: HeadingLevel.HEADING_3 }));
+            (text || '').split('\n').forEach(line => children.push(para(line)));
+          });
+        });
+      });
+    }
   const doc = new Document({ sections: [{ properties: {}, children }] });
   const blob = await Packer.toBlob(doc);
   triggerDownload(blob, '课程设计-' + getDateStr() + '.docx');
