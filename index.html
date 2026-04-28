@@ -54,7 +54,7 @@
     .col-header-cell+.col-header-cell{border-left:1px solid #ddd;}
 
     /* MODULE ROW */
-    .module-row{display:grid;grid-template-columns:60px 1fr 1fr 1fr;border-top:1px solid #f0f0f0;transition:background .15s;}
+    .module-row{display:grid;grid-template-columns:90px 1fr 1fr 1fr;border-top:1px solid #f0f0f0;transition:background .15s;}
     .module-row:nth-child(even){background:#fafafa;}
     .module-row:nth-child(odd){background:white;}
     .module-row.drag-over{background:#f0eeff;border-top:2px solid #7c4dff;}
@@ -63,7 +63,7 @@
     .seq-cell{background:#f8f8f8;border-right:1px solid #efefef;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px 4px;cursor:grab;}
     .seq-cell:active{cursor:grabbing;}
     .seq-num{font-size:10px;font-weight:700;color:#8b6fd4;text-align:center;line-height:1.3;}
-    .mod-name-input{font-size:11px;color:#555;border:none;background:transparent;outline:none;text-align:center;width:52px;font-family:inherit;cursor:text;border-bottom:1px dashed transparent;}
+    .mod-name-input{font-size:11px;color:#555;border:none;background:transparent;outline:none;text-align:center;width:78px;font-family:inherit;cursor:text;border-bottom:1px dashed transparent;white-space:normal;word-break:break-all;}
     .mod-name-input:hover{border-bottom-color:#c5b8f0;}
     .mod-name-input:focus{border-bottom-color:#7c4dff;background:#f0eeff;border-radius:3px;}
     .drag-handle{font-size:16px;color:#ccc;cursor:grab;line-height:1;}
@@ -73,7 +73,7 @@
 
     /* TEXT CELL */
     .text-cell{display:flex;flex-direction:column;border-left:1px solid #f0f0f0;}
-    .text-cell textarea{flex:1;border:none;outline:none;padding:10px 12px;font-size:13px;line-height:1.85;color:#333;resize:none;font-family:inherit;background:transparent;min-height:160px;}
+    .text-cell textarea{flex:1;border:none;outline:none;padding:10px 12px;font-size:13px;line-height:1.85;color:#333;resize:vertical;font-family:inherit;background:transparent;min-height:160px;}
     .text-cell textarea::placeholder{color:#ccc;}
     .cell-footer{padding:3px 12px 6px;display:flex;align-items:center;justify-content:space-between;background:inherit;}
     .char-count{font-size:11px;color:#ccc;}
@@ -164,6 +164,25 @@
     .mbtn-cancel{background:#f5f5f5;color:#666;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit;}
     .mbtn-save{background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;}
 
+    /* 思维导图放大Modal */
+    .mm-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;align-items:flex-start;justify-content:center;padding:20px;}
+    .mm-modal-overlay.open{display:flex;}
+    .mm-modal{background:white;border-radius:14px;width:96vw;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 10px 50px rgba(0,0,0,.3);overflow:hidden;}
+    .mm-modal-hd{padding:14px 20px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#f8f7ff;}
+    .mm-modal-hd h3{font-size:15px;color:#3d2b8e;font-weight:700;}
+    .mm-modal-hd-btns{display:flex;gap:8px;align-items:center;}
+    .mm-edit-ta{flex:1;border:none;outline:none;padding:16px 20px;font-size:13px;line-height:1.8;font-family:inherit;color:#333;resize:none;background:#fafafa;border-right:1px solid #eee;min-width:280px;max-width:360px;}
+    .mm-modal-body{display:flex;flex:1;overflow:hidden;}
+    .mm-svg-scroll{flex:1;overflow:auto;padding:16px;background:white;}
+    .mm-close-btn{background:#f0eeff;color:#7c4dff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;}
+    .mm-close-btn:hover{background:#ede9ff;}
+    .mm-expand-btn{background:#ede9ff;color:#7c4dff;border:none;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;margin-left:6px;}
+    .mm-expand-btn:hover{background:#d1c4e9;}
+
+    /* 逐字稿总字数 */
+    .script-total-bar{padding:4px 12px 6px;background:#fafafa;border-top:1px solid #f0f0f0;font-size:11px;color:#aaa;text-align:right;}
+    .script-total-bar span{color:#8b6fd4;font-weight:600;}
+
     /* DRAWER */
     .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:400;}
     .drawer-overlay.open{display:block;}
@@ -185,7 +204,7 @@
     .drawer-empty{text-align:center;color:#bbb;padding:40px 20px;font-size:14px;line-height:1.8;}
 
     @media(max-width:800px){
-      .col-header,.module-row{grid-template-columns:40px 1fr;}
+      .col-header,.module-row{grid-template-columns:90px 1fr;}
       .col-header .ch-ppt,.col-header .ch-script,.text-cell.ppt,.text-cell.script{display:none;}
     }
   </style>
@@ -234,6 +253,22 @@
     <div class="modal-btns">
       <button class="mbtn-cancel" onclick="closeSaveModal()">取消</button>
       <button class="mbtn-save" onclick="saveVersion()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 思维导图放大Modal -->
+<div class="mm-modal-overlay" id="mm-modal" onclick="if(event.target===this)closeMmModal()">
+  <div class="mm-modal">
+    <div class="mm-modal-hd">
+      <h3 id="mm-modal-title">🧠 思维导图</h3>
+      <div class="mm-modal-hd-btns">
+        <button class="mm-close-btn" onclick="closeMmModal()">✕ 关闭</button>
+      </div>
+    </div>
+    <div class="mm-modal-body">
+      <textarea class="mm-edit-ta" id="mm-edit-ta" placeholder="在此编辑课程说明内容，思维导图将实时预览..." oninput="onMmEditInput()"></textarea>
+      <div class="mm-svg-scroll" id="mm-svg-scroll"></div>
     </div>
   </div>
 </div>
@@ -379,11 +414,15 @@ function renderGroup(group) {
     <div class="group-desc-wrap">
       <label>📄 课程说明</label>
       <textarea class="group-desc-ta" placeholder="在此填写本单元课程说明..."
+        data-group-desc="${group.id}"
         onblur="updateGroupDesc('${group.id}',this.value)">${escHtml(group.desc||'')}</textarea>
     </div>
     <div class="group-mindmap-wrap">
       <label>🧠 思维导图
-        <button class="mm-refresh-btn" onclick="refreshMindmap('${group.id}')">🔄 刷新</button>
+        <span>
+          <button class="mm-refresh-btn" onclick="refreshMindmap('${group.id}')">🔄 刷新</button>
+          <button class="mm-expand-btn" onclick="openMmModal('${group.id}')">⛶ 放大编辑</button>
+        </span>
       </label>
       <div class="mindmap-svg-wrap" id="mm-${group.id}"></div>
     </div>`;
@@ -727,6 +766,14 @@ function renderLesson(lesson, li) {
   addRow.innerHTML = `<button class="add-module-btn" onclick="addModule('${lesson.id}')">＋ 添加模块</button>`;
   body.appendChild(addRow);
 
+  // 逐字稿总字数
+  const scriptTotal = document.createElement('div');
+  scriptTotal.className = 'script-total-bar';
+  scriptTotal.id = 'script-total-' + lesson.id;
+  const totalChars = lesson.modules.reduce((s, m) => s + (m.script || '').length, 0);
+  scriptTotal.innerHTML = `逐字稿总字数：<span>${totalChars.toLocaleString()}</span> 字`;
+  body.appendChild(scriptTotal);
+
   card.appendChild(body);
   return card;
 }
@@ -836,6 +883,15 @@ function renderModule(lessonId, mod, num) {
           data.lessons[li].modules[mi][field] = ta.value;
           const cc = document.getElementById(`cc-${mod.id}-${field}`);
           if (cc) cc.textContent = ta.value.length + ' 字';
+          // 更新逐字稿总字数
+          if (field === 'script') {
+            const totalEl = document.getElementById('script-total-' + lessonId);
+            if (totalEl) {
+              const total = data.lessons[li].modules.reduce((s, m) => s + (m.script || '').length, 0);
+              const span = totalEl.querySelector('span');
+              if (span) span.textContent = total.toLocaleString();
+            }
+          }
           saveData();
         }
       });
@@ -1116,8 +1172,149 @@ document.getElementById('save-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('save-modal')) closeSaveModal();
 });
 
-function saveVersion() {
-  const title = document.getElementById('v-title').value.trim();
+// ============================================================
+// 思维导图放大Modal
+// ============================================================
+let _mmModalGroupId = null;
+
+function openMmModal(groupId) {
+  _mmModalGroupId = groupId;
+  const gi = getGroupIndex(groupId);
+  if (gi < 0) return;
+  const group = data.groups[gi];
+  document.getElementById('mm-modal-title').textContent = '🧠 思维导图 · ' + (group.title || '');
+  // 把课程说明填入编辑框
+  document.getElementById('mm-edit-ta').value = group.desc || '';
+  // 渲染预览
+  renderMmModalPreview(groupId);
+  document.getElementById('mm-modal').classList.add('open');
+}
+
+function closeMmModal() {
+  document.getElementById('mm-modal').classList.remove('open');
+  // 保存编辑内容到 group.desc
+  if (_mmModalGroupId !== null) {
+    const gi = getGroupIndex(_mmModalGroupId);
+    if (gi >= 0) {
+      data.groups[gi].desc = document.getElementById('mm-edit-ta').value;
+      saveData();
+      // 同步更新页面上的课程说明 textarea
+      const ta = document.querySelector(`[data-group-desc="${_mmModalGroupId}"]`);
+      if (ta) ta.value = data.groups[gi].desc;
+      refreshMindmap(_mmModalGroupId);
+    }
+  }
+  _mmModalGroupId = null;
+}
+
+function onMmEditInput() {
+  if (!_mmModalGroupId) return;
+  const gi = getGroupIndex(_mmModalGroupId);
+  if (gi < 0) return;
+  data.groups[gi].desc = document.getElementById('mm-edit-ta').value;
+  renderMmModalPreview(_mmModalGroupId);
+}
+
+function renderMmModalPreview(groupId) {
+  const scroll = document.getElementById('mm-svg-scroll');
+  if (!scroll) return;
+  const tree = buildMindmapTree(groupId);
+  if (!tree) return;
+
+  const NODE_W = 130, NODE_H = 32, H_GAP = 44, V_GAP = 12;
+  function calcHeight(node) {
+    if (!node.children.length) return NODE_H;
+    const ch = node.children.reduce((s, c) => s + calcHeight(c) + V_GAP, 0) - V_GAP;
+    return Math.max(NODE_H, ch);
+  }
+  function maxDepth(node, d = 0) {
+    if (!node.children.length) return d;
+    return Math.max(...node.children.map(c => maxDepth(c, d + 1)));
+  }
+  const depth = maxDepth(tree);
+  const totalH = calcHeight(tree);
+  const svgW = (depth + 1) * (NODE_W + H_GAP) + 40;
+  const svgH = totalH + 60;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width', svgW);
+  svg.setAttribute('height', svgH);
+  svg.style.display = 'block';
+
+  const COLORS = ['#667eea', '#764ba2', '#9c6fd4', '#b39ddb'];
+  const LEAF_FILL = '#f0eeff';
+
+  function drawNode(node, x, y, level) {
+    const isLeaf = node.children.length === 0;
+    const fill = isLeaf ? LEAF_FILL : COLORS[Math.min(level, COLORS.length - 1)];
+    const textColor = isLeaf ? '#5c35b5' : 'white';
+    const g = document.createElementNS(ns, 'g');
+    const rect = document.createElementNS(ns, 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y);
+    rect.setAttribute('width', NODE_W); rect.setAttribute('height', NODE_H);
+    rect.setAttribute('rx', 7); rect.setAttribute('ry', 7);
+    rect.setAttribute('fill', fill);
+    rect.setAttribute('stroke', COLORS[Math.min(level, COLORS.length - 1)]);
+    rect.setAttribute('stroke-width', '1.5');
+    g.appendChild(rect);
+    // 多行文字（最多显示2行）
+    const label = node.label;
+    const maxChars = 10;
+    const line1 = label.slice(0, maxChars);
+    const line2 = label.length > maxChars ? label.slice(maxChars, maxChars * 2) + (label.length > maxChars * 2 ? '…' : '') : '';
+    const text1 = document.createElementNS(ns, 'text');
+    text1.setAttribute('x', x + NODE_W / 2);
+    text1.setAttribute('y', line2 ? y + NODE_H / 2 - 5 : y + NODE_H / 2 + 1);
+    text1.setAttribute('text-anchor', 'middle');
+    text1.setAttribute('dominant-baseline', 'middle');
+    text1.setAttribute('fill', textColor);
+    text1.setAttribute('font-size', '12');
+    text1.setAttribute('font-family', '"PingFang SC","Microsoft YaHei",sans-serif');
+    text1.textContent = line1;
+    g.appendChild(text1);
+    if (line2) {
+      const text2 = document.createElementNS(ns, 'text');
+      text2.setAttribute('x', x + NODE_W / 2);
+      text2.setAttribute('y', y + NODE_H / 2 + 10);
+      text2.setAttribute('text-anchor', 'middle');
+      text2.setAttribute('dominant-baseline', 'middle');
+      text2.setAttribute('fill', textColor);
+      text2.setAttribute('font-size', '12');
+      text2.setAttribute('font-family', '"PingFang SC","Microsoft YaHei",sans-serif');
+      text2.textContent = line2;
+      g.appendChild(text2);
+    }
+    svg.appendChild(g);
+    if (node.children.length) {
+      const childX = x + NODE_W + H_GAP;
+      const totalChildH = node.children.reduce((s, c) => s + calcHeight(c) + V_GAP, 0) - V_GAP;
+      let childY = y + NODE_H / 2 - totalChildH / 2;
+      node.children.forEach(child => {
+        const ch = calcHeight(child);
+        const cy = childY + ch / 2 - NODE_H / 2;
+        const startX = x + NODE_W, startY = y + NODE_H / 2;
+        const endX = childX, endY = cy + NODE_H / 2;
+        const midX = (startX + endX) / 2;
+        const path = document.createElementNS(ns, 'path');
+        path.setAttribute('d', `M${startX},${startY} C${midX},${startY} ${midX},${endY} ${endX},${endY}`);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', COLORS[Math.min(level + 1, COLORS.length - 1)]);
+        path.setAttribute('stroke-width', '1.5');
+        path.setAttribute('opacity', '0.5');
+        svg.insertBefore(path, svg.firstChild);
+        drawNode(child, childX, cy, level + 1);
+        childY += ch + V_GAP;
+      });
+    }
+  }
+  const rootY = svgH / 2 - NODE_H / 2;
+  drawNode(tree, 20, rootY, 0);
+  scroll.innerHTML = '';
+  scroll.appendChild(svg);
+}
+
+
   if (!title) { alert('请填写版本标题'); return; }
   const version = {
     id: genId('v'), title,
