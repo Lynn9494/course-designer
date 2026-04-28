@@ -1522,8 +1522,12 @@ function triggerDownload(blob, filename) {
 
 async function exportDocx() {
   document.getElementById('export-menu').classList.remove('open');
-  if (typeof docx === 'undefined') { alert('Word库加载中，稍后再试'); return; }
-  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+  if (typeof docx === 'undefined') {
+    alert('Word导出库未加载，可能是网络问题。请刷新页面后重试，或检查网络是否能访问 unpkg.com');
+    return;
+  }
+  try {
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
   const children = [];
   data.lessons.forEach(lesson => {
     children.push(new Paragraph({ text: lesson.title, heading: HeadingLevel.HEADING_1 }));
@@ -1531,13 +1535,17 @@ async function exportDocx() {
       children.push(new Paragraph({ text: `模块${mi+1}`, heading: HeadingLevel.HEADING_2 }));
       [['课程设计', mod.design], ['PPT内容', mod.ppt], ['逐字稿', mod.script]].forEach(([label, text]) => {
         children.push(new Paragraph({ text: label, heading: HeadingLevel.HEADING_3 }));
-        text.split('\n').forEach(line => children.push(new Paragraph({ children: [new TextRun({ text: line, size: 24 })] })));
+        (text || '').split('\n').forEach(line => children.push(new Paragraph({ children: [new TextRun({ text: line, size: 24 })] })));
       });
     });
   });
   const doc = new Document({ sections: [{ properties: {}, children }] });
   const blob = await Packer.toBlob(doc);
   triggerDownload(blob, '课程设计-' + getDateStr() + '.docx');
+  } catch(e) {
+    alert('导出Word失败：' + e.message);
+    console.error(e);
+  }
 }
 
 function exportPDF() {
