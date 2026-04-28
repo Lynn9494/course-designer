@@ -270,39 +270,38 @@ function loadData() {
 }
 
 // 从 data/ 目录加载所有课设 JSON，合并进当前 data
+// 每次都强制重新加载远程课设，保留本地手动新增的内容
 async function loadCourseFiles() {
+  // 用于标记哪些 id 是来自远程课设文件（不应被手动数据覆盖）
+  const remoteWeekIds = new Set();
+  const remoteLessonIds = new Set();
+
   for (const file of COURSE_DATA_FILES) {
     try {
-      const resp = await fetch('data/' + file);
+      const resp = await fetch('data/' + file + '?t=' + Date.now()); // 防缓存
       if (!resp.ok) continue;
       const w = await resp.json();
-      // 避免重复导入：按 lesson.id 去重
-      const existingIds = new Set(data.lessons.map(l => l.id));
-      // 检查是否已有对应的分组
-      const existingGroupIds = new Set(data.groups.map(g => g.id));
       const weekId = 'grp_' + w.id;
-      if (existingGroupIds.has(weekId)) continue; // 已存在则跳过
-      // 添加 lessons
+      remoteWeekIds.add(weekId);
+      w.lessons.forEach(l => remoteLessonIds.add(l.id));
+
+      // 删除旧的同周次数据（确保内容总是最新）
+      data.groups = data.groups.filter(g => g.id !== weekId);
+      data.lessons = data.lessons.filter(l => !remoteLessonIds.has(l.id) || l.id === l.id && !w.lessons.find(wl => wl.id === l.id));
+
+      // 重新插入最新数据
       const newLessonIds = [];
       for (const lesson of w.lessons) {
-        if (!existingIds.has(lesson.id)) {
-          // 补全 modules 字段兼容性
-          lesson.modules = (lesson.modules || []).map(m => ({
-            images: [], ...m
-          }));
-          data.lessons.push(lesson);
-          newLessonIds.push(lesson.id);
-        }
+        lesson.modules = (lesson.modules || []).map(m => ({ images: [], ...m }));
+        data.lessons.push(lesson);
+        newLessonIds.push(lesson.id);
       }
-      // 添加对应的分组
-      if (newLessonIds.length) {
-        data.groups.push({
-          id: weekId,
-          title: w.title || w.id,
-          desc: w.book ? (w.book + ' · ' + (w.method || '')) : '',
-          lessonIds: newLessonIds
-        });
-      }
+      data.groups.unshift({
+        id: weekId,
+        title: w.title || w.id,
+        desc: w.book ? (w.book + ' · ' + (w.method || '')) : '',
+        lessonIds: newLessonIds
+      });
     } catch(e) { console.warn('加载课设文件失败:', file, e); }
   }
   saveData();
