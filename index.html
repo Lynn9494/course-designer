@@ -44,7 +44,7 @@
     .l-btn-del{background:#ffeaea;color:#e53935;}
     .l-btn-del:hover{background:#ffcdd2;}
 
-    .lesson-body{overflow:hidden;transition:max-height .25s ease;}
+    .lesson-body{overflow:visible;transition:max-height .25s ease;}
     .lesson-body.collapsed{display:none;}
 
     /* COL HEADER */
@@ -173,7 +173,7 @@
     .mm-modal-hd-btns{display:flex;gap:8px;align-items:center;}
     .mm-edit-ta{flex:1;border:none;outline:none;padding:16px 20px;font-size:13px;line-height:1.8;font-family:inherit;color:#333;resize:none;background:#fafafa;border-right:1px solid #eee;min-width:280px;max-width:360px;}
     .mm-modal-body{display:flex;flex:1;overflow:hidden;}
-    .mm-svg-scroll{flex:1;overflow:auto;padding:16px;background:white;}
+    .mm-svg-scroll{flex:1;overflow:auto;padding:20px;background:white;}
     .mm-close-btn{background:#f0eeff;color:#7c4dff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;}
     .mm-close-btn:hover{background:#ede9ff;}
     .mm-expand-btn{background:#ede9ff;color:#7c4dff;border:none;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;margin-left:6px;}
@@ -267,7 +267,6 @@
       </div>
     </div>
     <div class="mm-modal-body">
-      <textarea class="mm-edit-ta" id="mm-edit-ta" placeholder="在此编辑课程说明内容，思维导图将实时预览..." oninput="onMmEditInput()"></textarea>
       <div class="mm-svg-scroll" id="mm-svg-scroll"></div>
     </div>
   </div>
