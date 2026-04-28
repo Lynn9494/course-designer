@@ -173,6 +173,11 @@
     .mm-modal-hd-btns{display:flex;gap:8px;align-items:center;}
     .mm-edit-ta{flex:1;border:none;outline:none;padding:16px 20px;font-size:13px;line-height:1.8;font-family:inherit;color:#333;resize:none;background:#fafafa;border-right:1px solid #eee;min-width:280px;max-width:360px;}
     .mm-modal-body{display:flex;flex:1;overflow:hidden;}
+    .mm-edit-panel{width:340px;min-width:260px;overflow-y:auto;background:#fafafa;border-right:1px solid #eee;padding:12px 14px;display:flex;flex-direction:column;gap:10px;}
+    .mm-edit-panel-title{font-size:11px;font-weight:700;color:#8b6fd4;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+    .mm-mod-edit{background:white;border:1px solid #e0d8ff;border-radius:8px;padding:10px 12px;}
+    .mm-mod-edit-label{font-size:11px;color:#7c4dff;font-weight:600;margin-bottom:6px;display:block;}
+    .mm-mod-edit textarea{width:100%;box-sizing:border-box;border:none;outline:none;font-size:12px;line-height:1.7;color:#333;resize:vertical;font-family:inherit;background:transparent;min-height:80px;display:block;}
     .mm-svg-scroll{flex:1;overflow:auto;padding:20px;background:white;}
     .mm-close-btn{background:#f0eeff;color:#7c4dff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;}
     .mm-close-btn:hover{background:#ede9ff;}
@@ -267,6 +272,9 @@
       </div>
     </div>
     <div class="mm-modal-body">
+      <div class="mm-edit-panel" id="mm-edit-panel">
+        <div class="mm-edit-panel-title">✏️ 编辑各模块内容</div>
+      </div>
       <div class="mm-svg-scroll" id="mm-svg-scroll"></div>
     </div>
   </div>
@@ -1027,7 +1035,7 @@ function renderModule(lessonId, mod, num) {
         }
       });
     } else {
-      cell.innerHTML = `<textarea placeholder="${placeholder}" data-field="${field}" data-lesson="${lessonId}" data-module="${mod.id}">${escHtml(mod[field])}</textarea>
+      cell.innerHTML = `<textarea placeholder="${placeholder}" data-field="${field}" data-lesson="${lessonId}" data-module="${mod.id}" ${field === 'design' ? `data-mod-design="${mod.id}"` : ''}>${escHtml(mod[field])}</textarea>
         <div class="cell-footer">
           ${field === 'script' ? `<div class="tts-bar">
             <button class="tts-btn tts-play" id="tts-play-${mod.id}" onclick="toggleTTS('${mod.id}')">▶</button>
@@ -1347,6 +1355,47 @@ function openMmModal(groupId) {
   if (gi < 0) return;
   const group = data.groups[gi];
   document.getElementById('mm-modal-title').textContent = '🧠 思维导图 · ' + (group.title || '');
+
+  // 左侧：为每个课时的每个模块生成编辑框
+  const panel = document.getElementById('mm-edit-panel');
+  panel.innerHTML = '<div class="mm-edit-panel-title">✏️ 编辑模块内容 → 自动更新导图</div>';
+  group.lessonIds.forEach(lid => {
+    const lesson = data.lessons.find(l => l.id === lid);
+    if (!lesson) return;
+    // 课时标题
+    const lessonTitle = document.createElement('div');
+    lessonTitle.style.cssText = 'font-size:12px;font-weight:700;color:#3d2b8e;margin-top:6px;padding-bottom:4px;border-bottom:1px solid #e0d8ff;';
+    lessonTitle.textContent = lesson.title || lid;
+    panel.appendChild(lessonTitle);
+    lesson.modules.forEach((mod, mi) => {
+      const box = document.createElement('div');
+      box.className = 'mm-mod-edit';
+      const label = document.createElement('span');
+      label.className = 'mm-mod-edit-label';
+      label.textContent = mod.name || ('模块' + (mi + 1));
+      const ta = document.createElement('textarea');
+      ta.value = mod.design || '';
+      ta.placeholder = '在此填写课程设计内容…';
+      ta.addEventListener('input', () => {
+        // 实时保存到数据
+        const li = getLessonIndex(lid);
+        const mii = getModuleIndex(lid, mod.id);
+        if (li >= 0 && mii >= 0) {
+          data.lessons[li].modules[mii].design = ta.value;
+          // 同步更新页面上对应的textarea
+          const pageTa = document.querySelector(`[data-mod-design="${mod.id}"]`);
+          if (pageTa) pageTa.value = ta.value;
+          saveData();
+          // 实时刷新导图预览
+          renderMmModalPreview(groupId);
+        }
+      });
+      box.appendChild(label);
+      box.appendChild(ta);
+      panel.appendChild(box);
+    });
+  });
+
   // 渲染完整5层预览
   renderMmModalPreview(groupId);
   document.getElementById('mm-modal').classList.add('open');
