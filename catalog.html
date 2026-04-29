@@ -145,17 +145,24 @@
     grid.innerHTML = versions.map((v, i) => {
       const d = new Date(v.createdAt);
       const dateStr = d.toLocaleDateString('zh-CN') + ' ' + d.toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
-      const totalWords = v.design.length + v.ppt.length + v.script.length;
+      const lessons = v.lessons || [];
+      const lessonCount = lessons.length;
+      const moduleCount = lessons.reduce((s, l) => s + (l.modules || []).length, 0);
+      const totalWords = lessons.reduce((s, l) =>
+        s + (l.modules || []).reduce((ms, m) =>
+          ms + (m.design||'').length + (m.ppt||'').length + (m.script||'').length, 0), 0);
+      const lessonTitles = lessons.map(l => l.title || '').filter(Boolean).join(' · ');
       return `<div class="card" onclick="openVersion('${v.id}')">
-        <div class="card-num">第 ${sortNew ? i+1 : versions.length - i} 课</div>
+        <div class="card-num">版本 ${sortNew ? i+1 : versions.length - i}</div>
         <div class="card-title">${escHtml(v.title)}</div>
         ${v.desc ? `<div class="card-desc">${escHtml(v.desc)}</div>` : '<div class="card-desc" style="color:#ddd;">暂无简介</div>'}
+        ${lessonTitles ? `<div class="card-desc" style="color:#a78bfa;font-size:11px;">${escHtml(lessonTitles)}</div>` : ''}
         <div class="card-counts">
-          <span class="cc cc1">课程设计 ${v.design.length}字</span>
-          <span class="cc cc2">PPT ${v.ppt.length}字</span>
-          <span class="cc cc3">逐字稿 ${v.script.length}字</span>
+          <span class="cc cc1">${lessonCount} 个课时</span>
+          <span class="cc cc2">${moduleCount} 个模块</span>
+          <span class="cc cc3">共 ${totalWords} 字</span>
         </div>
-        <div class="card-meta">💾 ${dateStr} · 共 ${totalWords} 字</div>
+        <div class="card-meta">💾 ${dateStr}</div>
         <div class="card-footer" onclick="event.stopPropagation()">
           <button class="cbtn cbtn-open" onclick="openVersion('${v.id}')">📂 在工作台中打开</button>
           <button class="cbtn cbtn-del" onclick="deleteVersion('${v.id}')">🗑</button>
