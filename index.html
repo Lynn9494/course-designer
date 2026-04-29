@@ -1185,11 +1185,9 @@ function renderModule(lessonId, mod, num) {
       onclick="event.stopPropagation()"
       oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
       onblur="updateModuleName('${lessonId}','${mod.id}',this.value)"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur()}"
-    >${escHtml(mod.name||'')}</textarea>
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur()}">${escHtml(mod.name||'')}</textarea>
     <span class="drag-handle" title="拖拽排序">⠿</span>
     <button class="del-mod-btn" onclick="deleteModule('${lessonId}','${mod.id}')" title="删除模块">✕</button>`;
-  row.appendChild(seq);
   // 初始化 textarea 高度自适应
   const ta = seq.querySelector('.mod-name-input');
   if (ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
