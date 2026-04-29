@@ -63,7 +63,7 @@
     .seq-cell{background:#f8f8f8;border-right:1px solid #efefef;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:8px 6px;cursor:grab;min-height:160px;}
     .seq-cell:active{cursor:grabbing;}
     .seq-num{font-size:10px;font-weight:700;color:#8b6fd4;text-align:center;line-height:1.3;}
-    .mod-name-input{font-size:11px;color:#555;border:none;background:transparent;outline:none;text-align:center;width:100%;box-sizing:border-box;font-family:inherit;cursor:text;border-bottom:1px dashed transparent;word-break:break-all;line-height:1.5;resize:none;overflow:hidden;display:block;padding:2px 2px;}
+    .mod-name-input{font-size:11px;color:#555;border:none;background:transparent;outline:none;text-align:center;width:100%;box-sizing:border-box;font-family:inherit;cursor:text;border-bottom:1px dashed transparent;word-break:break-all;line-height:1.5;resize:none;overflow:hidden;display:block;padding:2px 2px;min-height:1.8em;}
     .mod-name-input:hover{border-bottom-color:#c5b8f0;}
     .mod-name-input:focus{border-bottom-color:#7c4dff;background:#f0eeff;border-radius:3px;}
     .drag-handle{font-size:16px;color:#ccc;cursor:grab;line-height:1;}
@@ -1180,7 +1180,7 @@ function renderModule(lessonId, mod, num) {
   const seq = document.createElement('div');
   seq.className = 'seq-cell';
   seq.innerHTML = `<span class="seq-num">模块${num}</span>
-    <textarea class="mod-name-input" placeholder="命名..." maxlength="30" rows="1"
+    <textarea class="mod-name-input" placeholder="命名..." maxlength="30" rows="2"
       title="点击编辑模块名称"
       onclick="event.stopPropagation()"
       oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
@@ -1188,10 +1188,10 @@ function renderModule(lessonId, mod, num) {
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur()}">${escHtml(mod.name||'')}</textarea>
     <span class="drag-handle" title="拖拽排序">⠿</span>
     <button class="del-mod-btn" onclick="deleteModule('${lessonId}','${mod.id}')" title="删除模块">✕</button>`;
-  // 初始化 textarea 高度自适应
-  const ta = seq.querySelector('.mod-name-input');
-  if (ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
   row.appendChild(seq);
+  // 插入 DOM 后再计算高度
+  const ta = seq.querySelector('.mod-name-input');
+  if (ta) requestAnimationFrame(() => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; });
 
   // text cells
   ['design','ppt','script'].forEach(field => {
