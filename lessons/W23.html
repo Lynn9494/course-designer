@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="zh-CN"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -93,12 +92,12 @@
         body.editing .card p:focus, body.editing .card h3:focus, body.editing .card h4:focus, body.editing .quote-box:focus, body.editing .summary-box p:focus, body.editing .moral-box:focus, body.editing .step-block .step-q:focus, body.editing .step-block .step-reason:focus, body.editing .step-block .step-result:focus, body.editing .ref-box p:focus, body.editing .mat-card p:focus, body.editing .mat-card .mat-title:focus, body.editing .mat-card .mat-moral:focus, body.editing .method-card p:focus, body.editing .method-card h5:focus { outline: 2px solid var(--accent); background: #FFFFF0; }
     </style>
 </head>
-<body>
+<body class="">
 <div class="edit-hint">编辑模式已开启 — 点击任意文字即可修改，改完点"保存并导出"</div>
 <div class="edit-toolbar">
-    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()">编辑</button>
-    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display:none;">保存并导出</button>
-    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display:none;">取消</button>
+    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()" style="display: inline-block;">编辑</button>
+    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display: none;">保存并导出</button>
+    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display: none;">取消</button>
 </div>
 
 <div class="header">
@@ -113,7 +112,7 @@
             <div class="day-title expanded" data-day="d6" onclick="toggleDay(this)">D6 教学思路<span class="arrow">▶</span></div>
             <div class="module-list show" id="day-d6">
                 <div class="module-item active" data-target="d6-m1" onclick="switchModule(this)">模块一：导入<span class="time-tag">1min</span></div>
-                <div class="sub-item" data-target="d6-m1" onclick="switchModule(this)">狐狸形象引入</div>
+                <div class="sub-item active" data-target="d6-m1" onclick="switchModule(this)">狐狸形象引入</div>
                 <div class="module-item" data-target="d6-m2" onclick="switchModule(this)">模块二：内容梳理<span class="time-tag">10-12min</span></div>
                 <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">精读《狐狸教狼钓鱼》</div>
                 <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节①：暗记仇恨</div>
@@ -125,8 +124,8 @@
             </div>
         </div>
         <div class="day-section">
-            <div class="day-title" data-day="d7" onclick="toggleDay(this)">D7 教学思路<span class="arrow">▶</span></div>
-            <div class="module-list" id="day-d7">
+            <div class="day-title expanded" data-day="d7" onclick="toggleDay(this)">D7 教学思路<span class="arrow">▶</span></div>
+            <div class="module-list show" id="day-d7">
                 <div class="module-item" data-target="d7-m1" onclick="switchModule(this)">模块一：回顾导入<span class="time-tag">1-2min</span></div>
                 <div class="sub-item" data-target="d7-m1" onclick="switchModule(this)">回顾问题 + 引出方法</div>
                 <div class="module-item" data-target="d7-m2" onclick="switchModule(this)">模块二：方法讲解<span class="time-tag">2-3min</span></div>
@@ -194,7 +193,7 @@
                     <p><span class="tag mind">心理/动作描写</span> 狼："冻得都有些受不住了，可是为了捕到更多的鱼，他坚持着""深信自己一定是已经钓到很多鱼了。"</p>
                     <div class="summary-box"><p>→ 狼的形象：<strong>贪心</strong></p></div>
                     <p><span class="tag speech">语言/动作描写</span> 狐狸："别太贪心了，再说，鱼虽然好吃，但吃多了也会伤身体的。"（假惺惺）＋ 跑去叫村里的人来逮狼</p>
-                    <div class="summary-box"><p>→ 狐狸的形象：<strong>虚伪、狠毒</strong></p></div>
+                    <div class="summary-box"><p>→ 狐狸的形象：<strong>狠毒</strong></p></div>
 
                     <div class="moral-box">💡 寓意①：不要轻信花言巧语和送上门的好事，小心是圈套。<br>💡 寓意②：贪心不知足，往往会吃大亏。<br>💡 寓意③：总在背后说人坏话、搬弄是非，迟早惹祸上身。</div>
                 </div>
@@ -291,7 +290,7 @@
                     </div>
                     <div class="step-block">
                         <div class="step-q">第三步：结合内容，类比说明</div>
-                        <div class="step-reason"><strong>行为结果的相同点：</strong>狼贪图鱼，驴子贪图更好的主人——都是不满足已有的，想得到更好的；狼被冻住，驴子落到硝皮匠手里——都是没有好下场。</div>
+                        <div class="step-reason"><strong>行为结果的相同点：</strong>狼贪图鱼，驴子贪图更好的主人——都是贪心，不满足已有的，想得到更好的；狼被冻住，驴子落到硝皮匠手里——都是没有好下场。</div>
                         <div class="step-result"><strong>共同主题：</strong>贪心不知足，最终只会让自己的处境更糟。<br>→ 所以《驴子和他的主人》和《狐狸教狼钓鱼》属于同一主题——贪心没有好下场。</div>
                     </div>
                 </div>
@@ -307,8 +306,8 @@
                 <div class="card">
                     <div class="ref-box">
                         <div class="ref-title">📝 参考答案</div>
-                        <p><strong>推荐寓言故事：</strong>《乌鸦与狐狸》</p>
-                        <p><strong>推荐理由：</strong>《乌鸦与狐狸》和材料二都体现了"小选择，大智慧"的主题。乌鸦的选择是轻信狐狸的奉承，结果失去了奶酪（类似于蝉的选择，只顾眼前享受，没有考虑后果）。而蚂蚁的选择是辛苦储备粮食，最终在冬天享受美食（类似于乌鸦如果选择不轻信狐狸，就能保住奶酪）。这两个故事都通过小的选择，展现了智慧和远见的重要性。蚂蚁的远见和勤奋，以及乌鸦的轻信和短视，都提醒我们，生活中的每一个小选择都可能带来巨大的影响，只有做出明智的选择，才能避免不必要的损失，收获好的结果。</p>
+                        <p><strong>推荐寓言故事：</strong><span style="font-family: &quot;PingFang SC&quot;; font-size: 10pt; letter-spacing: 0pt; color: rgb(0, 0, 0); text-align: justify;">《农夫和他的儿子们》</span></p>
+                        <p><strong>推荐理由：</strong><font face="PingFang SC" style="font-family: &quot;PingFang SC&quot;; font-size: 10pt; letter-spacing: 0pt; color: rgb(0, 0, 0); text-align: justify;">《农夫和他的儿子们》和材料二都体现了</font><font face="PingFang SC" style="font-family: &quot;PingFang SC&quot;; font-size: 10pt; letter-spacing: 0pt; color: rgb(0, 0, 0); text-align: justify;">“小选择，大智慧”的主题。农夫的选择是临终前告诉儿子们“葡萄园里埋着财宝”，让他们去翻地，结果儿子们虽然没找到财宝，却把葡萄园翻得松软，获得了大丰收（类似于蚂蚁辛苦储备粮食，最终在冬天享受美食）。而如果农夫选择直接命令儿子们去翻地，他们很可能偷懒不听。这两个故事都通过小的选择，展现了智慧和远见的重要性。农夫的远见和机智，以及蚂蚁的勤奋和远见，都提醒我们：生活中的每一个小选择都可能带来巨大的影响，只有做出明智的选择，才能避免不必要的损失，收获好的结果。</font></p>
                     </div>
                 </div>
             </div>
@@ -335,7 +334,7 @@
                     <div class="mat-card">
                         <div class="mat-title">W23 导语 · 狐狸的故事</div>
                         <div class="mat-label">《伊索寓言》中的狐狸</div>
-                        <p>在《伊索寓言》里，狐狸几乎是出镜率最高的动物之一。它时而聪明机灵，时而狡猾阴险，有时能用三言两语化解困局，有时又不动声色地布下圈套。正因如此，狐狸成了伊索最喜欢借用的"主角"。本周，我们来读一个新的狐狸故事——《狐狸教狼钓鱼》。这一次，狐狸不只是耍小聪明，而是精心设局、步步为营，把一个爱搬弄是非的狼引入了自己的陷阱。看看伊索笔下，这只狐狸究竟是什么样的？</p>
+                        <p><span style="background-color: rgb(255, 255, 255);">在《伊索寓言》里，狐狸是出镜最多的动物之一，以它为主角的故事约占十分之一。但你有没有发现，这些故事里的狐狸，性格并不总是一样的：有时它狡猾阴险、不择手段；有时又聪明机智、以弱胜强；有时甚至会因爱面子而自欺欺人。每一个故事都从不同角度展现了狐狸独特的性格魅力。</span></p>
                     </div>
                 </div>
 
@@ -348,7 +347,7 @@
                         <div class="mat-label">内容梗概</div>
                         <p>狐狸听说狼到处说自己坏话，暗记仇恨，伺机报复。一天傍晚，狐狸用鱼勾起狼的馋心，将其骗到结冰的河边，以"尾巴钓鱼"为由让狼久坐不动，待狼尾巴冻牢后，再跑去叫村民逮狼。狼断尾逃命，狐狸报仇得逞。</p>
                         <div class="mat-label">角色形象</div>
-                        <p><strong>狐狸：</strong>有心机、狡猾、阴险、虚伪、狠毒</p>
+                        <p><strong>狐狸：</strong>狡猾、阴险狠毒</p>
                         <p><strong>狼：</strong>爱搬弄是非、嘴馋、轻信、贪心</p>
                         <div class="mat-label">寓意</div>
                         <div class="mat-moral">①不要轻信花言巧语和送上门的好事，小心是圈套。<br>②贪心不知足，往往会吃大亏。<br>③总在背后说人坏话、搬弄是非，迟早惹祸上身。</div>
@@ -382,7 +381,7 @@
                         <div class="mat-label">第一步：提炼句式</div>
                         <p>"谁因为（贪心的行为），结果（没有好下场）。"</p>
                         <div class="mat-label">第二步：代入联想</div>
-                        <p>牧羊人因为想拿野山羊换取财富，把自己羊的食物统统喂给野山羊，结果自己的羊全饿死，野山羊也逃走了。——成立 ✓</p>
+                        <p>牧羊人因为想拿野山羊换取财富，把自己羊的食物统统喂给野山羊，结果自己的羊全饿死，野山羊也逃走了。</p>
                         <div class="mat-label">第三步：类比说明</div>
                         <p>狼和牧羊人都因贪心做了不该做的事，结果都没有好下场。两个故事都说明：贪心不但得不到想要的，反而会害了自己。</p>
                     </div>
@@ -393,9 +392,9 @@
                     <div class="mat-card">
                         <div class="mat-title">方法练习 · 《驴子和他的主人》</div>
                         <div class="mat-label">第二步：代入联想</div>
-                        <p>驴子因为不满足现在的主人，一次次祈求宙斯换主人，结果越换越差，落到硝皮匠手里，后悔莫及。——成立 ✓</p>
+                        <p>驴子因为不满足现在的主人，一次次祈求宙斯换主人，结果越换越差，落到硝皮匠手里，后悔莫及。</p>
                         <div class="mat-label">第三步：类比说明</div>
-                        <p>狼贪图鱼，驴子贪图更好的主人——都是不满足已有的；狼被冻住，驴子落到硡皮匠手里——都是没有好下场。共同主题：贪心不知足，最终只会让自己的处境更糟。</p>
+                        <p>狼贪图鱼，驴子贪图更好的主人——都是贪心，不满足已有的；</p><div>狼被冻住，驴子落到硡皮匠手里——都是没有好下场。<div>共同主题：贪心不知足，最终只会让自己的处境更糟。</div></div><p></p>
                     </div>
                 </div>
 
@@ -412,7 +411,7 @@
                         <div class="mat-label">题目（7）</div>
                         <p>蚂蚁和蝉因为选择不同，结局也不同。小明准备用这个故事参加"小选择，大智慧"主题寓言故事会，请你再向他推荐一则符合主题的寓言故事，并写清楚推荐理由。</p>
                         <div class="mat-label">参考答案</div>
-                        <p><strong>推荐寓言故事《乌鸦与狐狸》。</strong>推荐理由：《乌鸦与狐狸》和材料二都体现了"小选择，大智慧"的主题。乌鸦的选择是轻信狐狸的奉承，结果失去了奶酪（类似于蝉的选择，只顾眼前享受，没有考虑后果）。而蚂蚁的选择是辛苦储备粮食，最终在冬天享受美食（类似于乌鸦如果选择不轻信狐狸，就能保住奶酪）。这两个故事都通过小的选择，展现了智慧和远见的重要性。蚂蚁的远见和勤奋，以及乌鸦的轻信和短视，都提醒我们，生活中的每一个小选择都可能带来巨大的影响，只有做出明智的选择，才能避免不必要的损失，收获好的结果。</p>
+                        <p><strong>推荐寓言故事《农夫和他的儿子们》。</strong>推荐理由：<font face="PingFang SC" style="font-family: &quot;PingFang SC&quot;; font-size: 10pt; letter-spacing: 0pt; color: rgb(0, 0, 0); text-align: justify;">《农夫和他的儿子们》和材料二都体现了</font><font face="PingFang SC" style="font-family: &quot;PingFang SC&quot;; font-size: 10pt; letter-spacing: 0pt; color: rgb(0, 0, 0); text-align: justify;">“小选择，大智慧”的主题。农夫的选择是临终前告诉儿子们“葡萄园里埋着财宝”，让他们去翻地，结果儿子们虽然没找到财宝，却把葡萄园翻得松软，获得了大丰收（类似于蚂蚁辛苦储备粮食，最终在冬天享受美食）。而如果农夫选择直接命令儿子们去翻地，他们很可能偷懒不听。这两个故事都通过小的选择，展现了智慧和远见的重要性。农夫的远见和机智，以及蚂蚁的勤奋和远见，都提醒我们：生活中的每一个小选择都可能带来巨大的影响，只有做出明智的选择，才能避免不必要的损失，收获好的结果。</font></p><p class="MsoNormal" style="margin: 0pt 0pt 0.0001pt; text-align: justify; font-family: Calibri; font-size: 10.5pt; color: rgb(0, 0, 0);"><span style="font-family: &quot;PingFang SC&quot;; letter-spacing: 0pt; font-size: 10pt;"><br></span></p><p></p>
                     </div>
                 </div>
 
@@ -473,5 +472,6 @@ function saveAndExport() {
     a.click();
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
