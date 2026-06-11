@@ -13,6 +13,8 @@
     /* HEADER */
     header{background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:12px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.15);flex-shrink:0;position:sticky;top:0;z-index:200;}
     header h1{font-size:17px;font-weight:600;letter-spacing:1px;}
+    .catalog-link{background:rgba(255,255,255,.22);color:white;border:1px solid rgba(255,255,255,.4);padding:6px 14px;font-size:12px;border-radius:7px;cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:background .15s;margin-left:auto;}
+    .catalog-link:hover{background:rgba(255,255,255,.32);}
     header .sub{font-size:11px;opacity:.75;}
     .hbtns{display:flex;gap:7px;flex-shrink:0;flex-wrap:wrap;}
     .hbtn{background:rgba(255,255,255,.18);color:white;border:1px solid rgba(255,255,255,.35);padding:6px 12px;font-size:12px;border-radius:7px;cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500;transition:background .15s;}
@@ -409,7 +411,7 @@
     <div class="sub">课时 · 模块 · 三栏对应创作</div>
   </div>
   <div class="hbtns">
-    <button class="hbtn" onclick="window.open('catalog.html','_blank')">📋 课程目录</button>
+    <a class="hbtn catalog-link" href="catalog.html" target="_blank">📋 课程目录</a>
     <button class="hbtn" onclick="openDrawer()">🕐 版本历史</button>
     <button class="hbtn" onclick="openSaveModal()">💾 保存版本</button>
     <div class="export-wrap">

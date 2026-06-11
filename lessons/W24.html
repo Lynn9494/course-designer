@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U6《伊索寓言》下 · W24 狐狸的故事（二）</title>
+    <style>
+        :root {
+            --primary: #4A5568; --primary-dark: #2D3748;
+            --accent: #5B7FFF; --accent-light: #EBF0FF;
+            --green: #48BB78; --green-light: #F0FFF4;
+            --orange: #ED8936;
+            --bg: #F7F8FA; --sidebar-bg: #FFFFFF;
+            --card-bg: #FFFFFF; --text: #2D3748;
+            --text-light: #718096; --text-muted: #A0AEC0;
+            --border: #E2E8F0; --shadow: 0 1px 8px rgba(0,0,0,0.06);
+            --radius: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        .header { background: #FFF; border-bottom: 1px solid var(--border); padding: 16px 28px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; }
+        .header h1 { font-size: 17px; font-weight: 700; }
+        .header .sep { margin: 0 12px; color: var(--text-muted); }
+        .header .subtitle { font-size: 14px; color: var(--text-light); }
+        .container { display: flex; margin-top: 56px; height: calc(100vh - 56px); }
+        .sidebar { width: 280px; min-width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; height: calc(100vh - 56px); position: sticky; top: 56px; }
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 3px; }
+        .day-title { display: flex; align-items: center; padding: 10px 18px; font-size: 14px; font-weight: 700; color: var(--primary-dark); cursor: pointer; transition: background 0.15s; }
+        .day-title:hover { background: #F7FAFC; }
+        .day-title .arrow { margin-left: auto; font-size: 10px; color: var(--text-muted); transition: transform 0.2s; }
+        .day-title.expanded .arrow { transform: rotate(90deg); }
+        .module-list { display: none; }
+        .module-list.show { display: block; }
+        .module-item { padding: 7px 18px 7px 28px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+        .module-item:hover { background: #F7FAFC; }
+        .module-item.active { background: var(--accent-light); color: var(--accent); border-left-color: var(--accent); }
+        .module-item .time-tag { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-left: 6px; }
+        .sub-item { padding: 5px 18px 5px 42px; font-size: 12px; color: var(--text-light); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sub-item:hover { background: #F7FAFC; color: var(--text); }
+        .sub-item.active { background: #F0F4FF; color: var(--accent); border-left-color: var(--accent); }
+        .main-area { flex: 1; display: flex; overflow: hidden; height: calc(100vh - 56px); }
+        .content { flex: 1; overflow-y: auto; padding: 28px 32px; border-right: 1px solid var(--border); }
+        .content::-webkit-scrollbar { width: 4px; }
+        .content::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }
+        .materials { width: 340px; min-width: 340px; overflow-y: auto; padding: 24px 20px; background: #FAFBFD; }
+        .materials::-webkit-scrollbar { width: 3px; }
+        .materials::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
+        .materials-header { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .section-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); display: inline-block; }
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .card h3 { font-size: 15px; font-weight: 700; color: var(--primary-dark); margin-bottom: 12px; }
+        .card h4 { font-size: 13.5px; font-weight: 600; color: var(--orange); margin: 14px 0 8px; }
+        .card p { font-size: 13.5px; color: var(--text); margin-bottom: 8px; line-height: 1.8; }
+        .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-right: 4px; }
+        .tag.action { background: #EBF4FF; color: #2B6CB0; }
+        .tag.speech { background: #FEFCBF; color: #975A16; }
+        .tag.mind { background: #C6F6D5; color: #276749; }
+        .quote-box { background: #FFFFF0; border: 1px solid #FEFCBF; border-radius: 8px; padding: 12px 16px; margin: 8px 0; font-size: 13px; color: #5D4E37; line-height: 1.9; }
+        .summary-box { background: var(--accent-light); border-radius: 8px; padding: 12px 16px; margin: 10px 0; border-left: 3px solid var(--accent); }
+        .summary-box p { margin: 0; font-size: 13.5px; }
+        .summary-box strong { color: var(--accent); }
+        .moral-box { background: linear-gradient(135deg, #667EEA, #764BA2); color: #FFF; border-radius: 8px; padding: 14px 20px; margin: 14px 0; font-size: 14px; font-weight: 500; }
+        .step-block { background: #F7FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; }
+        .step-block .step-q { font-size: 13.5px; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px; }
+        .step-block .step-reason { font-size: 12.5px; color: var(--text-light); margin-bottom: 8px; line-height: 1.8; }
+        .step-block .step-result { font-size: 13px; background: var(--green-light); border-left: 3px solid var(--green); padding: 10px 14px; border-radius: 6px; line-height: 1.8; }
+        .ref-box { background: #F0FFF4; border: 1px solid #C6F6D5; border-radius: 8px; padding: 16px 18px; margin: 14px 0; }
+        .ref-box .ref-title { font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+        .ref-box p { font-size: 13px; line-height: 2; color: #2D3748; margin-bottom: 6px; }
+        .mat-card { background: #FFF; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+        .mat-card .mat-title { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed var(--border); }
+        .mat-card p { font-size: 12.5px; line-height: 1.8; color: var(--text); margin-bottom: 6px; }
+        .mat-card .mat-label { font-size: 11px; font-weight: 700; color: var(--accent); margin-top: 10px; margin-bottom: 4px; }
+        .mat-card .mat-moral { font-size: 12.5px; font-weight: 600; color: #2D3748; background: #EDF2F7; padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
+        .method-card { background: #EBF4FF; border: 1px solid #BEE3F8; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+        .method-card h5 { font-size: 12px; font-weight: 700; color: #2B6CB0; margin-bottom: 6px; }
+        .method-card p { font-size: 12.5px; color: #2A4365; line-height: 1.7; margin-bottom: 4px; }
+        /* 思维导图样式 */
+        .mindmap { background: #FAFBFD; border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 14px 0; }
+        .mindmap-center { text-align: center; background: #667EEA; color: #FFF; border-radius: 50px; padding: 10px 24px; font-size: 14px; font-weight: 700; display: inline-block; margin-bottom: 16px; }
+        .mindmap-branches { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .branch { background: #FFF; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
+        .branch-title { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+        .branch-items { font-size: 12px; color: var(--text-light); line-height: 1.8; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .material-section { display: none; }
+        .material-section.active { display: block; }
+        @media (max-width: 1100px) { .materials { width: 280px; min-width: 280px; } }
+        @media (max-width: 900px) { .container { flex-direction: column; } .sidebar { width: 100%; min-width: unset; height: auto; max-height: 35vh; position: relative; top: 0; } .main-area { flex-direction: column; height: auto; } .content { border-right: none; border-bottom: 1px solid var(--border); } .materials { width: 100%; min-width: unset; } }
+        .edit-toolbar { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; gap: 10px; align-items: center; }
+        .edit-btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.2s; }
+        .edit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .edit-btn.primary { background: var(--accent); color: #FFF; }
+        .edit-btn.success { background: #48BB78; color: #FFF; }
+        .edit-btn.secondary { background: #EDF2F7; color: var(--text); }
+        .edit-hint { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); background: #FFF3CD; color: #856404; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 999; display: none; }
+        body.editing .edit-hint { display: block; }
+        body.editing .card p, body.editing .card h3, body.editing .card h4, body.editing .quote-box, body.editing .summary-box p, body.editing .moral-box, body.editing .step-block .step-q, body.editing .step-block .step-reason, body.editing .step-block .step-result, body.editing .ref-box p, body.editing .mat-card p, body.editing .mat-card .mat-title, body.editing .mat-card .mat-moral, body.editing .method-card p, body.editing .method-card h5 { outline: 1px dashed #BEE3F8; outline-offset: 2px; min-height: 1.5em; }
+        body.editing .card p:focus, body.editing .card h3:focus, body.editing .card h4:focus, body.editing .quote-box:focus, body.editing .summary-box p:focus, body.editing .moral-box:focus, body.editing .step-block .step-q:focus, body.editing .step-block .step-reason:focus, body.editing .step-block .step-result:focus, body.editing .ref-box p:focus, body.editing .mat-card p:focus, body.editing .mat-card .mat-title:focus, body.editing .mat-card .mat-moral:focus, body.editing .method-card p:focus, body.editing .method-card h5:focus { outline: 2px solid var(--accent); background: #FFFFF0; }
+    </style>
+</head>
+<body>
+<div class="edit-hint">编辑模式已开启 — 点击任意文字即可修改，改完点"保存并导出"</div>
+<div class="edit-toolbar">
+    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()">编辑</button>
+    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display:none;">保存并导出</button>
+    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display:none;">取消</button>
+</div>
+
+<div class="header">
+    <h1>U6《伊索寓言》下</h1>
+    <span class="sep">·</span>
+    <span class="subtitle">W24 主题：狐狸的故事（二）</span>
+</div>
+
+<div class="container">
+    <div class="sidebar" id="sidebar">
+        <div class="day-section">
+            <div class="day-title expanded" data-day="d6" onclick="toggleDay(this)">D6 教学思路<span class="arrow">▶</span></div>
+            <div class="module-list show" id="day-d6">
+                <div class="module-item active" data-target="d6-m1" onclick="switchModule(this)">模块一：导入<span class="time-tag">1min</span></div>
+                <div class="sub-item" data-target="d6-m1" onclick="switchModule(this)">狐狸"流量担当"引入</div>
+                <div class="module-item" data-target="d6-m2" onclick="switchModule(this)">模块二：内容梳理<span class="time-tag">10-12min</span></div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">精读《狐狸和葡萄》</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 爱面子·自欺欺人</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">精读《断了尾巴的狐狸》</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节①：爱面子</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节②：自私虚伪</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节③：老狐狸戳穿</div>
+                <div class="module-item" data-target="d6-m3" onclick="switchModule(this)">模块三：总结与预告<span class="time-tag">2min</span></div>
+                <div class="sub-item" data-target="d6-m3" onclick="switchModule(this)">总结 + 下节课预告</div>
+            </div>
+        </div>
+        <div class="day-section">
+            <div class="day-title" data-day="d7" onclick="toggleDay(this)">D7 教学思路<span class="arrow">▶</span></div>
+            <div class="module-list" id="day-d7">
+                <div class="module-item" data-target="d7-m1" onclick="switchModule(this)">模块一：回顾导入<span class="time-tag">1min</span></div>
+                <div class="sub-item" data-target="d7-m1" onclick="switchModule(this)">回顾问题 + 引出方法</div>
+                <div class="module-item" data-target="d7-m2" onclick="switchModule(this)">模块二：方法讲解<span class="time-tag">2-3min</span></div>
+                <div class="sub-item" data-target="d7-m2" onclick="switchModule(this)">思维导图介绍 + 步骤</div>
+                <div class="module-item" data-target="d7-m3" onclick="switchModule(this)">模块三：方法示范<span class="time-tag">8-10min</span></div>
+                <div class="sub-item" data-target="d7-m3" onclick="switchModule(this)">梳理"狐狸"的形象特点</div>
+                <div class="sub-item" data-target="d7-m3" onclick="switchModule(this)">┗ 六个分支展开</div>
+                <div class="module-item" data-target="d7-m4" onclick="switchModule(this)">模块四：真题演练<span class="time-tag">3-4min</span></div>
+                <div class="sub-item" data-target="d7-m4" onclick="switchModule(this)">《最完美的战胜》老鼠形象</div>
+                <div class="module-item" data-target="d7-m5" onclick="switchModule(this)">模块五：总结<span class="time-tag">1min</span></div>
+                <div class="sub-item" data-target="d7-m5" onclick="switchModule(this)">方法总结</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-area">
+        <div class="content" id="content">
+
+            <!-- D6 模块一 -->
+            <div class="content-section active" id="d6-m1">
+                <div class="section-title">模块一：导入（1min）</div>
+                <div class="card">
+                    <p>在《伊索寓言》这个动物故事王国里，狐狸绝对是当仁不让的"流量担当"。据统计，在两三百篇的《伊索寓言》中，以狐狸为主人公的寓言就多达二十九篇，占据了约十分之一的篇幅。这些故事中，狐狸的形象丰富多彩，它们或是狡猾多端，或是聪明机智，每一个故事都从不同角度展现了狐狸独特的性格魅力。</p>
+                    <p><strong>今天，我们就再来读两个新的狐狸寓言，看看这一次，狐狸又会展现出怎样的性格？又会带给我们什么启发？</strong></p>
+                </div>
+            </div>
+
+            <!-- D6 模块二 -->
+            <div class="content-section" id="d6-m2">
+                <div class="section-title">模块二：内容梳理（10-12min）</div>
+
+                <div class="card">
+                    <h3>1. 精读《狐狸和葡萄》（第六单元，P150）</h3>
+                    <h4>【主要内容】</h4>
+                    <p>狐狸想吃葡萄却够不着，便说葡萄是酸的。</p>
+                    <h4>【狐狸的形象】</h4>
+                    <p><span class="tag speech">语言描写①</span>（看见葡萄时）："葡萄真好吃呢，又甜又解渴，我要吃一些。"</p>
+                    <p><span class="tag speech">语言描写②</span>（吃不到后）："这葡萄一定是酸的，让馋嘴的麻雀去吃吧。"</p>
+                    <p><strong>字面意思：</strong>葡萄酸，自己不稀罕</p>
+                    <p><strong>联系上下文：</strong>又饿又渴、跳了好几次都没够着葡萄</p>
+                    <p><strong>真实意图：</strong>说葡萄"酸"是自我安慰，为失败找借口</p>
+                    <div class="summary-box"><p>→ 狐狸的形象：<strong>爱面子、自欺欺人</strong></p></div>
+                    <div class="moral-box">💡 寓意：要正视失败，坦然承认自己的不足，不要自欺欺人。</div>
+                </div>
+
+                <div class="card">
+                    <h3>2. 精读《断了尾巴的狐狸》（第六单元，P151）</h3>
+                    <h4>【情节①】狐狸咬断尾巴逃生，失去尾巴后躲躲藏藏</h4>
+                    <p>狐狸为了逃生，狠心咬断自己的尾巴；失去尾巴后觉得没面子，总躲躲藏藏。</p>
+                    <div class="summary-box"><p>→ 断尾狐狸的形象：<strong>爱面子</strong></p></div>
+
+                    <h4>【情节②】断尾狐狸劝说其他狐狸也去掉尾巴</h4>
+                    <p>为了掩盖自己的缺陷，这只狐狸劝说其他狐狸也都去掉尾巴。</p>
+                    <p><span class="tag speech">语言描写</span></p>
+                    <div class="quote-box">"对于没有尾巴的好处，你们怎么能体会得到呢？你们看我现在活动多么灵活！简直无法想象，有个尾巴多么丑陋、笨重、多余。亲爱的同胞们，你们听我的劝告，今天就把尾巴去掉，你们肯定会感觉好极了。"</div>
+                    <p><strong>字面意思：</strong>没尾巴好处多</p>
+                    <p><strong>联系上下文：</strong>自己被迫断尾、羞于见人；而同胞们尾巴完好</p>
+                    <p><strong>真实意图：</strong>骗大家都断尾，这样自己就不显得难看了</p>
+                    <div class="summary-box"><p>→ 断尾狐狸的形象：<strong>自私、虚伪、狡猾</strong></p></div>
+
+                    <h4>【情节③】老狐狸当场戳穿小算盘</h4>
+                    <p><span class="tag speech">语言描写</span></p>
+                    <div class="quote-box">不耐烦地打断道："我敢说，要不是对你自己有什么好处的话，你绝不会煞费苦心地劝我们把尾巴去掉。"</div>
+                    <div class="summary-box"><p>→ 老狐狸的形象：<strong>聪明、清醒</strong></p></div>
+                    <div class="moral-box">💡 寓意：听别人的建议时，不要轻信，要先想想对方的真实动机。</div>
+                </div>
+            </div>
+
+            <!-- D6 模块三 -->
+            <div class="content-section" id="d6-m3">
+                <div class="section-title">模块三：总结与预告（2min）</div>
+                <div class="card">
+                    <h3>1. 总结</h3>
+                    <p>（1）两篇故事的主要内容、寓意、词句积累</p>
+                    <p>（2）狐狸的形象</p>
+                </div>
+                <div class="card">
+                    <h3>2. 预告</h3>
+                    <p>我们已经读了不少《伊索寓言》中的狐狸故事。这些狐狸的形象都一样吗？有相同，也有不同。怎样才能全面认识它们呢？</p>
+                    <p><strong>下节课，我们就来归纳梳理一下《伊索寓言》中的狐狸形象。</strong></p>
+                </div>
+            </div>
+
+            <!-- D7 模块一 -->
+            <div class="content-section" id="d7-m1">
+                <div class="section-title">模块一：回顾导入（1min）</div>
+                <div class="card">
+                    <h3>1. 回顾问题</h3>
+                    <p>我们已经读了不少《伊索寓言》中的狐狸故事——有《狐狸和葡萄》《断了尾巴的狐狸》，还有之前学过的《狐狸教狼钓鱼》《毛驴、狐狸和狮子》《狮子、狼和狐狸》《狐狸和乌鸦》《蝉和狐狸》……这些狐狸的形象有相同的，也有不同的。怎样才能更全面地了解《伊索寓言》里狐狸的形象特点呢？</p>
+                </div>
+                <div class="card">
+                    <h3>2. 引出方法</h3>
+                    <p>今天我们就来学一种特别好用的方法——<strong>「借助思维导图归纳形象特点」</strong>。</p>
+                </div>
+            </div>
+
+            <!-- D7 模块二 -->
+            <div class="content-section" id="d7-m2">
+                <div class="section-title">模块二：方法讲解（2-3min）</div>
+                <div class="card">
+                    <h3>方法定义</h3>
+                    <p>用思维导图归纳同一动物角色的多面特点。</p>
+                </div>
+                <div class="card">
+                    <h3>① 思维导图是什么</h3>
+                    <p>思维导图是一种图形化的思维工具。它以中心主题为起点，向外分出许多放射状的分支，用来组织和展示与中心主题相关的信息。可以帮助我们把零散的想法系统化、结构化。</p>
+                    <h4>思维导图的结构</h4>
+                    <p>· <strong>中心节点：</strong>代表核心概念或问题</p>
+                    <p>· <strong>一级分支：</strong>直接相关的子主题</p>
+                    <p>· <strong>二级及以下分支：</strong>进一步细化的内容</p>
+                </div>
+                <div class="card">
+                    <h3>② 两个步骤</h3>
+                    <div class="step-block">
+                        <div class="step-q">第一步：回忆并提炼核心特点</div>
+                        <div class="step-reason">从读过的寓言中回忆这个角色的表现，归纳出几个核心特点，作为思维导图的一级分支。</div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">第二步：为每个特点搭配具体故事</div>
+                        <div class="step-reason">给每个特点配上对应的篇目，用角色在故事中"做了什么"来证明这个特点。</div>
+                        <div class="step-result">*注意：同一篇目可以同时支撑多个特点。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- D7 模块三 -->
+            <div class="content-section" id="d7-m3">
+                <div class="section-title">模块三：方法示范（8-10min）</div>
+                <div class="card">
+                    <h3>梳理"狐狸"的形象特点</h3>
+                    <h4>第一步：回忆并提炼核心特点</h4>
+                    <p>回忆已经学习过的狐狸相关寓言，提炼狐狸的核心特点：</p>
+                    <p><strong>狡猾、自私、自作聪明、机智、自欺欺人、阴险狠毒</strong></p>
+                </div>
+                <div class="card">
+                    <h4>第二步：为每个特点搭配具体故事</h4>
+                    <div class="step-block">
+                        <div class="step-q">① 分支一：狡猾</div>
+                        <div class="step-result">
+                            《断了尾巴的狐狸》——骗大家去掉尾巴<br>
+                            《狐狸教狼钓鱼》——骗狼用尾巴在冰水中钓鱼
+                        </div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">② 分支二：自私</div>
+                        <div class="step-result">
+                            《断了尾巴的狐狸》——为不让自己难堪，劝大家都去掉尾巴<br>
+                            《毛驴、狐狸和狮子》——为求生存，出卖毛驴
+                        </div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">③ 分支三：自作聪明</div>
+                        <div class="step-result">
+                            《毛驴、狐狸和狮子》——为求生存出卖毛驴，结果被狮子吃了
+                        </div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">④ 分支四：机智</div>
+                        <div class="step-result">
+                            《狮子、狼和狐狸》——面对狼的诬陷，用计谋反击
+                        </div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">⑤ 分支五：自欺欺人</div>
+                        <div class="step-result">
+                            《狐狸和葡萄》——吃不到葡萄说葡萄酸
+                        </div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">⑥ 分支六：阴险狠毒</div>
+                        <div class="step-result">
+                            《狐狸教狼钓鱼》——骗狼用尾巴在冰水中钓鱼，还叫村里人来逮狼，导致狼的尾巴断掉
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>总结发现</h3>
+                    <p>① 角色的形象特点是多面的，同一角色在不同故事中可能展现出不同的特点。</p>
+                    <p>② 角色是为寓意服务的，作者根据想传达的不同道理，设计不同的形象。</p>
+                    <p>③ 评价角色要结合具体言行，不能一概而论。</p>
+                </div>
+            </div>
+
+            <!-- D7 模块四 -->
+            <div class="content-section" id="d7-m4">
+                <div class="section-title">模块四：真题演练（3-4min）</div>
+                <div class="card">
+                    <h3>【2022——2023 福建厦门·期中】</h3>
+                    <p><strong>题目：</strong>老鼠在不同的寓言故事中有着不同的性格特点。请你结合《伊索寓言》或《克雷洛夫寓言》的阅读经验，完成以下思维导图。</p>
+                </div>
+                <div class="card">
+                    <div class="ref-box">
+                        <div class="ref-title">📝 参考答案</div>
+                        <p style="margin-bottom:10px;">以"老鼠"为中心，结合读过的寓言，从以下维度填写思维导图：</p>
+                        <div class="mindmap">
+                            <div style="text-align:center;margin-bottom:14px;"><span class="mindmap-center">老鼠的形象</span></div>
+                            <div class="mindmap-branches">
+                                <div class="branch">
+                                    <div class="branch-title">聪明、警惕</div>
+                                    <div class="branch-items">《猫和老鼠》<br>一眼识破猫装死的圈套，幽默揭穿骗局</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">朴实、知足</div>
+                                    <div class="branch-items">《城里老鼠和乡下老鼠》<br>乡下老鼠宁要平静生活，不贪城里享乐</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">感恩、重义</div>
+                                    <div class="branch-items">《狮子和报恩的老鼠》<br>咬断绳网，报答当初放它的狮子</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">善良、勇敢</div>
+                                    <div class="branch-items">《最完美的战胜》<br>不忍心趁机伤害落网的大象，反而救了它</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- D7 模块五 -->
+            <div class="content-section" id="d7-m5">
+                <div class="section-title">模块五：总结（1min）</div>
+                <div class="card">
+                    <h3>总结方法</h3>
+                    <p>今天我们学会了<strong>「借助思维导图归纳形象特点」</strong>，可以发现同一个动物在不同寓言里有不同侧面，这启示我们：读寓言时要根据具体的故事内容来判断形象，不能一概而论。</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 随材区 -->
+        <div class="materials">
+            <div class="materials-header">随 材 区</div>
+            <div id="materials-content">
+
+                <!-- mat-d6-m1：导语 -->
+                <div class="material-section active" id="mat-d6-m1">
+                    <div class="mat-card">
+                        <div class="mat-title">W24 导语 · 狐狸的故事（二）</div>
+                        <div class="mat-label">《伊索寓言》中的狐狸</div>
+                        <p>在《伊索寓言》里，狐狸是出镜最多的动物之一，多达二十九篇以它为主角。但你有没有发现，这些故事里的狐狸，性格并不总是一样的？有时它狡猾阴险、不择手段；有时又聪明机智、以弱胜强；有时甚至会因爱面子而自欺欺人。本周，我们来读两个新的狐狸故事，看看伊索又赋予了狐狸怎样的性格，想借它传达什么道理。</p>
+                    </div>
+                </div>
+
+                <!-- mat-d6-m2：寓言卡片 -->
+                <div class="material-section" id="mat-d6-m2">
+                    <div class="mat-card">
+                        <div class="mat-title">寓言卡片 ①</div>
+                        <div class="mat-label">篇名</div>
+                        <p>《狐狸和葡萄》</p>
+                        <div class="mat-label">内容梗概</div>
+                        <p>狐狸又饿又渴，看见架上挂着的葡萄，跳了好几次都没够着，便说葡萄一定是酸的，让麻雀去吃吧。</p>
+                        <div class="mat-label">角色形象</div>
+                        <p><strong>狐狸：</strong>爱面子、自欺欺人</p>
+                        <div class="mat-label">寓意</div>
+                        <div class="mat-moral">要正视失败，坦然承认自己的不足，不要自欺欺人。</div>
+                    </div>
+                    <div class="mat-card">
+                        <div class="mat-title">寓言卡片 ②</div>
+                        <div class="mat-label">篇名</div>
+                        <p>《断了尾巴的狐狸》</p>
+                        <div class="mat-label">内容梗概</div>
+                        <p>狐狸为逃生咬断尾巴，因为没面子总躲躲藏藏。为掩盖缺陷，它竭力劝说同胞们也都去掉尾巴。老狐狸一针见血地戳穿了它的私心。</p>
+                        <div class="mat-label">角色形象</div>
+                        <p><strong>断尾狐狸：</strong>爱面子、自私、虚伪、狡猾</p>
+                        <p><strong>老狐狸：</strong>聪明、清醒</p>
+                        <div class="mat-label">寓意</div>
+                        <div class="mat-moral">听别人的建议时，不要轻信，要先想想对方的真实动机。</div>
+                    </div>
+                </div>
+
+                <!-- mat-d6-m3 -->
+                <div class="material-section" id="mat-d6-m3"></div>
+
+                <!-- mat-d7-m1 -->
+                <div class="material-section" id="mat-d7-m1"></div>
+
+                <!-- mat-d7-m2：方法卡 -->
+                <div class="material-section" id="mat-d7-m2">
+                    <div class="method-card">
+                        <h5>方法卡</h5>
+                        <p><strong>方法名称：</strong>借助思维导图归纳形象特点</p>
+                        <p><strong>方法定义：</strong>用思维导图归纳同一动物角色的多面特点。</p>
+                        <p><strong>第一步：</strong>回忆并提炼核心特点（作为一级分支）</p>
+                        <p><strong>第二步：</strong>为每个特点搭配具体故事（用"做了什么"来证明）</p>
+                        <p><strong>注意：</strong>同一篇目可以同时支撑多个特点。</p>
+                    </div>
+                </div>
+
+                <!-- mat-d7-m3：方法示范 -->
+                <div class="material-section" id="mat-d7-m3">
+                    <div class="mat-card">
+                        <div class="mat-title">方法示范 · 狐狸的形象特点</div>
+                        <div class="mindmap" style="padding:14px;">
+                            <div style="text-align:center;margin-bottom:12px;"><span class="mindmap-center" style="font-size:13px;padding:8px 18px;">狐狸的形象</span></div>
+                            <div class="mindmap-branches">
+                                <div class="branch">
+                                    <div class="branch-title">狡猾</div>
+                                    <div class="branch-items">《断了尾巴的狐狸》骗大家断尾<br>《狐狸教狼钓鱼》骗狼钓鱼</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">自私</div>
+                                    <div class="branch-items">《断了尾巴的狐狸》劝大家断尾掩盖自己<br>《毛驴、狐狸和狮子》出卖毛驴求生</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">自作聪明</div>
+                                    <div class="branch-items">《毛驴、狐狸和狮子》出卖毛驴反被狮子吃</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">机智</div>
+                                    <div class="branch-items">《狮子、狼和狐狸》面对诬陷用计谋反击</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">自欺欺人</div>
+                                    <div class="branch-items">《狐狸和葡萄》吃不到葡萄说葡萄酸</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">阴险狠毒</div>
+                                    <div class="branch-items">《狐狸教狼钓鱼》骗狼冻尾，叫人来逮狼</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- mat-d7-m4：真题 -->
+                <div class="material-section" id="mat-d7-m4">
+                    <div class="mat-card">
+                        <div class="mat-title">【2022——2023 福建厦门·期中】</div>
+                        <div class="mat-label">阅读材料：最完美的战胜</div>
+                        <p>①老鼠是山神的宠物，它向山神要求下凡当普通的动物。山神说："在动物世界中，大象是最强大的，你下凡后，必须战胜大象，你才有资格回到我身边。"老鼠答应了山神的条件。</p>
+                        <p>②但老鼠一来到动物界，便感到它向山神的承诺是轻率的。因为，它到动物界后，发现自己是一种又小又弱的小动物，要战胜大象那简直是天方夜谭，它后悔了。</p>
+                        <p>③但它还是决定试一试。它想：自己要是从大象的长鼻子中钻进去，用身体堵住大象的气管，不让它喘气，大概会迫使它认输。</p>
+                        <p>④这天，它趁大象吃树枝之机，悄悄地钻进大象的鼻子中，准备实施它的计划。不料，刚进去一小段，大象觉得奇痒，便猛地打了一个喷嚏，老鼠只听见一声巨大的轰响，便觉得天旋地转，就像炮弹一样射向高空，半天才掉在地上，摔得它浑身上下像碎了一样痛。这下它可知道大象的厉害了。</p>
+                        <p>⑤大象由此也恨透了老鼠，一见到老鼠，大象就用它那大脚踩老鼠。老鼠好几次险些丧命。此后很久，老鼠总是远远地躲开大象，它不想自讨苦吃。</p>
+                        <p>⑥可天有不测风云。一天，大象落入了猎人设下的巨网中。它挣扎了很久，全身一点力气也没有了，它在等死。老鼠想：这真是天赐良机，大象现在已毫无反抗之力，只要我在它的要害部位挖几个洞，它就会没命了。我不就战胜大象了吗？</p>
+                        <p>⑦然而，老鼠是善良的。它看到大象可怜的样子不忍下手。它的良心告诉它，应该救大象。于是它开始用锋利的牙齿咬网和绳子，不知过了多久，那张巨网出现了一个大缺口，大象猛一用力，终于从巨网中钻了出来，大象得救了。从这件事情中，大象看到老鼠可贵的心灵，它决定同老鼠结下友谊。当然，老鼠也愿意结交大象这个仁厚的朋友。于是，老鼠和大象化干戈为玉帛。</p>
+                        <p>⑧不久，山神找到了老鼠，它向老鼠祝贺，说它已经战胜了大象。老鼠说："我还没有战胜大象呢！这大概是不可能的了。"山神说："老鼠，你已经战胜了大象。你将你的对手变成了朋友。难道世上还有比这更完美的战胜吗？"</p>
+                        <div class="mat-label">题目</div>
+                        <p>老鼠在不同的寓言故事中有着不同的性格特点。请你结合《伊索寓言》或《克雷洛夫寓言》的阅读经验，完成以下思维导图。</p>
+                        <div class="mat-label">参考答案</div>
+                        <div class="mindmap" style="padding:12px;margin-top:8px;">
+                            <div style="text-align:center;margin-bottom:12px;"><span class="mindmap-center" style="font-size:13px;padding:8px 18px;">老鼠的形象</span></div>
+                            <div class="mindmap-branches">
+                                <div class="branch">
+                                    <div class="branch-title">聪明、警惕</div>
+                                    <div class="branch-items">《猫和老鼠》<br>识破猫装死的圈套</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">朴实、知足</div>
+                                    <div class="branch-items">《城里老鼠和乡下老鼠》<br>宁要平静，不贪享乐</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">感恩、重义</div>
+                                    <div class="branch-items">《狮子和报恩的老鼠》<br>咬断绳网报答狮子</div>
+                                </div>
+                                <div class="branch">
+                                    <div class="branch-title">善良、勇敢</div>
+                                    <div class="branch-items">《最完美的战胜》<br>放弃报复，救了落网的大象</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- mat-d7-m5 -->
+                <div class="material-section" id="mat-d7-m5"></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchModule(el) {
+    const target = el.getAttribute('data-target');
+    if (!target) return;
+    document.querySelectorAll('.module-item, .sub-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('[data-target="' + target + '"]').forEach(i => i.classList.add('active'));
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    const section = document.getElementById(target);
+    if (section) section.classList.add('active');
+    document.querySelectorAll('.material-section').forEach(s => s.classList.remove('active'));
+    const mat = document.getElementById('mat-' + target);
+    if (mat) mat.classList.add('active');
+}
+function toggleDay(el) {
+    const day = el.getAttribute('data-day');
+    const list = document.getElementById('day-' + day);
+    const isExpanded = el.classList.contains('expanded');
+    el.classList.toggle('expanded', !isExpanded);
+    list.classList.toggle('show', !isExpanded);
+}
+function toggleEdit() {
+    document.body.classList.add('editing');
+    document.getElementById('btn-edit').style.display = 'none';
+    document.getElementById('btn-save').style.display = 'inline-block';
+    document.getElementById('btn-cancel').style.display = 'inline-block';
+    document.querySelectorAll('.card p, .card h3, .card h4, .quote-box, .summary-box p, .moral-box, .step-block .step-q, .step-block .step-reason, .step-block .step-result, .ref-box p, .mat-card p, .mat-card .mat-title, .mat-card .mat-moral, .method-card p, .method-card h5').forEach(el => {
+        el.contentEditable = 'true';
+    });
+}
+function cancelEdit() {
+    document.body.classList.remove('editing');
+    document.getElementById('btn-edit').style.display = 'inline-block';
+    document.getElementById('btn-save').style.display = 'none';
+    document.getElementById('btn-cancel').style.display = 'none';
+    document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+}
+function saveAndExport() {
+    document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.body.classList.remove('editing');
+    document.getElementById('btn-edit').style.display = 'inline-block';
+    document.getElementById('btn-save').style.display = 'none';
+    document.getElementById('btn-cancel').style.display = 'none';
+    const blob = new Blob([document.documentElement.outerHTML], {type: 'text/html;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'U6W24-teaching-plan.html';
+    a.click();
+}
+</script>
+</body>
+</html>

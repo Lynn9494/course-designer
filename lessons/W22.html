@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U6《伊索寓言》下 · W22 人的故事</title>
+    <style>
+        :root {
+            --primary: #4A5568; --primary-dark: #2D3748;
+            --accent: #5B7FFF; --accent-light: #EBF0FF;
+            --green: #48BB78; --green-light: #F0FFF4;
+            --orange: #ED8936;
+            --bg: #F7F8FA; --sidebar-bg: #FFFFFF;
+            --card-bg: #FFFFFF; --text: #2D3748;
+            --text-light: #718096; --text-muted: #A0AEC0;
+            --border: #E2E8F0; --shadow: 0 1px 8px rgba(0,0,0,0.06);
+            --radius: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        .header { background: #FFF; border-bottom: 1px solid var(--border); padding: 16px 28px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; }
+        .header h1 { font-size: 17px; font-weight: 700; }
+        .header .sep { margin: 0 12px; color: var(--text-muted); }
+        .header .subtitle { font-size: 14px; color: var(--text-light); }
+        .container { display: flex; margin-top: 56px; height: calc(100vh - 56px); }
+        .sidebar { width: 280px; min-width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; height: calc(100vh - 56px); position: sticky; top: 56px; }
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 3px; }
+        .day-title { display: flex; align-items: center; padding: 10px 18px; font-size: 14px; font-weight: 700; color: var(--primary-dark); cursor: pointer; transition: background 0.15s; }
+        .day-title:hover { background: #F7FAFC; }
+        .day-title .arrow { margin-left: auto; font-size: 10px; color: var(--text-muted); transition: transform 0.2s; }
+        .day-title.expanded .arrow { transform: rotate(90deg); }
+        .module-list { display: none; }
+        .module-list.show { display: block; }
+        .module-item { padding: 7px 18px 7px 28px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+        .module-item:hover { background: #F7FAFC; }
+        .module-item.active { background: var(--accent-light); color: var(--accent); border-left-color: var(--accent); }
+        .module-item .time-tag { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-left: 6px; }
+        .sub-item { padding: 5px 18px 5px 42px; font-size: 12px; color: var(--text-light); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sub-item:hover { background: #F7FAFC; color: var(--text); }
+        .sub-item.active { background: #F0F4FF; color: var(--accent); border-left-color: var(--accent); }
+        .main-area { flex: 1; display: flex; overflow: hidden; height: calc(100vh - 56px); }
+        .content { flex: 1; overflow-y: auto; padding: 28px 32px; border-right: 1px solid var(--border); }
+        .content::-webkit-scrollbar { width: 4px; }
+        .content::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }
+        .materials { width: 340px; min-width: 340px; overflow-y: auto; padding: 24px 20px; background: #FAFBFD; }
+        .materials::-webkit-scrollbar { width: 3px; }
+        .materials::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
+        .materials-header { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .section-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); display: inline-block; }
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .card h3 { font-size: 15px; font-weight: 700; color: var(--primary-dark); margin-bottom: 12px; }
+        .card h4 { font-size: 13.5px; font-weight: 600; color: var(--orange); margin: 14px 0 8px; }
+        .card p { font-size: 13.5px; color: var(--text); margin-bottom: 8px; line-height: 1.8; }
+        .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-right: 4px; }
+        .tag.action { background: #EBF4FF; color: #2B6CB0; }
+        .tag.speech { background: #FEFCBF; color: #975A16; }
+        .tag.mind { background: #C6F6D5; color: #276749; }
+        .quote-box { background: #FFFFF0; border: 1px solid #FEFCBF; border-radius: 8px; padding: 12px 16px; margin: 8px 0; font-size: 13px; color: #5D4E37; line-height: 1.9; }
+        .summary-box { background: var(--accent-light); border-radius: 8px; padding: 12px 16px; margin: 10px 0; border-left: 3px solid var(--accent); }
+        .summary-box p { margin: 0; font-size: 13.5px; }
+        .summary-box strong { color: var(--accent); }
+        .moral-box { background: linear-gradient(135deg, #667EEA, #764BA2); color: #FFF; border-radius: 8px; padding: 14px 20px; margin: 14px 0; font-size: 14px; font-weight: 500; }
+        .step-block { background: #F7FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; }
+        .step-block .step-q { font-size: 13.5px; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px; }
+        .step-block .step-reason { font-size: 12.5px; color: var(--text-light); margin-bottom: 8px; line-height: 1.8; }
+        .step-block .step-result { font-size: 13px; background: var(--green-light); border-left: 3px solid var(--green); padding: 10px 14px; border-radius: 6px; line-height: 1.8; }
+        .ref-box { background: #F0FFF4; border: 1px solid #C6F6D5; border-radius: 8px; padding: 16px 18px; margin: 14px 0; }
+        .ref-box .ref-title { font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+        .ref-box p { font-size: 13px; line-height: 2; color: #2D3748; }
+        .mat-card { background: #FFF; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+        .mat-card .mat-title { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed var(--border); }
+        .mat-card p { font-size: 12.5px; line-height: 1.8; color: var(--text); margin-bottom: 6px; }
+        .mat-card .mat-label { font-size: 11px; font-weight: 700; color: var(--accent); margin-top: 10px; margin-bottom: 4px; }
+        .mat-card .mat-moral { font-size: 12.5px; font-weight: 600; color: #2D3748; background: #EDF2F7; padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
+        .method-card { background: #EBF4FF; border: 1px solid #BEE3F8; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+        .method-card h5 { font-size: 12px; font-weight: 700; color: #2B6CB0; margin-bottom: 6px; }
+        .method-card p { font-size: 12.5px; color: #2A4365; line-height: 1.7; margin-bottom: 4px; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .material-section { display: none; }
+        .material-section.active { display: block; }
+        .img-block { text-align: center; margin: 12px 0; }
+        .img-block img { max-width: 100%; border-radius: 8px; }
+        .img-caption { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+        @media (max-width: 1100px) { .materials { width: 280px; min-width: 280px; } }
+        @media (max-width: 900px) { .container { flex-direction: column; } .sidebar { width: 100%; min-width: unset; height: auto; max-height: 35vh; position: relative; top: 0; } .main-area { flex-direction: column; height: auto; } .content { border-right: none; border-bottom: 1px solid var(--border); } .materials { width: 100%; min-width: unset; } }
+        .edit-toolbar { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; gap: 10px; align-items: center; }
+        .edit-btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.2s; }
+        .edit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .edit-btn.primary { background: var(--accent); color: #FFF; }
+        .edit-btn.success { background: #48BB78; color: #FFF; }
+        .edit-btn.secondary { background: #EDF2F7; color: var(--text); }
+        .edit-hint { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); background: #FFF3CD; color: #856404; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 999; display: none; }
+        body.editing .edit-hint { display: block; }
+        body.editing .card p, body.editing .card h3, body.editing .card h4, body.editing .quote-box, body.editing .summary-box p, body.editing .moral-box, body.editing .step-block .step-q, body.editing .step-block .step-reason, body.editing .step-block .step-result, body.editing .ref-box p, body.editing .mat-card p, body.editing .mat-card .mat-title, body.editing .mat-card .mat-moral, body.editing .method-card p, body.editing .method-card h5 { outline: 1px dashed #BEE3F8; outline-offset: 2px; min-height: 1.5em; }
+        body.editing .card p:focus, body.editing .card h3:focus, body.editing .card h4:focus, body.editing .quote-box:focus, body.editing .summary-box p:focus, body.editing .moral-box:focus, body.editing .step-block .step-q:focus, body.editing .step-block .step-reason:focus, body.editing .step-block .step-result:focus, body.editing .ref-box p:focus, body.editing .mat-card p:focus, body.editing .mat-card .mat-title:focus, body.editing .mat-card .mat-moral:focus, body.editing .method-card p:focus, body.editing .method-card h5:focus { outline: 2px solid var(--accent); background: #FFFFF0; }
+    </style>
+</head>
+<body>
+<div class="edit-hint">编辑模式已开启 — 点击任意文字即可修改，改完点"保存并导出"</div>
+<div class="edit-toolbar">
+    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()">编辑</button>
+    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display:none;">保存并导出</button>
+    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display:none;">取消</button>
+</div>
+
+<div class="header">
+    <h1>U6《伊索寓言》下</h1>
+    <span class="sep">·</span>
+    <span class="subtitle">W22 主题：人的故事</span>
+</div>
+
+<div class="container">
+    <div class="sidebar" id="sidebar">
+        <div class="day-section">
+            <div class="day-title expanded" data-day="d6" onclick="toggleDay(this)">D6 教学思路<span class="arrow">▶</span></div>
+            <div class="module-list show" id="day-d6">
+                <div class="module-item active" data-target="d6-m1" onclick="switchModule(this)">模块一：导入<span class="time-tag">1min</span></div>
+                <div class="sub-item" data-target="d6-m1" onclick="switchModule(this)">伊索寓言中的人物引入</div>
+                <div class="module-item" data-target="d6-m2" onclick="switchModule(this)">模块二：内容梳理<span class="time-tag">10-12min</span></div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">精读《牧羊人和野山羊》</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节①：贪心盘算</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节②：偏心讨好</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节③：两头落空</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">精读《牧羊人和狼崽》</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节①：异想天开</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节②：不听劝告</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节③：养虎为患</div>
+                <div class="module-item" data-target="d6-m3" onclick="switchModule(this)">模块三：总结与预告<span class="time-tag">2min</span></div>
+                <div class="sub-item" data-target="d6-m3" onclick="switchModule(this)">总结 + 下节课预告</div>
+            </div>
+        </div>
+        <div class="day-section">
+            <div class="day-title" data-day="d7" onclick="toggleDay(this)">D7 教学思路<span class="arrow">▶</span></div>
+            <div class="module-list" id="day-d7">
+                <div class="module-item" data-target="d7-m1" onclick="switchModule(this)">模块一：回顾导入<span class="time-tag">1-2min</span></div>
+                <div class="sub-item" data-target="d7-m1" onclick="switchModule(this)">回顾问题 + 引出方法</div>
+                <div class="module-item" data-target="d7-m2" onclick="switchModule(this)">模块二：方法讲解与示范<span class="time-tag">5-7min</span></div>
+                <div class="sub-item" data-target="d7-m2" onclick="switchModule(this)">介绍双气泡图</div>
+                <div class="sub-item" data-target="d7-m2" onclick="switchModule(this)">方法示范：两篇牧羊人故事对比</div>
+                <div class="module-item" data-target="d7-m3" onclick="switchModule(this)">模块三：真题演练<span class="time-tag">3-4min</span></div>
+                <div class="sub-item" data-target="d7-m3" onclick="switchModule(this)">《农夫和蛇》对比题</div>
+                <div class="module-item" data-target="d7-m4" onclick="switchModule(this)">模块四：总结与预告<span class="time-tag">1min</span></div>
+                <div class="sub-item" data-target="d7-m4" onclick="switchModule(this)">方法总结 + 下周预告</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-area">
+        <div class="content" id="content">
+
+            <!-- D6 模块一：导入 -->
+            <div class="content-section active" id="d6-m1">
+                <div class="section-title">模块一：导入（1min）</div>
+                <div class="card">
+                    <p>之前我们读了很多《伊索寓言》里的动物故事，但其实《伊索寓言》里还有不少以人为主角的故事。伊索特别喜欢写那些普普通通的人——农夫、渔夫、商人等等，他们有时候因为善良、有时候因为贪心、有时候因为冲动，做出一些决定，结果往往出人意料。</p>
+                    <p><strong>今天我们就来看两个关于牧羊人的故事。</strong></p>
+                </div>
+            </div>
+
+            <!-- D6 模块二：内容梳理 -->
+            <div class="content-section" id="d6-m2">
+                <div class="section-title">模块二：内容梳理（10-12min）</div>
+                <div class="card">
+                    <h3>1. 精读《牧羊人和野山羊》（第六单元，P142）</h3>
+                    <h4>【情节①】（起因）</h4>
+                    <p>牧羊人把羊群赶进山洞避雪，发现洞里有一大群膘肥体壮的野山羊，心中暗自盘算想得到这一大笔财富。</p>
+                    <div class="summary-box"><p>【牧羊人的形象】<strong>贪婪</strong></p></div>
+                    <h4>【情节②】（经过）</h4>
+                    <p>为了讨好野山羊，他把自己羊的食物统统喂给了野山羊，把自己的羊丢在一边不管。</p>
+                    <div class="summary-box"><p>【牧羊人的形象】<strong>偏心</strong></p></div>
+                    <h4>【情节③】（结果）</h4>
+                    <p>雪停后，自己的山羊饿死了，野山羊逃得无影无踪。</p>
+                    <div class="moral-box">💡 寓意①：贪图不属于自己的东西，往往会失去原有的。<br>💡 寓意②：偏心对待外人而忽视自己人，最终会两头落空。</div>
+                </div>
+                <div class="card">
+                    <h3>2. 精读《牧羊人和狼崽》（第七单元，P174）</h3>
+                    <h4>【情节①】（起因）</h4>
+                    <p>牧羊人收养了一窝小狼崽，希望它们长大后能看羊护院，还能叼来别人的羊。</p>
+                    <div class="summary-box"><p>【牧羊人的形象】<strong>异想天开、贪婪</strong></p></div>
+                    <h4>【情节②】（经过）</h4>
+                    <p>邻居劝他不要养虎为患，他当作耳旁风，继续悉心照顾狼崽直到长大。</p>
+                    <div class="summary-box"><p>【牧羊人的形象】<strong>不听劝告</strong></p></div>
+                    <h4>【情节③】（结果）</h4>
+                    <p>狼崽长大后肆无忌惮地攻击了他自己的羊群，牧羊人懊悔自责。</p>
+                    <div class="moral-box">💡 寓意①：贪心没有好下场。<br>💡 寓意②：不听劝告，迟早要吃亏。</div>
+                </div>
+            </div>
+
+            <!-- D6 模块三：总结与预告 -->
+            <div class="content-section" id="d6-m3">
+                <div class="section-title">模块三：总结与预告（2min）</div>
+                <div class="card">
+                    <h3>1. 总结</h3>
+                    <p>（1）两篇故事的主要内容、寓意、词句积累</p>
+                    <p>（2）牧羊人的形象</p>
+                </div>
+                <div class="card">
+                    <h3>2. 预告</h3>
+                    <p>这两个牧羊人的故事有点相似，但仔细看，又有不同。那怎么才能一下子看清这些相同和不同呢？</p>
+                    <p><strong>下节课，我们就来学一个可以帮助我们比较的好方法。</strong></p>
+                </div>
+            </div>
+
+            <!-- D7 模块一：回顾导入 -->
+            <div class="content-section" id="d7-m1">
+                <div class="section-title">模块一：回顾导入（1-2min）</div>
+                <div class="card">
+                    <h3>1. 回顾问题</h3>
+                    <p>上节课读的两个故事很像，但仔细看又不太一样。怎么才能把这两个故事的相同与不同理清楚呢？这就需要用到比较的方法。</p>
+                </div>
+                <div class="card">
+                    <h3>2. 引出方法</h3>
+                    <p>今天我们要学的方法，特别适合拿来比较两篇文章的异同，而且比较完之后一目了然——它就是<strong>「运用双气泡图比较阅读」</strong>。</p>
+                </div>
+            </div>
+
+            <!-- D7 模块二：方法讲解与示范 -->
+            <div class="content-section" id="d7-m2">
+                <div class="section-title">模块二：方法讲解与示范（5-7min）</div>
+                <div class="card">
+                    <h3>1. 方法定义</h3>
+                    <p>选取两篇角色或情节相似的寓言，利用双气泡图，从多个维度比较异同。</p>
+                </div>
+                <div class="card">
+                    <h3>① 介绍双气泡图</h3>
+                    <p><strong>双气泡图是什么：</strong>双气泡图是一种思维导图，用来比较两个事物的相同点和不同点。</p>
+                    <p><strong>双气泡图的组成：</strong>双气泡图由两个主气泡（对比的两个对象）和若干小气泡（特征）组成。中间重叠的小气泡是相同点，两边独立的小气泡是不同点。</p>
+                    <div class="img-block">
+                        <img src="http://upload.zhenguanyu.com/uploads/c6660631_image1.jpeg" alt="双气泡图结构示意">
+                        <div class="img-caption">双气泡图结构：中间 = 相同点，两侧 = 不同点</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>② 多个维度</h3>
+                    <p>· 维度一：角色——有哪些角色、形象特点</p>
+                    <p>· 维度二：起因、经过、结果</p>
+                    <p>· 维度三：寓意</p>
+                    <p>……</p>
+                </div>
+                <div class="card">
+                    <h3>2. 方法示范：运用双气泡图比较《牧羊人和野山羊》《牧羊人和狼崽》</h3>
+                    <p><strong>第一步：</strong>画两个大圆，分别写上两篇寓言的名字。</p>
+                    <p><strong>第二步：</strong>按维度对比——中间的小圆写相同点，两侧的小圆写不同点。</p>
+                    <p><em style="font-size:12px;color:var(--text-muted);">*注意：两侧的不同点要在同一维度上一一对应。</em></p>
+                    <div class="img-block" style="margin-top:14px;">
+                        <img src="http://upload.zhenguanyu.com/uploads/d99853b5_image3.png" alt="牧羊人双气泡图完整版">
+                    </div>
+                </div>
+            </div>
+
+            <!-- D7 模块三：真题演练 -->
+            <div class="content-section" id="d7-m3">
+                <div class="section-title">模块三：真题演练（3-4min）</div>
+                <div class="card">
+                    <h3>【2024——2025 广西南宁·期末】阅读</h3>
+                    <h4>寓言二则（节选）</h4>
+                    <div class="quote-box">
+                        <p><strong>[选段一]</strong></p>
+                        <p>一条蛇对一个农夫说："咱们交个朋友吧！虽然咱们住得近，但是总觉得有些生疏。你不必每天都提防着我，我不是坏人。你看，我都换上一身新衣服了，春天就要来了啊！"农夫看到蛇的新衣服，说："你确实已经换了新皮了，但是你的心还是原来那个恶毒的心啊！"说着，农夫就拿起棍子把蛇赶跑了。</p>
+                        <p style="text-align:right;font-size:12px;color:var(--text-muted);">——节选自《克雷洛夫寓言·农夫和蛇》，有改动</p>
+                    </div>
+                    <div class="quote-box" style="margin-top:10px;">
+                        <p><strong>[选段二]</strong></p>
+                        <p>在一个寒冷的冬天，一个农夫在路边发现了一条冻僵了的蛇，他很可怜蛇，就把它放在怀里。当农夫身上的热气把蛇温暖了之后，蛇很快就苏醒了，露出了恶毒的本性，咬了农夫一口，给了农夫致命的伤害。农夫在临死之前说："你们要记住我这血的教训，我因为怜悯恶人，所以才受到如此的恶报啊！"</p>
+                        <p style="text-align:right;font-size:12px;color:var(--text-muted);">——节选自《伊索寓言·农夫和蛇》，有改动</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>题目：运用双气泡图，比较两篇寓言的相同点和不同点。</h3>
+                    <div class="ref-box">
+                        <div class="ref-title">📝 参考答案</div>
+                        <div class="img-block">
+                            <img src="http://upload.zhenguanyu.com/uploads/47eb1de7_image4.png" alt="农夫和蛇双气泡图答案">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- D7 模块四：总结与预告 -->
+            <div class="content-section" id="d7-m4">
+                <div class="section-title">模块四：总结与预告（1min）</div>
+                <div class="card">
+                    <h3>1. 总结方法</h3>
+                    <p><strong>运用双气泡图比较阅读</strong>——双气泡图为我们清清楚楚地展现出了两个故事的相同与不同。以后遇到角色或情节相近的故事，也可以像这样对比着读，既能锻炼我们分析归纳的能力，又能让我们对故事的理解更加深入。</p>
+                </div>
+                <div class="card">
+                    <h3>2. 预告下周</h3>
+                    <p>下周我们将继续在《伊索寓言》中探索更多有趣的故事，看看伊索笔下还有哪些令人深思的智慧。</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 随材区 -->
+        <div class="materials">
+            <div class="materials-header">随 材 区</div>
+            <div id="materials-content">
+
+                <!-- mat-d6-m1：导语 -->
+                <div class="material-section active" id="mat-d6-m1">
+                    <div class="mat-card">
+                        <div class="mat-title">W22 导语 · 人的故事</div>
+                        <div class="mat-label">《伊索寓言》中的人物</div>
+                        <p>在《伊索寓言》中，除了形形色色的动物，伊索还写了许多普通人的故事。他笔下的人物多是牧羊人、农夫、渔夫这样的劳动者，他们的遭遇贴近生活，却藏着深刻的道理。这些人有时因为贪心，想得到不属于自己的东西；有时因为固执，把好心人的劝告当作耳旁风。最终，他们往往都要为自己的选择付出代价。本周，我们就来读两个关于牧羊人的故事，看看伊索是怎样刻画人性弱点的。</p>
+                    </div>
+                </div>
+
+                <!-- mat-d6-m2：寓言卡片 -->
+                <div class="material-section" id="mat-d6-m2">
+                    <div class="mat-card">
+                        <div class="mat-title">寓言卡片 ①</div>
+                        <div class="mat-label">篇名</div>
+                        <p>《牧羊人和野山羊》</p>
+                        <div class="mat-label">内容梗概</div>
+                        <p>牧羊人避雪时发现野山羊，贪心想占有它们，把自己羊的食物全部喂给野山羊。结果雪停后自己的羊饿死，野山羊也跑了，两头落空。</p>
+                        <div class="mat-label">角色形象</div>
+                        <p><strong>牧羊人：</strong>贪婪、偏心</p>
+                        <div class="mat-label">寓意</div>
+                        <div class="mat-moral">①贪图不属于自己的东西，往往会失去原有的。②偏心对待外人而忽视自己人，最终会两头落空。</div>
+                    </div>
+                    <div class="mat-card">
+                        <div class="mat-title">寓言卡片 ②</div>
+                        <div class="mat-label">篇名</div>
+                        <p>《牧羊人和狼崽》</p>
+                        <div class="mat-label">内容梗概</div>
+                        <p>牧羊人收养狼崽，异想天开地想让它们帮他看羊还能偷别人的羊，不听邻居劝告。狼崽长大后将他自己的羊群全部吃掉，牧羊人悔恨不已。</p>
+                        <div class="mat-label">角色形象</div>
+                        <p><strong>牧羊人：</strong>异想天开、贪婪、不听劝告</p>
+                        <div class="mat-label">寓意</div>
+                        <div class="mat-moral">①贪心没有好下场。②不听劝告，迟早要吃亏。</div>
+                    </div>
+                </div>
+
+                <!-- mat-d6-m3 -->
+                <div class="material-section" id="mat-d6-m3"></div>
+
+                <!-- mat-d7-m1 -->
+                <div class="material-section" id="mat-d7-m1"></div>
+
+                <!-- mat-d7-m2：方法卡 + 示范 -->
+                <div class="material-section" id="mat-d7-m2">
+                    <div class="method-card">
+                        <h5>方法卡</h5>
+                        <p><strong>方法名称：</strong>运用双气泡图比较阅读</p>
+                        <p><strong>方法定义：</strong>选取两篇角色或情节相似的寓言，利用双气泡图，从多个维度比较异同。</p>
+                        <p><strong>双气泡图组成：</strong>两个主气泡（对比对象）+ 若干小气泡（特征）。中间重叠 = 相同点，两侧独立 = 不同点。</p>
+                        <p><strong>比较维度：</strong>角色形象、起因经过结果、寓意等</p>
+                    </div>
+                    <div class="mat-card">
+                        <div class="mat-title">方法示范 · 对比两篇牧羊人故事</div>
+                        <div class="mat-label">第一步</div>
+                        <p>画两个大圆，分别写上两篇寓言的名字。</p>
+                        <div class="mat-label">第二步</div>
+                        <p>按维度对比——中间的小圆写相同点，两侧的小圆写不同点。注意：不同点要在同一维度上一一对应。</p>
+                        <img src="http://upload.zhenguanyu.com/uploads/d99853b5_image3.png" style="max-width:100%;border-radius:6px;margin-top:10px;" alt="牧羊人双气泡图">
+                    </div>
+                </div>
+
+                <!-- mat-d7-m3：真题 -->
+                <div class="material-section" id="mat-d7-m3">
+                    <div class="mat-card">
+                        <div class="mat-title">【2024——2025 广西南宁·期末】</div>
+                        <div class="mat-label">寓言二则（节选）</div>
+                        <p><strong>[选段一]</strong> 一条蛇对一个农夫说："咱们交个朋友吧！……你不必每天都提防着我，我不是坏人。你看，我都换上一身新衣服了……"农夫说："你确实已经换了新皮了，但是你的心还是原来那个恶毒的心啊！"说着，农夫就拿起棍子把蛇赶跑了。</p>
+                        <p style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">——《克雷洛夫寓言·农夫和蛇》</p>
+                        <p><strong>[选段二]</strong> 在一个寒冷的冬天，一个农夫在路边发现了一条冻僵了的蛇，他很可怜蛇，就把它放在怀里……蛇苏醒后咬了农夫一口，给了农夫致命的伤害。农夫临死前说："我因为怜悯恶人，所以才受到如此的恶报啊！"</p>
+                        <p style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">——《伊索寓言·农夫和蛇》</p>
+                        <div class="mat-label">题目</div>
+                        <p>运用双气泡图，比较两篇寓言的相同点和不同点。</p>
+                        <div class="mat-label">参考答案</div>
+                        <img src="http://upload.zhenguanyu.com/uploads/47eb1de7_image4.png" style="max-width:100%;border-radius:6px;margin-top:8px;" alt="农夫和蛇双气泡图答案">
+                    </div>
+                </div>
+
+                <!-- mat-d7-m4 -->
+                <div class="material-section" id="mat-d7-m4"></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchModule(el) {
+    const target = el.getAttribute('data-target');
+    if (!target) return;
+    document.querySelectorAll('.module-item, .sub-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('[data-target="' + target + '"]').forEach(i => i.classList.add('active'));
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    const section = document.getElementById(target);
+    if (section) section.classList.add('active');
+    document.querySelectorAll('.material-section').forEach(s => s.classList.remove('active'));
+    const mat = document.getElementById('mat-' + target);
+    if (mat) mat.classList.add('active');
+}
+function toggleDay(el) {
+    const day = el.getAttribute('data-day');
+    const list = document.getElementById('day-' + day);
+    const isExpanded = el.classList.contains('expanded');
+    el.classList.toggle('expanded', !isExpanded);
+    list.classList.toggle('show', !isExpanded);
+}
+function toggleEdit() {
+    document.body.classList.add('editing');
+    document.getElementById('btn-edit').style.display = 'none';
+    document.getElementById('btn-save').style.display = 'inline-block';
+    document.getElementById('btn-cancel').style.display = 'inline-block';
+    document.querySelectorAll('.card p, .card h3, .card h4, .quote-box, .summary-box p, .moral-box, .step-block .step-q, .step-block .step-reason, .step-block .step-result, .ref-box p, .mat-card p, .mat-card .mat-title, .mat-card .mat-moral, .method-card p, .method-card h5').forEach(el => {
+        el.contentEditable = 'true';
+    });
+}
+function cancelEdit() {
+    document.body.classList.remove('editing');
+    document.getElementById('btn-edit').style.display = 'inline-block';
+    document.getElementById('btn-save').style.display = 'none';
+    document.getElementById('btn-cancel').style.display = 'none';
+    document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+}
+function saveAndExport() {
+    document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.body.classList.remove('editing');
+    document.getElementById('btn-edit').style.display = 'inline-block';
+    document.getElementById('btn-save').style.display = 'none';
+    document.getElementById('btn-cancel').style.display = 'none';
+    const blob = new Blob([document.documentElement.outerHTML], {type: 'text/html;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'U6W22-teaching-plan.html';
+    a.click();
+}
+</script>
+</body>
+</html>

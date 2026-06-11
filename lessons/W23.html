@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U6《伊索寓言》下 · W23 狐狸的故事</title>
+    <style>
+        :root {
+            --primary: #4A5568; --primary-dark: #2D3748;
+            --accent: #5B7FFF; --accent-light: #EBF0FF;
+            --green: #48BB78; --green-light: #F0FFF4;
+            --orange: #ED8936;
+            --bg: #F7F8FA; --sidebar-bg: #FFFFFF;
+            --card-bg: #FFFFFF; --text: #2D3748;
+            --text-light: #718096; --text-muted: #A0AEC0;
+            --border: #E2E8F0; --shadow: 0 1px 8px rgba(0,0,0,0.06);
+            --radius: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        .header { background: #FFF; border-bottom: 1px solid var(--border); padding: 16px 28px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; }
+        .header h1 { font-size: 17px; font-weight: 700; }
+        .header .sep { margin: 0 12px; color: var(--text-muted); }
+        .header .subtitle { font-size: 14px; color: var(--text-light); }
+        .container { display: flex; margin-top: 56px; height: calc(100vh - 56px); }
+        .sidebar { width: 280px; min-width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; height: calc(100vh - 56px); position: sticky; top: 56px; }
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 3px; }
+        .day-title { display: flex; align-items: center; padding: 10px 18px; font-size: 14px; font-weight: 700; color: var(--primary-dark); cursor: pointer; transition: background 0.15s; }
+        .day-title:hover { background: #F7FAFC; }
+        .day-title .arrow { margin-left: auto; font-size: 10px; color: var(--text-muted); transition: transform 0.2s; }
+        .day-title.expanded .arrow { transform: rotate(90deg); }
+        .module-list { display: none; }
+        .module-list.show { display: block; }
+        .module-item { padding: 7px 18px 7px 28px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+        .module-item:hover { background: #F7FAFC; }
+        .module-item.active { background: var(--accent-light); color: var(--accent); border-left-color: var(--accent); }
+        .module-item .time-tag { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-left: 6px; }
+        .sub-item { padding: 5px 18px 5px 42px; font-size: 12px; color: var(--text-light); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sub-item:hover { background: #F7FAFC; color: var(--text); }
+        .sub-item.active { background: #F0F4FF; color: var(--accent); border-left-color: var(--accent); }
+        .main-area { flex: 1; display: flex; overflow: hidden; height: calc(100vh - 56px); }
+        .content { flex: 1; overflow-y: auto; padding: 28px 32px; border-right: 1px solid var(--border); }
+        .content::-webkit-scrollbar { width: 4px; }
+        .content::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }
+        .materials { width: 340px; min-width: 340px; overflow-y: auto; padding: 24px 20px; background: #FAFBFD; }
+        .materials::-webkit-scrollbar { width: 3px; }
+        .materials::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
+        .materials-header { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .section-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); display: inline-block; }
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .card h3 { font-size: 15px; font-weight: 700; color: var(--primary-dark); margin-bottom: 12px; }
+        .card h4 { font-size: 13.5px; font-weight: 600; color: var(--orange); margin: 14px 0 8px; }
+        .card p { font-size: 13.5px; color: var(--text); margin-bottom: 8px; line-height: 1.8; }
+        .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-right: 4px; }
+        .tag.action { background: #EBF4FF; color: #2B6CB0; }
+        .tag.speech { background: #FEFCBF; color: #975A16; }
+        .tag.mind { background: #C6F6D5; color: #276749; }
+        .quote-box { background: #FFFFF0; border: 1px solid #FEFCBF; border-radius: 8px; padding: 12px 16px; margin: 8px 0; font-size: 13px; color: #5D4E37; line-height: 1.9; }
+        .summary-box { background: var(--accent-light); border-radius: 8px; padding: 12px 16px; margin: 10px 0; border-left: 3px solid var(--accent); }
+        .summary-box p { margin: 0; font-size: 13.5px; }
+        .summary-box strong { color: var(--accent); }
+        .moral-box { background: linear-gradient(135deg, #667EEA, #764BA2); color: #FFF; border-radius: 8px; padding: 14px 20px; margin: 14px 0; font-size: 14px; font-weight: 500; }
+        .step-block { background: #F7FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; }
+        .step-block .step-q { font-size: 13.5px; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px; }
+        .step-block .step-reason { font-size: 12.5px; color: var(--text-light); margin-bottom: 8px; line-height: 1.8; }
+        .step-block .step-result { font-size: 13px; background: var(--green-light); border-left: 3px solid var(--green); padding: 10px 14px; border-radius: 6px; line-height: 1.8; }
+        .ref-box { background: #F0FFF4; border: 1px solid #C6F6D5; border-radius: 8px; padding: 16px 18px; margin: 14px 0; }
+        .ref-box .ref-title { font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+        .ref-box p { font-size: 13px; line-height: 2; color: #2D3748; }
+        .mat-card { background: #FFF; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+        .mat-card .mat-title { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed var(--border); }
+        .mat-card p { font-size: 12.5px; line-height: 1.8; color: var(--text); margin-bottom: 6px; }
+        .mat-card .mat-label { font-size: 11px; font-weight: 700; color: var(--accent); margin-top: 10px; margin-bottom: 4px; }
+        .mat-card .mat-moral { font-size: 12.5px; font-weight: 600; color: #2D3748; background: #EDF2F7; padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
+        .method-card { background: #EBF4FF; border: 1px solid #BEE3F8; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+        .method-card h5 { font-size: 12px; font-weight: 700; color: #2B6CB0; margin-bottom: 6px; }
+        .method-card p { font-size: 12.5px; color: #2A4365; line-height: 1.7; margin-bottom: 4px; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .material-section { display: none; }
+        .material-section.active { display: block; }
+        @media (max-width: 1100px) { .materials { width: 280px; min-width: 280px; } }
+        @media (max-width: 900px) { .container { flex-direction: column; } .sidebar { width: 100%; min-width: unset; height: auto; max-height: 35vh; position: relative; top: 0; } .main-area { flex-direction: column; height: auto; } .content { border-right: none; border-bottom: 1px solid var(--border); } .materials { width: 100%; min-width: unset; } }
+        .edit-toolbar { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; gap: 10px; align-items: center; }
+        .edit-btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.2s; }
+        .edit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .edit-btn.primary { background: var(--accent); color: #FFF; }
+        .edit-btn.success { background: #48BB78; color: #FFF; }
+        .edit-btn.secondary { background: #EDF2F7; color: var(--text); }
+        .edit-hint { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); background: #FFF3CD; color: #856404; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 999; display: none; }
+        body.editing .edit-hint { display: block; }
+        body.editing .card p, body.editing .card h3, body.editing .card h4, body.editing .quote-box, body.editing .summary-box p, body.editing .moral-box, body.editing .step-block .step-q, body.editing .step-block .step-reason, body.editing .step-block .step-result, body.editing .ref-box p, body.editing .mat-card p, body.editing .mat-card .mat-title, body.editing .mat-card .mat-moral, body.editing .method-card p, body.editing .method-card h5 { outline: 1px dashed #BEE3F8; outline-offset: 2px; min-height: 1.5em; }
+        body.editing .card p:focus, body.editing .card h3:focus, body.editing .card h4:focus, body.editing .quote-box:focus, body.editing .summary-box p:focus, body.editing .moral-box:focus, body.editing .step-block .step-q:focus, body.editing .step-block .step-reason:focus, body.editing .step-block .step-result:focus, body.editing .ref-box p:focus, body.editing .mat-card p:focus, body.editing .mat-card .mat-title:focus, body.editing .mat-card .mat-moral:focus, body.editing .method-card p:focus, body.editing .method-card h5:focus { outline: 2px solid var(--accent); background: #FFFFF0; }
+    </style>
+</head>
+<body>
+<div class="edit-hint">编辑模式已开启 — 点击任意文字即可修改，改完点"保存并导出"</div>
+<div class="edit-toolbar">
+    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()">编辑</button>
+    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display:none;">保存并导出</button>
+    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display:none;">取消</button>
+</div>
+
+<div class="header">
+    <h1>U6《伊索寓言》下</h1>
+    <span class="sep">·</span>
+    <span class="subtitle">W23 主题：狐狸的故事</span>
+</div>
+
+<div class="container">
+    <div class="sidebar" id="sidebar">
+        <div class="day-section">
+            <div class="day-title expanded" data-day="d6" onclick="toggleDay(this)">D6 教学思路<span class="arrow">▶</span></div>
+            <div class="module-list show" id="day-d6">
+                <div class="module-item active" data-target="d6-m1" onclick="switchModule(this)">模块一：导入<span class="time-tag">1min</span></div>
+                <div class="sub-item" data-target="d6-m1" onclick="switchModule(this)">狐狸形象引入</div>
+                <div class="module-item" data-target="d6-m2" onclick="switchModule(this)">模块二：内容梳理<span class="time-tag">10-12min</span></div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">精读《狐狸教狼钓鱼》</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节①：暗记仇恨</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节②：设饵勾引</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节③：下套骗狼</div>
+                <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 情节④：坐收渔翁之利</div>
+                <div class="module-item" data-target="d6-m3" onclick="switchModule(this)">模块三：总结与预告<span class="time-tag">2min</span></div>
+                <div class="sub-item" data-target="d6-m3" onclick="switchModule(this)">总结 + 下节课预告</div>
+            </div>
+        </div>
+        <div class="day-section">
+            <div class="day-title" data-day="d7" onclick="toggleDay(this)">D7 教学思路<span class="arrow">▶</span></div>
+            <div class="module-list" id="day-d7">
+                <div class="module-item" data-target="d7-m1" onclick="switchModule(this)">模块一：回顾导入<span class="time-tag">1-2min</span></div>
+                <div class="sub-item" data-target="d7-m1" onclick="switchModule(this)">回顾问题 + 引出方法</div>
+                <div class="module-item" data-target="d7-m2" onclick="switchModule(this)">模块二：方法讲解<span class="time-tag">2-3min</span></div>
+                <div class="sub-item" data-target="d7-m2" onclick="switchModule(this)">方法定义与三步骤</div>
+                <div class="module-item" data-target="d7-m3" onclick="switchModule(this)">模块三：方法示范<span class="time-tag">4-5min</span></div>
+                <div class="sub-item" data-target="d7-m3" onclick="switchModule(this)">《牧羊人和野山羊》示范</div>
+                <div class="module-item" data-target="d7-m4" onclick="switchModule(this)">模块四：方法练习<span class="time-tag">2-3min</span></div>
+                <div class="sub-item" data-target="d7-m4" onclick="switchModule(this)">《驴子和他的主人》练习</div>
+                <div class="module-item" data-target="d7-m5" onclick="switchModule(this)">模块五：真题演练<span class="time-tag">3-4min</span></div>
+                <div class="sub-item" data-target="d7-m5" onclick="switchModule(this)">《蚂蚁和蝉》主题推荐</div>
+                <div class="module-item" data-target="d7-m6" onclick="switchModule(this)">模块六：总结<span class="time-tag">1-2min</span></div>
+                <div class="sub-item" data-target="d7-m6" onclick="switchModule(this)">方法总结</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-area">
+        <div class="content" id="content">
+
+            <!-- D6 模块一 -->
+            <div class="content-section active" id="d6-m1">
+                <div class="section-title">模块一：导入（1min）</div>
+                <div class="card">
+                    <p>同学们，你们见过狐狸吗？狐狸啊，耳朵尖尖，尾巴蓬松，跑得飞快，是种非常机灵的动物。为了找吃的，它会悄悄靠近猎物；为了躲避天敌，它甚至会在走投无路时，突然全身瘫软装死，等危险一过，又立刻"复活"逃走——办法可多了！正因为狐狸这么机灵，古往今来，人们讲故事的时候，总喜欢让它当主角，还给它贴上各种各样的标签。</p>
+                    <p>在《伊索寓言》里，狐狸简直是"常驻明星"，我们之前已经读了不少和狐狸有关的寓言。今天，我们就再来读一个狐狸的新故事——看看这一次，狐狸的形象和我们印象中一样吗？</p>
+                </div>
+            </div>
+
+            <!-- D6 模块二 -->
+            <div class="content-section" id="d6-m2">
+                <div class="section-title">模块二：内容梳理（10-12min）</div>
+                <div class="card">
+                    <h3>精读《狐狸教狼钓鱼》（第六单元，P138）</h3>
+
+                    <h4>【情节①】（起因）狐狸暗记仇恨</h4>
+                    <p>狐狸从别的动物口中听说、还亲耳听到狼到处说自己坏话。狐狸当时没说什么，却暗暗下决心要教训狼。</p>
+                    <p><span class="tag speech">语言描写</span> 狼："他老偷东西，要是我是你们，就把他当成臭狗屎，一见他就叫他走开。"</p>
+                    <div class="summary-box"><p>→ 狼的形象：<strong>爱搬弄是非</strong></p></div>
+                    <p><span class="tag mind">心理描写</span> 狐狸："当时没说什么，但暗暗下决心要教训一下狼。"</p>
+                    <div class="summary-box"><p>→ 狐狸的形象：<strong>有心机</strong></p></div>
+
+                    <h4>【情节②】（经过·设饵）狐狸勾起狼的馋心</h4>
+                    <p>一天傍晚，狼路过狐狸洞，见狐狸吃鱼津津有味，便问吃的是什么。狐狸故意把鱼夸上天，勾起狼的馋心。</p>
+                    <p><span class="tag mind">心理描写</span> 狼："吃得这么津津有味……这东西的味道一定很好。"</p>
+                    <div class="summary-box"><p>→ 狼的形象：<strong>嘴馋</strong></p></div>
+                    <p><span class="tag mind">神态/心理描写</span> "狐狸的眼睛滴溜溜转着，觉得整治狼的机会来了。"</p>
+                    <p><span class="tag speech">语言描写</span></p>
+                    <div class="quote-box">"鱼！鱼可是天下第一好吃的东西，要是你连鱼都没吃过，那你这一世就算白活了。"</div>
+                    <p><strong>字面意思：</strong>鱼是天底下最好吃的，没吃过就等于白活</p>
+                    <p><strong>真实意图：</strong>故意夸大，勾起狼的贪嘴，好把他骗到结冰的河边</p>
+                    <div class="summary-box"><p>→ 狐狸的形象：<strong>狡猾</strong></p></div>
+
+                    <h4>【情节③】（经过·下套）狐狸教狼"钓鱼"</h4>
+                    <p>狐狸把狼带到结冰的河边，找到冰窟窿，教狼把尾巴伸进冰水"钓鱼"。</p>
+                    <p><span class="tag speech">语言描写</span></p>
+                    <div class="quote-box">"你就坐在这儿，把尾巴尽量往下放，水越深，鱼就越多。你要有耐心，一定要蹲着一动别动……你可千万别动，一动，鱼儿就都吓跑了。"</div>
+                    <p><strong>字面意思：</strong>传授一个钓鱼的"窍门"——尾巴放深、耐心别动</p>
+                    <p><strong>真实意图：</strong>哄狼一动不动地久坐，好让他的尾巴冻牢在冰里</p>
+                    <div class="summary-box"><p>→ 狐狸的形象：<strong>阴险</strong></p></div>
+                    <p><span class="tag action">动作/心理描写</span> 狼："狼觉得，这比起追猎兔子来可要容易得多了"，按狐狸说的蹲下来，将尾巴伸进冰冷的水中。</p>
+                    <div class="summary-box"><p>→ 狼的形象：<strong>轻信</strong></p></div>
+
+                    <h4>【情节④】（结果）狐狸得逞，狼断尾逃命</h4>
+                    <p>水很快冻起来，狼冻得受不住，却为了多钓鱼硬撑不动。狐狸假意劝他"别太贪心"，转身却跑去喊村民来逮狼。狼尾巴被冻牢，为逃命猛地一冲，"咔吧"一声扯断了尾巴。</p>
+                    <p><span class="tag mind">心理/动作描写</span> 狼："冻得都有些受不住了，可是为了捕到更多的鱼，他坚持着""深信自己一定是已经钓到很多鱼了。"</p>
+                    <div class="summary-box"><p>→ 狼的形象：<strong>贪心</strong></p></div>
+                    <p><span class="tag speech">语言/动作描写</span> 狐狸："别太贪心了，再说，鱼虽然好吃，但吃多了也会伤身体的。"（假惺惺）＋ 跑去叫村里的人来逮狼</p>
+                    <div class="summary-box"><p>→ 狐狸的形象：<strong>虚伪、狠毒</strong></p></div>
+
+                    <div class="moral-box">💡 寓意①：不要轻信花言巧语和送上门的好事，小心是圈套。<br>💡 寓意②：贪心不知足，往往会吃大亏。<br>💡 寓意③：总在背后说人坏话、搬弄是非，迟早惹祸上身。</div>
+                </div>
+            </div>
+
+            <!-- D6 模块三 -->
+            <div class="content-section" id="d6-m3">
+                <div class="section-title">模块三：总结与预告（2min）</div>
+                <div class="card">
+                    <h3>1. 总结</h3>
+                    <p>故事的主要内容、形象、寓意、词句积累</p>
+                </div>
+                <div class="card">
+                    <h3>2. 预告</h3>
+                    <p>今天学的这篇狐狸寓言，寓意非常丰富。其中"贪心没好下场"这一寓意，在《伊索寓言》中非常常见。除了这篇，你还能联想到哪些同样讲"贪心没好下场"的寓言故事呢？</p>
+                    <p><strong>下节课，我们就来学习一种方法——把同主题的寓言联想、归类到一起。</strong></p>
+                </div>
+            </div>
+
+            <!-- D7 模块一 -->
+            <div class="content-section" id="d7-m1">
+                <div class="section-title">模块一：回顾导入（1-2min）</div>
+                <div class="card">
+                    <h3>1. 回顾问题</h3>
+                    <p>上节课我们读了《狐狸教狼钓鱼》的故事，这则寓言的一个寓意是：贪心不知足，往往没有好下场。其实，"贪心没有好下场"这个主题在很多寓言里都出现过，可要让你迅速想出来同样主题的寓言，又有点困难，对不对？那问题来了：怎么才能快速找到同一类主题的寓言呢？有没有什么好办法？</p>
+                </div>
+                <div class="card">
+                    <h3>2. 引出方法</h3>
+                    <p>今天我们来学一种方法——<strong>「联想类比同主题寓言」</strong>。</p>
+                </div>
+            </div>
+
+            <!-- D7 模块二 -->
+            <div class="content-section" id="d7-m2">
+                <div class="section-title">模块二：方法讲解（2-3min）</div>
+                <div class="card">
+                    <h3>方法定义</h3>
+                    <p>从一篇寓言的主题出发，联想到其他主题相同的篇目，并通过类比说明它们为什么属于同一主题。</p>
+                </div>
+                <div class="card">
+                    <h3>三个步骤</h3>
+                    <div class="step-block">
+                        <div class="step-q">第一步：根据主题，提炼句式</div>
+                        <div class="step-reason">根据给定主题，提炼出一个概括性句式，作为联想的线索。</div>
+                        <div class="step-result">句式结构："谁因为（符合主题的行为）……结果（符合主题的结果）……"</div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">第二步：代入句式，进行联想</div>
+                        <div class="step-reason">以句式为线索，联想读过的寓言中，哪个角色能代入这个句式。</div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">第三步：结合内容，类比说明</div>
+                        <div class="step-reason">将所选寓言与已学篇目进行类比，说明两者为什么属于同一主题。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- D7 模块三 -->
+            <div class="content-section" id="d7-m3">
+                <div class="section-title">模块三：方法示范（4-5min）</div>
+                <div class="card">
+                    <h3>示范篇目：《牧羊人和野山羊》</h3>
+                    <p>主题：<strong>贪心没有好下场</strong></p>
+                </div>
+                <div class="card">
+                    <div class="step-block">
+                        <div class="step-q">第一步：根据主题，提炼句式</div>
+                        <div class="step-reason">主题是"贪心没有好下场"，关键词是"贪心"和"没有好下场"，提炼句式：<br>"谁因为（贪心的行为），结果（没有好下场）。"</div>
+                        <div class="step-result">先用《狐狸教狼钓鱼》验证：狼因为想吃鱼，听信狐狸的话把尾巴伸进冰窟窿（贪心的行为），结果尾巴被冻住，差点被村民抓住（没有好下场）。——成立 ✓</div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">第二步：代入句式，进行联想</div>
+                        <div class="step-result">《牧羊人和野山羊》：牧羊人因为想拿野山羊换取财富，把自己羊的食物统统喂给了野山羊（贪心的行为），结果自己的羊全部饿死，野山羊也逃走了（没有好下场）。——成立 ✓</div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">第三步：结合内容，类比说明</div>
+                        <div class="step-reason"><strong>行为、结果的相同点：</strong>狼和牧羊人都是因为贪心做了不该做的事——狼贪图鱼，牧羊人贪图野山羊；结果都没有好下场——狼尾巴被冻住，牧羊人自己的羊全饿死了。</div>
+                        <div class="step-result"><strong>共同主题：</strong>两个故事都说明，贪心不但得不到想要的，反而会害了自己。<br>→ 所以《牧羊人和野山羊》和《狐狸教狼钓鱼》属于同一主题——贪心没有好下场。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- D7 模块四 -->
+            <div class="content-section" id="d7-m4">
+                <div class="section-title">模块四：方法练习（2-3min）</div>
+                <div class="card">
+                    <h3>练习篇目：《驴子和他的主人》</h3>
+                    <p>判断是否符合"贪心没有好下场"的主题</p>
+                </div>
+                <div class="card">
+                    <div class="step-block">
+                        <div class="step-q">第二步：代入句式，进行联想</div>
+                        <div class="step-result">驴子因为不满足现在的主人，一次次祈求宙斯换主人（贪心的行为），结果越换越差，最后落到硝皮匠手里，后悔莫及（没有好下场）。——成立 ✓</div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-q">第三步：结合内容，类比说明</div>
+                        <div class="step-reason"><strong>行为结果的相同点：</strong>狼贪图鱼，驴子贪图更好的主人——都是不满足已有的，想得到更好的；狼被冻住，驴子落到硝皮匠手里——都是没有好下场。</div>
+                        <div class="step-result"><strong>共同主题：</strong>贪心不知足，最终只会让自己的处境更糟。<br>→ 所以《驴子和他的主人》和《狐狸教狼钓鱼》属于同一主题——贪心没有好下场。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- D7 模块五 -->
+            <div class="content-section" id="d7-m5">
+                <div class="section-title">模块五：真题演练（3-4min）</div>
+                <div class="card">
+                    <h3>【2024——2025 江苏扬州·期末】</h3>
+                    <p><strong>题目（7）：</strong>蚂蚁和蝉因为选择不同，结局也不同。小明准备用这个故事参加"小选择，大智慧"主题寓言故事会，请你再向他推荐一则符合主题的寓言故事，并写清楚推荐理由。</p>
+                </div>
+                <div class="card">
+                    <div class="ref-box">
+                        <div class="ref-title">📝 参考答案</div>
+                        <p><strong>推荐寓言故事：</strong>《乌鸦与狐狸》</p>
+                        <p><strong>推荐理由：</strong>《乌鸦与狐狸》和材料二都体现了"小选择，大智慧"的主题。乌鸦的选择是轻信狐狸的奉承，结果失去了奶酪（类似于蝉的选择，只顾眼前享受，没有考虑后果）。而蚂蚁的选择是辛苦储备粮食，最终在冬天享受美食（类似于乌鸦如果选择不轻信狐狸，就能保住奶酪）。这两个故事都通过小的选择，展现了智慧和远见的重要性。蚂蚁的远见和勤奋，以及乌鸦的轻信和短视，都提醒我们，生活中的每一个小选择都可能带来巨大的影响，只有做出明智的选择，才能避免不必要的损失，收获好的结果。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- D7 模块六 -->
+            <div class="content-section" id="d7-m6">
+                <div class="section-title">模块六：总结（1-2min）</div>
+                <div class="card">
+                    <h3>总结方法</h3>
+                    <p>今天我们学会了<strong>「联想类比同主题寓言」</strong>，你会发现，这么多看似不同的故事，讲的其实是同一个主题。这就是整本书阅读的乐趣——一篇篇读完，根据主题进行联想、类比，发现原来每一篇不是孤立的，而是有着千丝万缕的联系。这些联系能帮助我们更好地理解和记住其中的道理。</p>
+                    <p>那以后每读一篇新寓言，你可以试着联想：它可以归到哪个主题下？这样，你就能搭建属于自己的寓言宝库啦！</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 随材区 -->
+        <div class="materials">
+            <div class="materials-header">随 材 区</div>
+            <div id="materials-content">
+
+                <!-- mat-d6-m1：导语 -->
+                <div class="material-section active" id="mat-d6-m1">
+                    <div class="mat-card">
+                        <div class="mat-title">W23 导语 · 狐狸的故事</div>
+                        <div class="mat-label">《伊索寓言》中的狐狸</div>
+                        <p>在《伊索寓言》里，狐狸几乎是出镜率最高的动物之一。它时而聪明机灵，时而狡猾阴险，有时能用三言两语化解困局，有时又不动声色地布下圈套。正因如此，狐狸成了伊索最喜欢借用的"主角"。本周，我们来读一个新的狐狸故事——《狐狸教狼钓鱼》。这一次，狐狸不只是耍小聪明，而是精心设局、步步为营，把一个爱搬弄是非的狼引入了自己的陷阱。看看伊索笔下，这只狐狸究竟是什么样的？</p>
+                    </div>
+                </div>
+
+                <!-- mat-d6-m2：寓言卡片 -->
+                <div class="material-section" id="mat-d6-m2">
+                    <div class="mat-card">
+                        <div class="mat-title">寓言卡片</div>
+                        <div class="mat-label">篇名</div>
+                        <p>《狐狸教狼钓鱼》</p>
+                        <div class="mat-label">内容梗概</div>
+                        <p>狐狸听说狼到处说自己坏话，暗记仇恨，伺机报复。一天傍晚，狐狸用鱼勾起狼的馋心，将其骗到结冰的河边，以"尾巴钓鱼"为由让狼久坐不动，待狼尾巴冻牢后，再跑去叫村民逮狼。狼断尾逃命，狐狸报仇得逞。</p>
+                        <div class="mat-label">角色形象</div>
+                        <p><strong>狐狸：</strong>有心机、狡猾、阴险、虚伪、狠毒</p>
+                        <p><strong>狼：</strong>爱搬弄是非、嘴馋、轻信、贪心</p>
+                        <div class="mat-label">寓意</div>
+                        <div class="mat-moral">①不要轻信花言巧语和送上门的好事，小心是圈套。<br>②贪心不知足，往往会吃大亏。<br>③总在背后说人坏话、搬弄是非，迟早惹祸上身。</div>
+                    </div>
+                </div>
+
+                <!-- mat-d6-m3 -->
+                <div class="material-section" id="mat-d6-m3"></div>
+
+                <!-- mat-d7-m1 -->
+                <div class="material-section" id="mat-d7-m1"></div>
+
+                <!-- mat-d7-m2：方法卡 -->
+                <div class="material-section" id="mat-d7-m2">
+                    <div class="method-card">
+                        <h5>方法卡</h5>
+                        <p><strong>方法名称：</strong>联想类比同主题寓言</p>
+                        <p><strong>方法定义：</strong>从一篇寓言的主题出发，联想到其他主题相同的篇目，并通过类比说明它们为什么属于同一主题。</p>
+                        <p><strong>第一步：</strong>根据主题，提炼句式<br>→ "谁因为（符合主题的行为）……结果（符合主题的结果）……"</p>
+                        <p><strong>第二步：</strong>代入句式，进行联想</p>
+                        <p><strong>第三步：</strong>结合内容，类比说明</p>
+                    </div>
+                </div>
+
+                <!-- mat-d7-m3：方法示范 -->
+                <div class="material-section" id="mat-d7-m3">
+                    <div class="mat-card">
+                        <div class="mat-title">方法示范 · 《牧羊人和野山羊》</div>
+                        <div class="mat-label">主题</div>
+                        <p>贪心没有好下场</p>
+                        <div class="mat-label">第一步：提炼句式</div>
+                        <p>"谁因为（贪心的行为），结果（没有好下场）。"</p>
+                        <div class="mat-label">第二步：代入联想</div>
+                        <p>牧羊人因为想拿野山羊换取财富，把自己羊的食物统统喂给野山羊，结果自己的羊全饿死，野山羊也逃走了。——成立 ✓</p>
+                        <div class="mat-label">第三步：类比说明</div>
+                        <p>狼和牧羊人都因贪心做了不该做的事，结果都没有好下场。两个故事都说明：贪心不但得不到想要的，反而会害了自己。</p>
+                    </div>
+                </div>
+
+                <!-- mat-d7-m4：方法练习 -->
+                <div class="material-section" id="mat-d7-m4">
+                    <div class="mat-card">
+                        <div class="mat-title">方法练习 · 《驴子和他的主人》</div>
+                        <div class="mat-label">第二步：代入联想</div>
+                        <p>驴子因为不满足现在的主人，一次次祈求宙斯换主人，结果越换越差，落到硝皮匠手里，后悔莫及。——成立 ✓</p>
+                        <div class="mat-label">第三步：类比说明</div>
+                        <p>狼贪图鱼，驴子贪图更好的主人——都是不满足已有的；狼被冻住，驴子落到硡皮匠手里——都是没有好下场。共同主题：贪心不知足，最终只会让自己的处境更糟。</p>
+                    </div>
+                </div>
+
+                <!-- mat-d7-m5：真题 -->
+                <div class="material-section" id="mat-d7-m5">
+                    <div class="mat-card">
+                        <div class="mat-title">【2024——2025 江苏扬州·期末】</div>
+                        <div class="mat-label">材料：蚂蚁和蝉</div>
+                        <p>①一场秋雨过后，绿叶和青草都换了一身金黄色的衣服。太阳出来了，蚂蚁开始准备过冬的粮食，它来到树下，将树上掉下来的果子收集起来，整整齐齐地摆在树下晒成干儿，然后一点点儿地运回家。</p>
+                        <p>②蚂蚁的粮仓可真大啊！那里有许多好吃的东西，但是，为了使粮仓里的粮食充足一些，蚂蚁仍然四处寻找食物。汗水顺着它的脸直往下流，它也顾不上擦汗。这时，玩了一整个夏天的蝉从它头上飞过。蝉看到蚂蚁累得那副模样，抖了抖透明的翅膀，不解地问："你为什么要这么辛苦地工作呢？现在天气这么热，应该好好休息才对。"蚂蚁说："我在为冬天储备食物。现在不储备粮食，到了冬天我会挨饿呀！"</p>
+                        <p>③蝉听了，______地说："你简直是在自讨苦吃！我现在每天都能喝到甘甜的露水，根本不需要储备什么粮食。哎，你什么时候能活得像我一样潇洒？"</p>
+                        <p>④几场秋雨后，天气开始转凉，蝉还是整天唱着歌，而蚂蚁仍然忙碌地收集着粮食。</p>
+                        <p>⑤冬天到了，大地被冰雪覆盖。蝉到处都找不到食物，冷得发抖，饿得奄奄一息。它看到蚂蚁在家里享受着美食，后悔极了。</p>
+                        <div class="mat-label">题目（7）</div>
+                        <p>蚂蚁和蝉因为选择不同，结局也不同。小明准备用这个故事参加"小选择，大智慧"主题寓言故事会，请你再向他推荐一则符合主题的寓言故事，并写清楚推荐理由。</p>
+                        <div class="mat-label">参考答案</div>
+                        <p><strong>推荐寓言故事《乌鸦与狐狸》。</strong>推荐理由：《乌鸦与狐狸》和材料二都体现了"小选择，大智慧"的主题。乌鸦的选择是轻信狐狸的奉承，结果失去了奶酪（类似于蝉的选择，只顾眼前享受，没有考虑后果）。而蚂蚁的选择是辛苦储备粮食，最终在冬天享受美食（类似于乌鸦如果选择不轻信狐狸，就能保住奶酪）。这两个故事都通过小的选择，展现了智慧和远见的重要性。蚂蚁的远见和勤奋，以及乌鸦的轻信和短视，都提醒我们，生活中的每一个小选择都可能带来巨大的影响，只有做出明智的选择，才能避免不必要的损失，收获好的结果。</p>
+                    </div>
+                </div>
+
+                <!-- mat-d7-m6 -->
+                <div class="material-section" id="mat-d7-m6"></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchModule(el) {
+    const target = el.getAttribute('data-target');
+    if (!target) return;
+    document.querySelectorAll('.module-item, .sub-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('[data-target="' + target + '"]').forEach(i => i.classList.add('active'));
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    const section = document.getElementById(target);
+    if (section) section.classList.add('active');
+    document.querySelectorAll('.material-section').forEach(s => s.classList.remove('active'));
+    const mat = document.getElementById('mat-' + target);
+    if (mat) mat.classList.add('active');
+}
+function toggleDay(el) {
+    const day = el.getAttribute('data-day');
+    const list = document.getElementById('day-' + day);
+    const isExpanded = el.classList.contains('expanded');
+    el.classList.toggle('expanded', !isExpanded);
+    list.classList.toggle('show', !isExpanded);
+}
+function toggleEdit() {
+    document.body.classList.add('editing');
+    document.getElementById('btn-edit').style.display = 'none';
+    document.getElementById('btn-save').style.display = 'inline-block';
+    document.getElementById('btn-cancel').style.display = 'inline-block';
+    document.querySelectorAll('.card p, .card h3, .card h4, .quote-box, .summary-box p, .moral-box, .step-block .step-q, .step-block .step-reason, .step-block .step-result, .ref-box p, .mat-card p, .mat-card .mat-title, .mat-card .mat-moral, .method-card p, .method-card h5').forEach(el => {
+        el.contentEditable = 'true';
+    });
+}
+function cancelEdit() {
+    document.body.classList.remove('editing');
+    document.getElementById('btn-edit').style.display = 'inline-block';
+    document.getElementById('btn-save').style.display = 'none';
+    document.getElementById('btn-cancel').style.display = 'none';
+    document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+}
+function saveAndExport() {
+    document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.body.classList.remove('editing');
+    document.getElementById('btn-edit').style.display = 'inline-block';
+    document.getElementById('btn-save').style.display = 'none';
+    document.getElementById('btn-cancel').style.display = 'none';
+    const blob = new Blob([document.documentElement.outerHTML], {type: 'text/html;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'U6W23-teaching-plan.html';
+    a.click();
+}
+</script>
+</body>
+</html>
