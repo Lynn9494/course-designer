@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U6《伊索寓言》下 · W21 老鼠的故事</title>
+    <style>
+        :root {
+            --primary: #4A5568; --primary-dark: #2D3748;
+            --accent: #5B7FFF; --accent-light: #EBF0FF;
+            --green: #48BB78; --green-light: #F0FFF4;
+            --orange: #ED8936;
+            --bg: #F7F8FA; --sidebar-bg: #FFFFFF;
+            --card-bg: #FFFFFF; --text: #2D3748;
+            --text-light: #718096; --text-muted: #A0AEC0;
+            --border: #E2E8F0; --shadow: 0 1px 8px rgba(0,0,0,0.06);
+            --radius: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        .header { background: #FFF; border-bottom: 1px solid var(--border); padding: 16px 28px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; }
+        .header h1 { font-size: 17px; font-weight: 700; }
+        .header .sep { margin: 0 12px; color: var(--text-muted); }
+        .header .subtitle { font-size: 14px; color: var(--text-light); }
+        .container { display: flex; margin-top: 56px; height: calc(100vh - 56px); }
+        .sidebar { width: 280px; min-width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; height: calc(100vh - 56px); position: sticky; top: 56px; }
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 3px; }
+        .day-title { display: flex; align-items: center; padding: 10px 18px; font-size: 14px; font-weight: 700; color: var(--primary-dark); cursor: pointer; transition: background 0.15s; }
+        .day-title:hover { background: #F7FAFC; }
+        .day-title .arrow { margin-left: auto; font-size: 10px; color: var(--text-muted); transition: transform 0.2s; }
+        .day-title.expanded .arrow { transform: rotate(90deg); }
+        .module-list { display: none; }
+        .module-list.show { display: block; }
+        .module-item { padding: 7px 18px 7px 28px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+        .module-item:hover { background: #F7FAFC; }
+        .module-item.active { background: var(--accent-light); color: var(--accent); border-left-color: var(--accent); }
+        .module-item .time-tag { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-left: 6px; }
+        .sub-item { padding: 5px 18px 5px 42px; font-size: 12px; color: var(--text-light); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sub-item:hover { background: #F7FAFC; color: var(--text); }
+        .sub-item.active { background: #F0F4FF; color: var(--accent); border-left-color: var(--accent); }
+        .main-area { flex: 1; display: flex; overflow: hidden; height: calc(100vh - 56px); }
+        .content { flex: 1; overflow-y: auto; padding: 28px 32px; border-right: 1px solid var(--border); }
+        .content::-webkit-scrollbar { width: 4px; }
+        .content::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }
+        .materials { width: 340px; min-width: 340px; overflow-y: auto; padding: 24px 20px; background: #FAFBFD; }
+        .materials::-webkit-scrollbar { width: 3px; }
+        .materials::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
+        .materials-header { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .section-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); display: inline-block; }
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .card h3 { font-size: 15px; font-weight: 700; color: var(--primary-dark); margin-bottom: 12px; }
+        .card h4 { font-size: 13.5px; font-weight: 600; color: var(--orange); margin: 14px 0 8px; }
+        .card p { font-size: 13.5px; color: var(--text); margin-bottom: 8px; line-height: 1.8; }
+        .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-right: 4px; }
+        .tag.action { background: #EBF4FF; color: #2B6CB0; }
+        .tag.speech { background: #FEFCBF; color: #975A16; }
+        .tag.mind { background: #C6F6D5; color: #276749; }
+        .quote-box { background: #FFFFF0; border: 1px solid #FEFCBF; border-radius: 8px; padding: 12px 16px; margin: 8px 0; font-size: 13px; color: #5D4E37; line-height: 1.9; }
+        .summary-box { background: var(--accent-light); border-radius: 8px; padding: 12px 16px; margin: 10px 0; border-left: 3px solid var(--accent); }
+        .summary-box p { margin: 0; font-size: 13.5px; }
+        .summary-box strong { color: var(--accent); }
+        .moral-box { background: linear-gradient(135deg, #667EEA, #764BA2); color: #FFF; border-radius: 8px; padding: 14px 20px; margin: 14px 0; font-size: 14px; font-weight: 500; }
+        .step-block { background: #F7FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; }
+        .step-block .step-q { font-size: 13.5px; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px; }
+        .step-block .step-reason { font-size: 12.5px; color: var(--text-light); margin-bottom: 8px; line-height: 1.8; }
+        .step-block .step-result { font-size: 13px; background: var(--green-light); border-left: 3px solid var(--green); padding: 10px 14px; border-radius: 6px; line-height: 1.8; }
+        .ref-box { background: #F0FFF4; border: 1px solid #C6F6D5; border-radius: 8px; padding: 16px 18px; margin: 14px 0; }
+        .ref-box .ref-title { font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+        .ref-box p { font-size: 13px; line-height: 2; color: #2D3748; }
+        .mat-card { background: #FFF; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+        .mat-card .mat-title { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed var(--border); }
+        .mat-card p { font-size: 12.5px; line-height: 1.8; color: var(--text); margin-bottom: 6px; }
+        .mat-card .mat-label { font-size: 11px; font-weight: 700; color: var(--accent); margin-top: 10px; margin-bottom: 4px; }
+        .mat-card .mat-moral { font-size: 12.5px; font-weight: 600; color: #2D3748; background: #EDF2F7; padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
+        .method-card { background: #EBF4FF; border: 1px solid #BEE3F8; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+        .method-card h5 { font-size: 12px; font-weight: 700; color: #2B6CB0; margin-bottom: 6px; }
+        .method-card p { font-size: 12.5px; color: #2A4365; line-height: 1.7; margin-bottom: 4px; }
+        @media (max-width: 1100px) { .materials { width: 280px; min-width: 280px; } }
+        @media (max-width: 900px) { .container { flex-direction: column; } .sidebar { width: 100%; min-width: unset; height: auto; max-height: 35vh; position: relative; top: 0; } .main-area { flex-direction: column; height: auto; } .content { border-right: none; border-bottom: 1px solid var(--border); } .materials { width: 100%; min-width: unset; } }
+
+        /* Edit mode styles */
+        .edit-toolbar {
+            position: fixed; bottom: 24px; right: 24px; z-index: 999;
+            display: flex; gap: 10px; align-items: center;
+        }
+        .edit-btn {
+            padding: 10px 20px; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.2s;
+        }
+        .edit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .edit-btn.primary { background: var(--accent); color: #FFF; }
+        .edit-btn.success { background: #48BB78; color: #FFF; }
+        .edit-btn.secondary { background: #EDF2F7; color: var(--text); }
+        .edit-btn.danger { background: #E53E3E; color: #FFF; }
+        .edit-hint {
+            position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+            background: #FFF3CD; color: #856404; padding: 8px 20px;
+            border-radius: 8px; font-size: 13px; font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 999; display: none;
+        }
+        body.editing .edit-hint { display: block; }
+        body.editing .card p,
+        body.editing .card h3,
+        body.editing .card h4,
+        body.editing .quote-box,
+        body.editing .summary-box p,
+        body.editing .moral-box,
+        body.editing .step-block .step-q,
+        body.editing .step-block .step-reason,
+        body.editing .step-block .step-result,
+        body.editing .ref-box p,
+        body.editing .mat-card p,
+        body.editing .mat-card .mat-title,
+        body.editing .mat-card .mat-moral,
+        body.editing .method-card p,
+        body.editing .method-card h5 {
+            outline: 1px dashed #BEE3F8;
+            outline-offset: 2px;
+            min-height: 1.5em;
+        }
+        body.editing .card p:focus,
+        body.editing .card h3:focus,
+        body.editing .card h4:focus,
+        body.editing .quote-box:focus,
+        body.editing .summary-box p:focus,
+        body.editing .moral-box:focus,
+        body.editing .step-block .step-q:focus,
+        body.editing .step-block .step-reason:focus,
+        body.editing .step-block .step-result:focus,
+        body.editing .ref-box p:focus,
+        body.editing .mat-card p:focus,
+        body.editing .mat-card .mat-title:focus,
+        body.editing .mat-card .mat-moral:focus,
+        body.editing .method-card p:focus,
+        body.editing .method-card h5:focus {
+            outline: 2px solid var(--accent);
+            background: #FFFFF0;
+        }
+    </style>
+</head>
+<body class="">
+<div class="edit-hint">编辑模式已开启 — 点击任意文字即可修改，改完点"保存并导出"</div>
+<div class="edit-toolbar">
+    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()" style="display: inline-block;">编辑</button>
+    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display: none;">保存并导出</button>
+    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display: none;">取消</button>
+</div>
+<div class="header">
+    <h1 id="page-title">U6《伊索寓言》下</h1>
+    <span class="sep">·</span>
+    <span class="subtitle" id="page-subtitle">W21 主题：老鼠的故事</span>
+</div>
+<div class="container">
+    <div class="sidebar" id="sidebar"><div class="day-section"><div class="day-title expanded" data-day="d6">D6 教学思路<span class="arrow">▶</span></div><div class="module-list show"><div class="module-item active" data-target="d6-m1">模块一：导入<span class="time-tag">1min</span></div><div class="sub-item" data-target="d6-m1">老鼠形象引入</div><div class="module-item" data-target="d6-m2">模块二：内容梳理<span class="time-tag">8-10min</span></div><div class="sub-item" data-target="d6-m2">精读《城里老鼠和乡下老鼠》</div><div class="sub-item" data-target="d6-m2">┗ 情节①：招待与不屑</div><div class="sub-item" data-target="d6-m2">┗ 情节②：进城受惊与回乡</div><div class="sub-item" data-target="d6-m2">精读《猫和老鼠》</div><div class="sub-item" data-target="d6-m2">┗ 情节①：老猫装死设圈套</div><div class="sub-item" data-target="d6-m2">┗ 情节②：老鼠识破骗局</div><div class="module-item" data-target="d6-m3">模块三：总结与预告<span class="time-tag">2min</span></div><div class="sub-item" data-target="d6-m3">总结 + 下节课预告</div></div></div><div class="day-section"><div class="day-title" data-day="d7">D7 教学思路<span class="arrow">▶</span></div><div class="module-list"><div class="module-item" data-target="d7-m1">模块一：回顾导入<span class="time-tag">1-2min</span></div><div class="sub-item" data-target="d7-m1">回顾问题 + 引出方法</div><div class="module-item" data-target="d7-m2">模块二：方法讲解<span class="time-tag">2-3min</span></div><div class="sub-item" data-target="d7-m2">方法定义与依据</div><div class="module-item" data-target="d7-m3">模块三：方法示范<span class="time-tag">3-4min</span></div><div class="sub-item" data-target="d7-m3">乡下老鼠回乡后续推测</div><div class="module-item" data-target="d7-m4">模块四：方法练习<span class="time-tag">2-3min</span></div><div class="sub-item" data-target="d7-m4">老猫装死失败后续推测</div><div class="module-item" data-target="d7-m5">模块五：真题演练<span class="time-tag">3-4min</span></div><div class="sub-item" data-target="d7-m5">《麻雀换羽毛》续编</div><div class="module-item" data-target="d7-m6">模块六：总结与预告<span class="time-tag">1min</span></div><div class="sub-item" data-target="d7-m6">方法总结 + 下周预告</div></div></div></div>
+    <div class="main-area">
+        <div class="content" id="content"><div class="content-section active" id="d6-m1"><div class="section-title">模块一：导入（1min）</div><div class="card"><p>提到“老鼠”，你脑海中会浮现怎样的画面？——小小的个头，灵活的身手，总爱偷吃东西，生活中似乎总扮演着那个让人讨厌的角色。</p><p>可你知道吗？在《伊索寓言》里，老鼠的形象可不太一样。比如《狮子和报恩的老鼠》中，老鼠不仅聪明机灵，还懂得感恩报恩。那《伊索寓言》里的老鼠，还有哪些有趣的特点呢？</p><p><strong>今天，我们就来读两个关于老鼠的故事。</strong></p></div></div><div class="content-section" id="d6-m2"><div class="section-title">模块二：内容梳理（8-10min）</div><div class="card"><h3>1. 精读《城里老鼠和乡下老鼠》（第五单元，P102）</h3><h4>【情节①】乡下老鼠殷勤招待，城里老鼠不屑一顾</h4><p>乡下老鼠殷勤招待来访的城里老鼠，城里老鼠却不屑一顾，抱怨乡下生活单调，劝说乡下老鼠进城。</p><p><b>· 乡下老鼠的形象：</b></p><p><span class="tag action">动作描写</span> 拿出自己平时一点点积攒起来又舍不得吃的最好的东西，格外殷勤地招待老朋友 / 津津有味地啃着荞麦皮</p><div class="summary-box"><p>→ 乡下老鼠的形象（情节①）：<strong>朴实、大方、热情好客</strong></p></div><p><b>· 城里老鼠的形象：</b></p><p><span class="tag action">动作描写</span> 不屑一顾地挑拣着吃的，不耐烦地抱怨</p><p><span class="tag speech">语言描写</span></p><div class="quote-box">“你这是怎么了，老朋友，你怎么能过这么单调枯燥的生活呢？你就像井底的青蛙，什么世面都没见过。你应该离开这些石头和树根，进城见识一下大街上的车水马龙……一只老鼠活不了几年的，我们一定得把以后的生活安排得更好。”</div><p><strong>字面意思：</strong>劝乡下老鼠别再过枯燥日子，跟他进城享受好生活</p><p><strong>真实意图：</strong>一边享受朋友的招待，一边贬低朋友的生活。未必是真心为乡下老鼠着想，更可能是看不起乡下生活、想炫耀城里的奢侈。</p><div class="summary-box"><p>→ 城里老鼠的形象（情节①）：<strong>自高自大、不懂感恩</strong></p></div></div><div class="card"><h4>【情节②】乡下老鼠动心进城，两次受惊后告别回乡</h4><p><b>· 乡下老鼠的形象：</b></p><p><span class="“tag" action”="">动作描写</span>&nbsp;“吓得跳下饭桌躲角落”“魂飞胆丧地缩回去”“战战兢兢爬出来”→ 对危险极度敏感，无法在提心吊胆中生活。</p><p><span class="tag speech">语言描写</span></p><div class="quote-box">“哎哟，我的好朋友，这地方我可待够了。再见吧，这里的生活的确很好，可是我还想多活几年呢。我宁愿过平静单调的生活，也不愿意只为了贪图吃喝，而整天提心吊胆地活着。”</div><p><strong>意思：</strong>安全比享乐更重要（认清不适合那种生活，主动选择放弃）</p><div class="summary-box"><p>→ 乡下老鼠的形象（情节②）：<strong>务实知足、渴望安宁</strong></p></div><p><b>· 城里老鼠的形象：</b></p><p><span class="tag action">动作描写</span> 俨然以主人自居，得意地款待乡下朋友；但在客人和狗来时同样要躲——城里的危险是常态，已经习惯了提心吊胆。</p><div class="summary-box"><p>→ 城里老鼠的形象（情节②）：<strong>习惯冒险、追求享乐</strong></p></div><div class="moral-box">💡 寓意：平静安稳的生活，胜过充满危险的享乐。</div></div><div class="card"><h3>2. 精读《猫和老鼠》（第六单元，P127）</h3><h4>【情节①】年老的猫钻进口袋装死，想骗老鼠靠近</h4><p><span class="tag action">动作描写</span> 左思右想 → 钻进口袋 → 把后腿拴在低矮的木桩上 → 倒挂着装死</p><p><span class="tag mind">心理描写</span> 认定老鼠们毫无觉察地靠近时，美餐就到手了</p><div class="summary-box"><p>→ 老猫的形象：<strong>年老体弱，但狡猾、有心计</strong></p></div><h4>【情节②】老鼠一眼识破猫的圈套</h4><p><span class="tag action">动作描写</span> 第一只远远地躲在一旁，悄声地说；另一只在旁边大声地笑</p><p><span class="tag speech">语言①（悄声说）</span></p><div class="quote-box">“快看，我活了这么大岁数，头一次见到有猫头的口袋。”→ 用“反常”提醒同伴</div><p><span class="tag speech">语言②（大声笑道）</span></p><div class="quote-box">“您好，尊敬的猫太太，您就在这里挂着吧。我们无论如何是不会离您太近的。”→ 揭穿骗局</div><div class="summary-box"><p>→ 老鼠的形象：<strong>聪明、警惕、幽默，善于观察和分析</strong></p></div><div class="moral-box">💡 寓意：善于观察、分析的人是不会轻易上当的。</div></div></div><div class="content-section" id="d6-m3"><div class="section-title">模块三：总结与预告（2min）</div><div class="card"><h3>1. 总结</h3><p>（1）两篇故事的主要内容、寓意、词句积累</p><p>（2）老鼠的形象</p></div><div class="card"><h3>2. 预告</h3><p>乡下老鼠回到家以后，会跟邻居们讲什么？老猫从口袋里爬出来以后，又会怎么做呢？</p><p><strong>下节课我们来学习怎么把故事接着讲下去。</strong></p></div></div><div class="content-section" id="d7-m1"><div class="section-title">模块一：回顾导入（1-2min）</div><div class="card"><h3>1. 回顾问题</h3><p>上节课我们一起读了两个跟老鼠有关的故事。如果请同学们顺着故事往下编，比如乡下老鼠回村后，邻居们问起城里的生活，他会怎么说、怎么做？或者老猫见两只老鼠不上当，接下来会怎么做？我们怎样才能编得合情合理呢？</p></div><div class="card"><h3>2. 引出方法</h3><p>这节课我们就来学一个新方法：<strong>根据形象特点推测后续情节</strong></p></div></div><div class="content-section" id="d7-m2"><div class="section-title">模块二：方法讲解（2-3min）</div><div class="card"><h3>方法定义</h3><p>根据故事的发展逻辑和角色的形象特点，推测角色在新情境中的言行。</p></div><div class="card"><h3>依据</h3><p>① 故事的发展逻辑</p><p>② 角色的形象特点</p></div></div><div class="content-section" id="d7-m3"><div class="section-title">模块三：方法示范（3-4min）</div><div class="card"><h3>新情境</h3><div class="quote-box">乡下老鼠刚回到家，邻居们就呼啦一下围了上来，七嘴八舌地问：“快说说，城里好不好玩？”</div><p><b>推测后续：乡下老鼠会怎么说、怎么做呢？</b></p></div><div class="card"><div class="step-block"><div class="step-q">1. 乡下老鼠会分享自己的见闻吗？他会分享哪些内容，会如实分享吗？</div><div class="step-reason">根据乡下老鼠的形象特点：<strong>热情好客</strong>——他会招呼邻居们坐下，主动分享见闻；<strong>朴实</strong>——他会如实分享，把城里生活好的一面、不好的一面都说出来</div><div class="step-result">→ 他喘了口气，招呼大家坐下，这才把城里的见闻一五一十讲给大家听：豪宅里鲜红的天鹅绒窗帘、餐桌上从全城搜罗来的山珍海味……讲得大家眼睛都直了。接着，他又把客人猛地推门进来、狗一叫吓得他魂飞魄散的场面也讲了一遍，听得邻居们直缩脖子。</div></div><div class="step-block"><div class="step-q">2. 在谈到城里生活的时候，乡下老鼠是什么态度呢？他还会羡慕城里的生活吗？</div><div class="step-reason">根据乡下老鼠的形象特点：<strong>务实知足、渴望安宁</strong>——不否认城里的好，但更珍惜眼前的踏实日子。<br>根据故事的发展逻辑：乡下老鼠明白了城里生活的代价是“提心吊胆”。他认为平静安稳的生活，胜过充满危险的享乐。所以不会再羡慕城里的生活。</div><div class="step-result">→ 他拍拍胸口，长长地舒了一口气，说：“我以后再也不羡慕城里的生活了。城里的生活虽然精彩，但还是咱们的荞麦皮吃得踏实！”</div></div></div><div class="card"><div class="ref-box"><div class="ref-title">📝 参考范文</div><p>乡下老鼠刚回到家，邻居们就呼啦一下围了上来，七嘴八舌地问：“快说说，城里好不好玩？”</p><p>他喘了口气，把城里的见闻一五一十讲给大家听：豪宅里鲜红的天鹅绒窗帘、餐桌上从全城搜罗来的山珍海味……讲得大家眼睛都直了。接着，他又把客人猛地推门进来、狗一叫吓得他魂飞魄散的场面也讲了一遍，听得邻居们直缩脖子。</p><p>最后，他拍拍胸口，长长地舒了一口气，说：“我以后再也不羡慕城里的生活了。城里的生活虽然精彩，但还是咱们的荞麦皮吃得踏实！”</p></div></div></div><div class="content-section" id="d7-m4"><div class="section-title">模块四：方法练习（2-3min）</div><div class="card"><h3>新情境</h3><div class="quote-box">老猫装死失败后，从口袋里爬了出来。</div><p><b>推测后续：老猫接下来会怎么做呢？</b></p></div><div class="card"><div class="step-block"><div class="step-q">1. 老猫会放弃抓老鼠吗？</div><div class="step-reason">根据老猫的形象特点：<strong>年老体弱，狡猾、有心计</strong>——她不会轻易放弃，而是会设计更隐蔽的圈套。</div><div class="step-result">→ 老猫又饿又恼，但她没有扑上去硬追，而是找来一个大木桶，桶里放了一块奶酪，桶口用小木棍支着，自己悄悄藏在桶后。只要老鼠钻进桶里吃奶酪，她就拉倒木棍，把老鼠扣住。</div></div><div class="step-block"><div class="step-q">2. 老鼠会发现这个圈套吗？他们会怎么应对？</div><div class="step-reason">根据两只老鼠的形象特点：<strong>聪明、警惕，善于观察分析</strong>——不会贸然行动，会仔细观察周围环境。<br>根据故事的发展逻辑：善于观察分析的人不会轻易上当，只要老鼠保持警惕，仍然会识破老猫的诡计。<br>根据两只老鼠的形象特点：<strong>幽默</strong>——会用语言嘲讽老猫的诡计。</div><div class="step-result">→ 两只老鼠闻到香味出来，一只小心地围着桶转了半圈，突然看到桶后露出的猫尾巴，赶紧拉住同伴。另一只仔细一看，笑道：“猫太太，您还是省省力气吧。”两只老鼠转身就跑，老猫气得直跺脚。</div></div></div><div class="card"><div class="ref-box"><div class="ref-title">📝 参考范文</div><p>老猫装死失败后，从口袋里爬了出来。她又饿又恼，但她没有扑上去硬追，而是找来一个大木桶，桶口用细绳拴着一个小木棍支着，自己藏在桶后。只要老鼠钻进桶里吃奶酪，她就拉倒木棍，把老鼠扣住。</p><p>两只老鼠闻到香味出来，一只小心地围着桶转了半圈，突然看到桶后露出的猫尾巴，赶紧拉住同伴：“别过去！桶后面有猫！”另一只仔细一看，笑道：“猫太太，您还是省省力气吧。”两只老鼠转身就跑，老猫气得直跺脚。</p></div></div></div><div class="content-section" id="d7-m5"><div class="section-title">模块五：真题演练（3-4min）</div><div class="card"><h3>【2025——2026 江苏盐城·期末】《麻雀换羽毛》</h3><p><strong>题目（5）：</strong>麻雀看到孔雀的羽毛后，接下来会发生什么事情？请你展开想象，续编这个故事的结局。</p><h4>新情境</h4><div class="quote-box">又过了些日子，麻雀去参加百灵鸟举办的歌舞会，看见孔雀的羽毛五彩缤纷，开屏时更是光彩夺目，得到大家的一片赞扬。</div><p><b>推测：麻雀会怎么做呢？</b></p></div><div class="card"><div class="step-block"><div class="step-q">1. 麻雀看见孔雀漂亮的羽毛，会有什么反应？</div><div class="step-reason">根据麻雀的形象特点：<strong>曾经爱慕虚荣、只看重外表</strong>——第一反应是羡慕，心里会痒痒的。</div><div class="step-result">→ 麻雀望着孔雀五彩缤纷的羽毛，心里泛起一阵羡慕。</div></div><div class="step-block"><div class="step-q">2. 麻雀最终会选择怎么做？</div><div class="step-reason">根据故事的发展逻辑：实用比外表更重要，麻雀已经明白了这个道理，不会再要求换羽毛。<br>根据麻雀的形象特点：<strong>吃过苦头后学会了反思</strong>——会立刻想起上次换羽毛的教训，果断飞走。</div><div class="step-result">→ 他马上想起被狐狸咬断羽毛、飞不起来的狼狈模样，赶紧摇了摇头。他拍拍自己灰色的羽毛，心里想着：再漂亮的羽毛，也比不上能自在飞、能保护自己的羽毛实在。然后头也不回地飞走了。</div></div></div><div class="card"><div class="ref-box"><div class="ref-title">📝 参考范文</div><p>麻雀望着孔雀五彩缤纷的羽毛，心里刚泛起一阵羡慕，就立刻想起被狐狸咬断羽毛、飞不起来的狼狈模样。他赶紧摇摇头，拍着自己的灰羽毛飞走了，心里想着：再漂亮的羽毛，也比不上能自在飞、能保护自己的羽毛实在。</p></div></div></div><div class="content-section" id="d7-m6"><div class="section-title">模块六：总结与预告（1min）</div><div class="card"><h3>1. 总结方法</h3><p><strong>根据形象特点推测后续情节</strong>——只要抓住角色形象和故事逻辑，故事接下来会发生什么其实是有迹可循的。</p></div><div class="card"><h3>2. 预告下周</h3><p>下周我们要从动物故事走进“人”的故事，伊索笔下的人物有什么特点呢？</p></div></div></div>
+        <div class="materials">
+            <div class="materials-header">随 材 区</div>
+            <div id="materials-content"><div class="material-section active" id="mat-d6-m1"><div class="mat-card"><div class="mat-title">W21 导语 · 老鼠</div><div class="mat-label">自然特点</div><p>老鼠体型小巧，行动敏捷，昼伏夜出，嗅觉灵敏，擅长啃咬和打洞，是自然界中典型的“生存高手”。</p><div class="mat-label">《伊索寓言》中的老鼠</div><p>在《伊索寓言》中，老鼠可不是令人讨厌的角色，它们各有各的性格。一起来看看伊索笔下的老鼠有多特别吧！</p></div></div><div class="material-section" id="mat-d6-m2"><div class="mat-card"><div class="mat-title">寓言卡片 ①</div><div class="mat-label">篇名</div><p>《城里老鼠和乡下老鼠》</p><div class="mat-label">内容梗概</div><p>城里老鼠嫌弃乡下生活单调，带乡下老鼠进城享受美食。可城里虽然吃得好，却随时有客人和狗闯入。乡下老鼠两次受惊后，决定回到平静的家乡。</p><div class="mat-label">角色形象</div><p><strong>乡下老鼠：</strong>务实知足、渴望安宁<br><strong>城里老鼠：</strong>自高自大、追求享乐</p><div class="mat-label">寓意</div><div class="mat-moral">平静安稳的生活，胜过充满危险的享乐。</div></div><div class="mat-card"><div class="mat-title">寓言卡片 ②</div><div class="mat-label">篇名</div><p>《猫和老鼠》</p><div class="mat-label">内容梗概</div><p>年老的猫抓不到老鼠，钻进口袋倒挂装死，想骗老鼠靠近。两只老鼠一眼识破圈套，用幽默的话揭穿了老猫的骗局。</p><div class="mat-label">角色形象</div><p><strong>老猫：</strong>年老体弱，但狡猾、有心计<br><strong>老鼠：</strong>聪明、警惕、幽默，善于观察和分析</p><div class="mat-label">寓意</div><div class="mat-moral">善于观察、分析的人是不会轻易上当的。</div></div></div><div class="material-section" id="mat-d6-m3"></div><div class="material-section" id="mat-d7-m1"></div><div class="material-section" id="mat-d7-m2"><div class="method-card"><h5>方法卡</h5><p><strong>方法名称：</strong>根据形象特点推测后续情节</p><p><strong>方法定义：</strong>根据故事的发展逻辑和角色的形象特点，推测角色在新情境中的言行。</p><p><strong>依据①：</strong>故事的发展逻辑</p><p><strong>依据②：</strong>角色的形象特点</p></div></div><div class="material-section" id="mat-d7-m3"><div class="method-card"><h5>方法示范 · 乡下老鼠回乡</h5><p><strong>新情境：</strong>乡下老鼠刚回到家，邻居们围上来问城里好不好玩。</p></div><div class="mat-card"><div class="mat-title">推测过程</div><div class="mat-label">问题1</div><p>会分享见闻吗？→ 热情好客＋朴实 → 如实分享好的与不好的</p><div class="mat-label">问题2</div><p>还会羡慕城里吗？→ 务实知足＋渴望安宁 → 不否认城里的好，但更珍惜踏实日子</p></div><div class="mat-card"><div class="mat-title">参考范文</div><p>乡下老鼠刚回到家，邻居们就呼啦一下围了上来，七嘴八舌地问：“快说说，城里好不好玩？”</p><p>他喘了口气，把城里的见闻一五一十讲给大家听：豪宅里鲜红的天鹅绒窗帘、餐桌上从全城搜罗来的山珍海味……讲得大家眼睛都直了。接着，他又把客人猛地推门进来、狗一叫吓得他魂飞魄散的场面也讲了一遍，听得邻居们直缩脖子。</p><p>最后，他拍拍胸口，长长地舒了一口气，说：“我以后再也不羡慕城里的生活了。城里的生活虽然精彩，但还是咱们的荞麦皮吃得踏实！”</p></div></div><div class="material-section" id="mat-d7-m4"><div class="method-card"><h5>方法练习 · 老猫的新圈套</h5><p><strong>新情境：</strong>老猫装死失败后，从口袋里爬了出来。</p></div><div class="mat-card"><div class="mat-title">推测过程</div><div class="mat-label">问题1</div><p>老猫会放弃吗？→ 狡猾＋有心计 → 不会放弃，设计更隐蔽的圈套</p><div class="mat-label">问题2</div><p>老鼠会发现吗？→ 聪明＋警惕＋善于观察分析 → 仍会识破<br>→ 幽默 → 用语言嘲讽老猫</p></div><div class="mat-card"><div class="mat-title">参考范文</div><p>老猫装死失败后，从口袋里爬了出来。她又饿又恼，但她没有扑上去硬追，而是找来一个大木桶，桶口用细绳拴着一个小木棍支着，自己藏在桶后。只要老鼠钻进桶里吃奶酪，她就拉倒木棍，把老鼠扣住。</p><p>两只老鼠闻到香味出来，一只小心地围着桶转了半圈，突然看到桶后露出的猫尾巴，赶紧拉住同伴：“别过去！桶后面有猫！”另一只仔细一看，笑道：“猫太太，您还是省省力气吧。”两只老鼠转身就跑，老猫气得直跺脚。</p></div></div><div class="material-section" id="mat-d7-m5"><div class="mat-card"><div class="mat-title">【2025——2026 江苏盐城·期末】阅读</div><div class="mat-label">麻雀换羽毛</div><p>①麻雀的羽毛灰不溜秋，没有一点光彩。</p><p>②一天，他看到翠鸟的羽毛比他的漂亮，便找到凤凰说：“您为什么把漂亮的羽毛给翠鸟，而把难看的羽毛给我？”凤凰说：“因为灰色的羽毛可以起到自我保护的作用。”麻雀不乐意，说：“我想要漂亮的羽毛，请给我一身绿羽毛吧！”凤凰同意了。</p><p>③第二天，群鸟们见了麻雀，纷纷说道：“麻雀，你的羽毛比以前漂亮了。”</p><p>④过了一段时间，麻雀看见鹦鹉的羽毛色彩鲜艳，羡慕极了。他又找到凤凰说：“我想要像鹦鹉一样的羽毛。”凤凰说：“你换上鹦鹉的羽毛，恐怕会飞不起来。”麻雀说：“我的力气很大，一定能飞起来的。”凤凰又同意了。</p><p>⑤麻雀换上了鹦鹉那样色彩鲜艳的羽毛，群鸟们见了，纷纷夸麻雀漂亮。</p><p>⑥又过了些日子，麻雀看见长尾山鸡的羽毛更是光彩夺目，而且尾巴上还有五颜六色的长羽毛。麻雀又去找凤凰，说：“我想要长长尾山鸡尾巴上那样亮亮的长羽毛。”凤凰说：“你换上了长尾山鸡尾巴上的长羽毛，不但飞不起来，就连走路也会感到困难。”麻雀说：“有了长尾山鸡尾巴上的长羽毛，就不用再飞了。”凤凰又满足了他的要求。</p><p>⑦麻雀变得跟长尾山鸡一样漂亮。可他却飞不起来，只得拖着长羽毛，慢慢地向树林走去。</p><p>⑧半路上，狐狸看见了，扑过去咬住他的尾巴。麻雀拼命挣扎，拖着尾巴在地上打滚。最后，他终于把狐狸咬住的羽毛挣断了。</p><p>⑨这时，麻雀才意识到：还是原来的羽毛好。能自在飞行，还不会遭到狐狸的欺负。</p><div class="mat-label">续写情境</div><p>又过了些日子，麻雀去参加百灵鸟举办的歌舞会，看见孔雀的羽毛五彩缤纷，开屏时更是光彩夺目，得到大家的一片赞扬。麻雀____。</p></div><div class="mat-card"><div class="mat-title">题目（5）</div><p><strong>麻雀看到孔雀的羽毛后，接下来会发生什么事情？请你展开想象，续编这个故事的结局。</strong></p></div><div class="mat-card"><div class="mat-title">参考答案</div><p>麻雀望着孔雀五彩缤纷的羽毛，心里刚泛起羡慕，就立刻想起被狐狸咬断羽毛、飞不起来的狼狈模样。它赶紧摇摇头，拍着自己的灰羽毛飞走了，心里想着：再漂亮的羽毛，也比不上能自在飞、能保护自己的羽毛实在。</p></div></div><div class="material-section" id="mat-d7-m6"></div></div></div>
+        </div>
+    </div>
+</div>
+<script>
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  📝 教学数据区 — 修改内容只需编辑下方 DATA 对象                           ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+const DATA = {
+    "title": "U6《伊索寓言》下",
+    "subtitle": "W21 主题：老鼠的故事",
+    "days": [
+        {
+            "id": "d6",
+            "name": "D6 教学思路",
+            "modules": [
+                {
+                    "id": "d6-m1",
+                    "name": "模块一：导入",
+                    "time": "1min",
+                    "subs": [
+                        "老鼠形象引入"
+                    ],
+                    "content": [
+                        {
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "提到“老鼠”，你脑海中会浮现怎样的画面？——小小的个头，灵活的身手，总爱偷吃东西，生活中似乎总扮演着那个让人讨厌的角色。"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "可你知道吗？在《伊索寓言》里，老鼠的形象可不太一样。比如《狮子和报恩的老鼠》中，老鼠不仅聪明机灵，还懂得感恩报恩。那《伊索寓言》里的老鼠，还有哪些有趣的特点呢？"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<strong>今天，我们就来读两个关于老鼠的故事。</strong>"
+                                }
+                            ]
+                        }
+                    ],
+                    "material": [
+                        {
+                            "type": "mat-card",
+                            "title": "W21 导语 · 老鼠",
+                            "sections": [
+                                {
+                                    "label": "自然特点",
+                                    "text": "老鼠体型小巧，行动敏捷，昼伏夜出，嗅觉灵敏，擅长啃咬和打洞，是自然界中典型的“生存高手”。"
+                                },
+                                {
+                                    "label": "《伊索寓言》中的老鼠",
+                                    "text": "在《伊索寓言》中，老鼠被赋予了丰富的性格：有的朴实知足，有的聪明警觉。今天我们来读两个关于老鼠的寓言故事，看看伊索笔下的老鼠有什么特别之处。"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "d6-m2",
+                    "name": "模块二：内容梳理",
+                    "time": "8-10min",
+                    "subs": [
+                        "精读《城里老鼠和乡下老鼠》",
+                        "┗ 情节①：招待与不屑",
+                        "┗ 情节②：进城受惊与回乡",
+                        "精读《猫和老鼠》",
+                        "┗ 情节①：老猫装死设圈套",
+                        "┗ 情节②：老鼠识破骗局"
+                    ],
+                    "content": [
+                        {
+                            "title": "1. 精读《城里老鼠和乡下老鼠》（第五单元，P102）",
+                            "blocks": [
+                                {
+                                    "type": "h4",
+                                    "text": "【情节①】乡下老鼠殷勤招待，城里老鼠不屑一顾"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "乡下老鼠殷勤招待来访的城里老鼠，城里老鼠却不屑一顾，抱怨乡下生活单调，劝说乡下老鼠进城。"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<b>· 乡下老鼠的形象：</b>"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag action\">动作描写</span> 拿出自己平时一点点积攒起来又舍不得吃的最好的东西，格外殷勤地招待老朋友 / 津津有味地啃着荞麦皮"
+                                },
+                                {
+                                    "type": "summary",
+                                    "text": "→ 乡下老鼠的形象（情节①）：<strong>朴实、大方、热情好客</strong>"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<b>· 城里老鼠的形象：</b>"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag action\">动作描写</span> 不屑一顾地挑拣着吃的，不耐烦地抱怨"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag speech\">语言描写</span>"
+                                },
+                                {
+                                    "type": "quote",
+                                    "text": "“你这是怎么了，老朋友，你怎么能过这么单调枯燥的生活呢？你就像井底的青蛙，什么世面都没见过。你应该离开这些石头和树根，进城见识一下大街上的车水马龙……一只老鼠活不了几年的，我们一定得把以后的生活安排得更好。”"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<strong>字面意思：</strong>劝乡下老鼠别再过枯燥日子，跟他进城享受好生活"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<strong>真实意图：</strong>一边享受朋友的招待，一边贬低朋友的生活。不是真心为乡下老鼠着想，而是看不起乡下生活、想炫耀城里的奢侈。"
+                                },
+                                {
+                                    "type": "summary",
+                                    "text": "→ 城里老鼠的形象（情节①）：<strong>自高自大、看不起人、不懂感恩</strong>"
+                                }
+                            ]
+                        },
+                        {
+                            "blocks": [
+                                {
+                                    "type": "h4",
+                                    "text": "【情节②】乡下老鼠动心进城，两次受惊后告别回乡"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<b>· 乡下老鼠的形象：</b>"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=“tag action”>动作描写</span> “动了心”“惊讶四处望”“受宠若惊”→ 对美好事物有好奇心；“吓得跳下饭桌躲角落”“魂飞胆丧地缩回去”“战战兢兢爬出来”→ 对危险极度敏感，无法在提心吊胆中生活。"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag speech\">语言描写</span>"
+                                },
+                                {
+                                    "type": "quote",
+                                    "text": "“哎哟，我的好朋友，这地方我可待够了。再见吧，这里的生活的确很好，可是我还想多活几年呢。我宁愿过平静单调的生活，也不愿意只为了贪图吃喝，而整天提心吊胆地活着。”"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<strong>意思：</strong>安全比享乐更重要（认清不适合那种生活，主动选择放弃）"
+                                },
+                                {
+                                    "type": "summary",
+                                    "text": "→ 乡下老鼠的形象（情节②）：<strong>警觉、务实知足、渴望安宁</strong>"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<b>· 城里老鼠的形象：</b>"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag action\">动作描写</span> 俨然以主人自居，得意地款待乡下朋友；但在客人和狗来时同样要躲——城里的危险是常态，已经习惯了提心吊胆。"
+                                },
+                                {
+                                    "type": "summary",
+                                    "text": "→ 城里老鼠的形象（情节②）：<strong>习惯冒险、追求享乐</strong>"
+                                },
+                                {
+                                    "type": "moral",
+                                    "text": "寓意：平静安稳的生活，胜过充满危险的享乐。"
+                                }
+                            ]
+                        },
+                        {
+                            "title": "2. 精读《猫和老鼠》（第六单元，P127）",
+                            "blocks": [
+                                {
+                                    "type": "h4",
+                                    "text": "【情节①】年老的猫钻进口袋装死，想骗老鼠靠近"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag action\">动作描写</span> 左思右想 → 钻进口袋 → 把后腿拴在低矮的木桩上 → 倒挂着装死"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag mind\">心理描写</span> 认定老鼠们毫无觉察地靠近时，美餐就到手了"
+                                },
+                                {
+                                    "type": "summary",
+                                    "text": "→ 老猫的形象：<strong>年老体弱，但狡猾、有心计</strong>"
+                                },
+                                {
+                                    "type": "h4",
+                                    "text": "【情节②】老鼠一眼识破猫的圈套"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag action\">动作描写</span> 第一只远远地躲在一旁，悄声地说；另一只在旁边大声地笑"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag speech\">语言①（悄声说）</span>"
+                                },
+                                {
+                                    "type": "quote",
+                                    "text": "“快看，我活了这么大岁数，头一次见到有猫头的口袋。”→ 用“反常”提醒同伴"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<span class=\"tag speech\">语言②（大声笑道）</span>"
+                                },
+                                {
+                                    "type": "quote",
+                                    "text": "“您好，尊敬的猫太太，您就在这里挂着吧。我们无论如何是不会离您太近的。”→ 揭穿骗局"
+                                },
+                                {
+                                    "type": "summary",
+                                    "text": "→ 老鼠的形象：<strong>聪明、警惕、幽默，善于观察和分析</strong>"
+                                },
+                                {
+                                    "type": "moral",
+                                    "text": "寓意：善于观察、分析的人是不会轻易上当的。"
+                                }
+                            ]
+                        }
+                    ],
+                    "material": [
+                        {
+                            "type": "mat-card",
+                            "title": "寓言卡片 ①",
+                            "sections": [
+                                {
+                                    "label": "篇名",
+                                    "text": "《城里老鼠和乡下老鼠》"
+                                },
+                                {
+                                    "label": "内容梗概",
+                                    "text": "城里老鼠嫌弃乡下生活单调，带乡下老鼠进城享受美食。可城里虽然吃得好，却随时有客人和狗闯入。乡下老鼠两次受惊后，决定回到平静的家乡。"
+                                },
+                                {
+                                    "label": "角色形象",
+                                    "text": "<strong>乡下老鼠：</strong>朴实、大方、热情好客；警觉、务实知足、渴望安宁<br><strong>城里老鼠：</strong>自高自大、不懂感恩；习惯冒险、追求享乐"
+                                },
+                                {
+                                    "label": "寓意",
+                                    "text": "平静安稳的生活，胜过充满危险的享乐。",
+                                    "isMoral": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "mat-card",
+                            "title": "寓言卡片 ②",
+                            "sections": [
+                                {
+                                    "label": "篇名",
+                                    "text": "《猫和老鼠》"
+                                },
+                                {
+                                    "label": "内容梗概",
+                                    "text": "年老的猫抓不到老鼠，钻进口袋倒挂装死，想骗老鼠靠近。两只老鼠一眼识破圈套，用幽默的话揭穿了老猫的骗局。"
+                                },
+                                {
+                                    "label": "角色形象",
+                                    "text": "<strong>老猫：</strong>年老体弱，但狡猾、有心计<br><strong>老鼠：</strong>聪明、警惕、幽默，善于观察和分析"
+                                },
+                                {
+                                    "label": "寓意",
+                                    "text": "善于观察、分析的人是不会轻易上当的。",
+                                    "isMoral": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "d6-m3",
+                    "name": "模块三：总结与预告",
+                    "time": "2min",
+                    "subs": [
+                        "总结 + 下节课预告"
+                    ],
+                    "content": [
+                        {
+                            "title": "1. 总结",
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "（1）两篇故事的主要内容、寓意、词句积累"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "（2）老鼠的形象"
+                                }
+                            ]
+                        },
+                        {
+                            "title": "2. 预告",
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "乡下老鼠回到家以后，会跟邻居们讲什么？聪明老鼠下次再碰到老猫的新把戏，又会怎么应对？"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<strong>下节课我们来学习怎么把故事接着讲下去。</strong>"
+                                }
+                            ]
+                        }
+                    ],
+                    "material": []
+                }
+            ]
+        },
+        {
+            "id": "d7",
+            "name": "D7 教学思路",
+            "modules": [
+                {
+                    "id": "d7-m1",
+                    "name": "模块一：回顾导入",
+                    "time": "1-2min",
+                    "subs": [
+                        "回顾问题 + 引出方法"
+                    ],
+                    "content": [
+                        {
+                            "title": "1. 回顾问题",
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "上节课我们一起读了两个跟老鼠有关的故事。如果请同学们顺着故事往下编，比如乡下老鼠回村后发生了什么？或者老猫见两只老鼠不上当，接下来会怎么做——怎样才能编得合情合理呢？"
+                                }
+                            ]
+                        },
+                        {
+                            "title": "2. 引出方法",
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "这节课我们就来学一个新方法：<strong>根据形象特点推测后续情节</strong>"
+                                }
+                            ]
+                        }
+                    ],
+                    "material": []
+                },
+                {
+                    "id": "d7-m2",
+                    "name": "模块二：方法讲解",
+                    "time": "2-3min",
+                    "subs": [
+                        "方法定义与依据"
+                    ],
+                    "content": [
+                        {
+                            "title": "方法定义",
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "根据故事的发展逻辑和角色的形象特点，推测角色在新情境中的言行。"
+                                }
+                            ]
+                        },
+                        {
+                            "title": "依据",
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "① 故事的发展逻辑"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "② 角色的形象特点"
+                                }
+                            ]
+                        }
+                    ],
+                    "material": [
+                        {
+                            "type": "method-card",
+                            "title": "方法卡",
+                            "sections": [
+                                {
+                                    "label": "方法名称",
+                                    "text": "根据形象特点推测后续情节"
+                                },
+                                {
+                                    "label": "方法定义",
+                                    "text": "根据故事的发展逻辑和角色的形象特点，推测角色在新情境中的言行。"
+                                },
+                                {
+                                    "label": "依据①",
+                                    "text": "故事的发展逻辑"
+                                },
+                                {
+                                    "label": "依据②",
+                                    "text": "角色的形象特点"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "d7-m3",
+                    "name": "模块三：方法示范",
+                    "time": "3-4min",
+                    "subs": [
+                        "乡下老鼠回乡后续推测"
+                    ],
+                    "content": [
+                        {
+                            "title": "新情境",
+                            "blocks": [
+                                {
+                                    "type": "quote",
+                                    "text": "乡下老鼠刚回到家，邻居们就呼啦一下围了上来，七嘴八舌地问：“快说说，城里好不好玩？”"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<b>推测后续：乡下老鼠会怎么说、怎么做呢？</b>"
+                                }
+                            ]
+                        },
+                        {
+                            "blocks": [
+                                {
+                                    "type": "step",
+                                    "question": "1. 乡下老鼠会分享自己的见闻吗？他会分享哪些内容，会如实分享吗？",
+                                    "reason": "根据乡下老鼠的形象特点：<strong>热情好客</strong>——他会招呼邻居们坐下，主动分享见闻；<strong>朴实</strong>——他会如实分享，把城里生活好的一面、不好的一面都说出来",
+                                    "result": "→ 他喘了口气，招呼大家坐下，这才把城里的见闻一五一十讲给大家听：豪宅里鲜红的天鹅绒窗帘、餐桌上从全城搜罗来的山珍海味……讲得大家眼睛都直了。接着，他又把客人猛地推门进来、狗一叫吓得他魂飞魄散的场面也讲了一遍，听得邻居们直缩脖子。"
+                                },
+                                {
+                                    "type": "step",
+                                    "question": "2. 在谈到城里生活的时候，乡下老鼠是什么态度呢？他还会羡慕城里的生活吗？",
+                                    "reason": "根据乡下老鼠的形象特点：<strong>务实知足、渴望安宁</strong>——不否认城里的好，但更珍惜眼前的踏实日子。<br>根据故事的发展逻辑：乡下老鼠明白了城里生活的代价是“提心吊胆”。他认为平静安稳的生活，胜过充满危险的享乐。所以不会再羡慕城里的生活。",
+                                    "result": "→ 他拍拍胸口，长长地舒了一口气，说：“我以后再也不羡慕城里的生活了。城里的生活虽然精彩，但还是咱们的荞麦皮吃得踏实！”"
+                                }
+                            ]
+                        },
+                        {
+                            "blocks": [
+                                {
+                                    "type": "ref",
+                                    "title": "参考范文",
+                                    "text": "乡下老鼠刚回到家，邻居们就呼啦一下围了上来，七嘴八舌地问：“快说说，城里好不好玩？”\n\n他喘了口气，把城里的见闻一五一十讲给大家听：豪宅里鲜红的天鹅绒窗帘、餐桌上从全城搜罗来的山珍海味……讲得大家眼睛都直了。接着，他又把客人猛地推门进来、狗一叫吓得他魂飞魄散的场面也讲了一遍，听得邻居们直缩脖子。\n\n最后，他拍拍胸口，长长地舒了一口气，说：“我以后再也不羡慕城里的生活了。城里的生活虽然精彩，但还是咱们的荞麦皮吃得踏实！”"
+                                }
+                            ]
+                        }
+                    ],
+                    "material": [
+                        {
+                            "type": "method-card",
+                            "title": "方法示范 · 乡下老鼠回乡",
+                            "sections": [
+                                {
+                                    "label": "新情境",
+                                    "text": "乡下老鼠刚回到家，邻居们围上来问城里好不好玩。"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "mat-card",
+                            "title": "推测过程",
+                            "sections": [
+                                {
+                                    "label": "问题1",
+                                    "text": "会分享见闻吗？→ 热情好客＋朴实 → 如实分享好的与不好的"
+                                },
+                                {
+                                    "label": "问题2",
+                                    "text": "还会羡慕城里吗？→ 务实知足＋渴望安宁 → 不否认城里的好，但更珍惜踏实日子"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "mat-card",
+                            "title": "参考范文",
+                            "sections": [
+                                {
+                                    "label": "",
+                                    "text": "乡下老鼠刚回到家，邻居们就呼啦一下围了上来，七嘴八舌地问：“快说说，城里好不好玩？”\n\n他喘了口气，把城里的见闻一五一十讲给大家听：豪宅里鲜红的天鹅绒窗帘、餐桌上从全城搜罗来的山珍海味……讲得大家眼睛都直了。接着，他又把客人猛地推门进来、狗一叫吓得他魂飞魄散的场面也讲了一遍，听得邻居们直缩脖子。\n\n最后，他拍拍胸口，长长地舒了一口气，说：“我以后再也不羡慕城里的生活了。城里的生活虽然精彩，但还是咱们的荞麦皮吃得踏实！”"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "d7-m4",
+                    "name": "模块四：方法练习",
+                    "time": "2-3min",
+                    "subs": [
+                        "老猫装死失败后续推测"
+                    ],
+                    "content": [
+                        {
+                            "title": "新情境",
+                            "blocks": [
+                                {
+                                    "type": "quote",
+                                    "text": "老猫装死失败后，从口袋里爬了出来。"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<b>推测后续：老猫接下来会怎么做呢？</b>"
+                                }
+                            ]
+                        },
+                        {
+                            "blocks": [
+                                {
+                                    "type": "step",
+                                    "question": "1. 老猫会放弃抓老鼠吗？",
+                                    "reason": "根据老猫的形象特点：<strong>年老体弱，狡猾、有心计</strong>——她不会轻易放弃，而是会设计更隐蔽的圈套。",
+                                    "result": "→ 老猫又饿又恼，但她没有扑上去硬追，而是找来一个大木桶，桶里放了一块奶酪，桶口用小木棍支着，自己悄悄藏在桶后。只要老鼠钻进桶里吃奶酪，她就拉倒木棍，把老鼠扣住。"
+                                },
+                                {
+                                    "type": "step",
+                                    "question": "2. 老鼠会发现这个圈套吗？他们会怎么应对？",
+                                    "reason": "根据两只老鼠的形象特点：<strong>聪明、警惕，善于观察分析</strong>——不会贸然行动，会仔细观察周围环境。<br>根据故事的发展逻辑：善于观察分析的人不会轻易上当，只要老鼠保持警惕，仍然会识破老猫的诡计。<br>根据两只老鼠的形象特点：<strong>幽默</strong>——会用语言嘲讽老猫的诡计。",
+                                    "result": "→ 两只老鼠闻到香味出来，一只小心地围着桶转了半圈，突然看到桶后露出的猫尾巴，赶紧拉住同伴。另一只仔细一看，笑道：“猫太太，您还是省省力气吧。”两只老鼠转身就跑，老猫气得直跺脚。"
+                                }
+                            ]
+                        },
+                        {
+                            "blocks": [
+                                {
+                                    "type": "ref",
+                                    "title": "参考范文",
+                                    "text": "老猫装死失败后，从口袋里爬了出来。她又饿又恼，但她没有扑上去硬追，而是找来一个大木桶，桶口用细绳拴着一个小木棍支着，自己藏在桶后。只要老鼠钻进桶里吃奶酪，她就拉倒木棍，把老鼠扣住。\n\n两只老鼠闻到香味出来，一只小心地围着桶转了半圈，突然看到桶后露出的猫尾巴，赶紧拉住同伴：“别过去！桶后面有猫！”另一只仔细一看，笑道：“猫太太，您还是省省力气吧。”两只老鼠转身就跑，老猫气得直跺脚。"
+                                }
+                            ]
+                        }
+                    ],
+                    "material": [
+                        {
+                            "type": "method-card",
+                            "title": "方法练习 · 老猫的新圈套",
+                            "sections": [
+                                {
+                                    "label": "新情境",
+                                    "text": "老猫装死失败后，从口袋里爬了出来。"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "mat-card",
+                            "title": "推测过程",
+                            "sections": [
+                                {
+                                    "label": "问题1",
+                                    "text": "老猫会放弃吗？→ 狡猾＋有心计 → 不会放弃，设计更隐蔽的圈套"
+                                },
+                                {
+                                    "label": "问题2",
+                                    "text": "老鼠会发现吗？→ 聪明＋警惕＋善于观察分析 → 仍会识破<br>→ 幽默 → 用语言嘲讽老猫"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "mat-card",
+                            "title": "参考范文",
+                            "sections": [
+                                {
+                                    "label": "",
+                                    "text": "老猫装死失败后，从口袋里爬了出来。她又饿又恼，但她没有扑上去硬追，而是找来一个大木桶，桶口用细绳拴着一个小木棍支着，自己藏在桶后。只要老鼠钻进桶里吃奶酪，她就拉倒木棍，把老鼠扣住。\n\n两只老鼠闻到香味出来，一只小心地围着桶转了半圈，突然看到桶后露出的猫尾巴，赶紧拉住同伴：“别过去！桶后面有猫！”另一只仔细一看，笑道：“猫太太，您还是省省力气吧。”两只老鼠转身就跑，老猫气得直跺脚。"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "d7-m5",
+                    "name": "模块五：真题演练",
+                    "time": "3-4min",
+                    "subs": [
+                        "《麻雀换羽毛》续编"
+                    ],
+                    "content": [
+                        {
+                            "title": "【2025——2026 江苏盐城·期末】《麻雀换羽毛》",
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "<strong>题目（5）：</strong>麻雀看到孔雀的羽毛后，接下来会发生什么事情？请你展开想象，续编这个故事的结局。"
+                                },
+                                {
+                                    "type": "h4",
+                                    "text": "新情境"
+                                },
+                                {
+                                    "type": "quote",
+                                    "text": "又过了些日子，麻雀去参加百灵鸟举办的歌舞会，看见孔雀的羽毛五彩缤纷，开屏时更是光彩夺目，得到大家的一片赞扬。"
+                                },
+                                {
+                                    "type": "p",
+                                    "text": "<b>推测：麻雀会怎么做呢？</b>"
+                                }
+                            ]
+                        },
+                        {
+                            "blocks": [
+                                {
+                                    "type": "step",
+                                    "question": "1. 麻雀看见孔雀漂亮的羽毛，会有什么反应？",
+                                    "reason": "根据麻雀的形象特点：<strong>曾经爱慕虚荣、只看重外表</strong>——第一反应是羡慕，心里会痒痒的。",
+                                    "result": "→ 麻雀望着孔雀五彩缤纷的羽毛，心里泛起一阵羡慕。"
+                                },
+                                {
+                                    "type": "step",
+                                    "question": "2. 麻雀最终会选择怎么做？",
+                                    "reason": "根据故事的发展逻辑：实用比外表更重要，麻雀已经明白了这个道理，不会再要求换羽毛。<br>根据麻雀的形象特点：<strong>吃过苦头后学会了反思</strong>——会立刻想起上次换羽毛的教训，果断飞走。",
+                                    "result": "→ 他马上想起被狐狸咬断羽毛、飞不起来的狼狈模样，赶紧摇了摇头。他拍拍自己灰色的羽毛，心里想着：再漂亮的羽毛，也比不上能自在飞、能保护自己的羽毛实在。然后头也不回地飞走了。"
+                                }
+                            ]
+                        },
+                        {
+                            "blocks": [
+                                {
+                                    "type": "ref",
+                                    "title": "参考范文",
+                                    "text": "麻雀望着孔雀五彩缤纷的羽毛，心里刚泛起一阵羡慕，就立刻想起被狐狸咬断羽毛、飞不起来的狼狈模样。他赶紧摇摇头，拍着自己的灰羽毛飞走了，心里想着：再漂亮的羽毛，也比不上能自在飞、能保护自己的羽毛实在。"
+                                }
+                            ]
+                        }
+                    ],
+                    "material": [
+                        {
+                            "type": "mat-card",
+                            "title": "【2025——2026 江苏盐城·期末】阅读",
+                            "sections": [
+                                {
+                                    "label": "麻雀换羽毛",
+                                    "text": "①麻雀的羽毛灰不溜秋，没有一点光彩。\n\n②一天，他看到翠鸟的羽毛比他的漂亮，便找到凤凰说：“您为什么把漂亮的羽毛给翠鸟，而把难看的羽毛给我？”凤凰说：“因为灰色的羽毛可以起到自我保护的作用。”麻雀不乐意，说：“我想要漂亮的羽毛，请给我一身绿羽毛吧！”凤凰同意了。\n\n③第二天，群鸟们见了麻雀，纷纷说道：“麻雀，你的羽毛比以前漂亮了。”\n\n④过了一段时间，麻雀看见鹦鹉的羽毛色彩鲜艳，羡慕极了。他又找到凤凰说：“我想要像鹦鹉一样的羽毛。”凤凰说：“你换上鹦鹉的羽毛，恐怕会飞不起来。”麻雀说：“我的力气很大，一定能飞起来的。”凤凰又同意了。\n\n⑤麻雀换上了鹦鹉那样色彩鲜艳的羽毛，群鸟们见了，纷纷夸麻雀漂亮。\n\n⑥又过了些日子，麻雀看见长尾山鸡的羽毛更是光彩夺目，而且尾巴上还有五颜六色的长羽毛。麻雀又去找凤凰，说：“我想要长长尾山鸡尾巴上那样亮亮的长羽毛。”凤凰说：“你换上了长尾山鸡尾巴上的长羽毛，不但飞不起来，就连走路也会感到困难。”麻雀说：“有了长尾山鸡尾巴上的长羽毛，就不用再飞了。”凤凰又满足了他的要求。\n\n⑦麻雀变得跟长尾山鸡一样漂亮。可他却飞不起来，只得拖着长羽毛，慢慢地向树林走去。\n\n⑧半路上，狐狸看见了，扑过去咬住他的尾巴。麻雀拼命挣扎，拖着尾巴在地上打滚。最后，他终于把狐狸咬住的羽毛挣断了。\n\n⑨这时，麻雀才意识到：还是原来的羽毛好。能自在飞行，还不会遭到狐狸的欺负。"
+                                },
+                                {
+                                    "label": "续写情境",
+                                    "text": "又过了些日子，麻雀去参加百灵鸟举办的歌舞会，看见孔雀的羽毛五彩缤纷，开屏时更是光彩夺目，得到大家的一片赞扬。麻雀____。"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "mat-card",
+                            "title": "题目（5）",
+                            "sections": [
+                                {
+                                    "label": "",
+                                    "text": "<strong>麻雀看到孔雀的羽毛后，接下来会发生什么事情？请你展开想象，续编这个故事的结局。</strong>"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "mat-card",
+                            "title": "参考答案",
+                            "sections": [
+                                {
+                                    "label": "",
+                                    "text": "麻雀望着孔雀五彩缤纷的羽毛，心里刚泛起羡慕，就立刻想起被狐狸咬断羽毛、飞不起来的狼狈模样。它赶紧摇摇头，拍着自己的灰羽毛飞走了，心里想着：再漂亮的羽毛，也比不上能自在飞、能保护自己的羽毛实在。"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "d7-m6",
+                    "name": "模块六：总结与预告",
+                    "time": "1min",
+                    "subs": [
+                        "方法总结 + 下周预告"
+                    ],
+                    "content": [
+                        {
+                            "title": "1. 总结方法",
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "<strong>根据形象特点推测后续情节</strong>——只要抓住角色形象和故事逻辑，故事接下来会发生什么其实是有迹可循的。"
+                                }
+                            ]
+                        },
+                        {
+                            "title": "2. 预告下周",
+                            "blocks": [
+                                {
+                                    "type": "p",
+                                    "text": "下周我们要从动物故事走进“人”的故事，伊索笔下的人物有什么特点呢？"
+                                }
+                            ]
+                        }
+                    ],
+                    "material": []
+                }
+            ]
+        }
+    ]
+};
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  以下为渲染代码，一般不需要修改                                           ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+function renderBlock(b) {
+    switch (b.type) {
+        case "p": return "<p>" + b.text + "</p>";
+        case "h4": return "<h4>" + b.text + "</h4>";
+        case "quote": return '<div class="quote-box">' + b.text + "</div>";
+        case "summary": return '<div class="summary-box"><p>' + b.text + "</p></div>";
+        case "moral": return '<div class="moral-box">\ud83d\udca1 ' + b.text + "</div>";
+        case "step": return '<div class="step-block"><div class="step-q">' + b.question + '</div><div class="step-reason">' + b.reason + '</div><div class="step-result">' + b.result + "</div></div>";
+        case "ref": return '<div class="ref-box"><div class="ref-title">\ud83d\udcdd ' + b.title + "</div>" + b.text.split("\n\n").map(function(p){return "<p>"+p+"</p>";}).join("") + "</div>";
+        default: return "<p>" + (b.text||"") + "</p>";
+    }
+}
+
+function renderContent(mod) {
+    var h = '<div class="section-title">' + mod.name + "\uff08" + mod.time + "\uff09</div>";
+    mod.content.forEach(function(card) {
+        h += '<div class="card">';
+        if (card.title) h += "<h3>" + card.title + "</h3>";
+        card.blocks.forEach(function(b){ h += renderBlock(b); });
+        h += "</div>";
+    });
+    return h;
+}
+
+function renderMaterial(mod) {
+    var h = "";
+    mod.material.forEach(function(mat) {
+        var cls = mat.type === "method-card" ? "method-card" : "mat-card";
+        h += '<div class="' + cls + '">';
+        h += mat.type === "method-card" ? "<h5>" + mat.title + "</h5>" : '<div class="mat-title">' + mat.title + "</div>";
+        mat.sections.forEach(function(sec) {
+            if (sec.label) {
+                if (mat.type === "method-card") {
+                    h += "<p><strong>" + sec.label + "\uff1a</strong>" + sec.text.replace(/\n\n/g,"<br>") + "</p>";
+                } else {
+                    h += '<div class="mat-label">' + sec.label + "</div>";
+                    h += sec.isMoral ? '<div class="mat-moral">' + sec.text + "</div>" : "<p>" + sec.text.replace(/\n\n/g,"</p><p>") + "</p>";
+                }
+            } else {
+                h += "<p>" + sec.text.replace(/\n\n/g,"</p><p>") + "</p>";
+            }
+        });
+        h += "</div>";
+    });
+    return h;
+}
+
+
+// Page uses static HTML - only set up event listeners
+(function() {
+    document.querySelectorAll(".day-title").forEach(function(t){ 
+        t.addEventListener("click",function(){ t.classList.toggle("expanded"); t.nextElementSibling.classList.toggle("show"); }); 
+    });
+    document.querySelectorAll(".module-item, .sub-item").forEach(function(item){
+        item.addEventListener("click", function(e){
+            e.stopPropagation();
+            var target = item.getAttribute("data-target");
+            document.querySelectorAll(".module-item, .sub-item").forEach(function(i){ i.classList.remove("active"); });
+            document.querySelectorAll('[data-target="'+target+'"]').forEach(function(el){ el.classList.add("active"); });
+            document.querySelectorAll(".content-section").forEach(function(s){ s.classList.remove("active"); });
+            document.querySelectorAll(".material-section").forEach(function(s){ s.classList.remove("active"); });
+            var c = document.getElementById(target); if(c) c.classList.add("active");
+            var m = document.getElementById("mat-"+target); if(m) m.classList.add("active");
+        });
+    });
+})();
+
+
+// ========== EDIT MODE ==========
+var editMode = false;
+var editableSelectors = '.card p, .card h3, .card h4, .quote-box, .summary-box p, .moral-box, .step-block .step-q, .step-block .step-reason, .step-block .step-result, .ref-box p, .mat-card p, .mat-card .mat-title, .mat-card .mat-moral, .method-card p, .method-card h5';
+
+function toggleEdit() {
+    editMode = true;
+    document.body.classList.add('editing');
+    document.querySelectorAll(editableSelectors).forEach(function(el) {
+        el.setAttribute('contenteditable', 'true');
+    });
+    document.getElementById('btn-edit').style.display = 'none';
+    document.getElementById('btn-save').style.display = 'inline-block';
+    document.getElementById('btn-cancel').style.display = 'inline-block';
+}
+
+function cancelEdit() {
+    editMode = false;
+    document.body.classList.remove('editing');
+    document.querySelectorAll('[contenteditable]').forEach(function(el) {
+        el.removeAttribute('contenteditable');
+    });
+    document.getElementById('btn-edit').style.display = 'inline-block';
+    document.getElementById('btn-save').style.display = 'none';
+    document.getElementById('btn-cancel').style.display = 'none';
+    location.reload();
+}
+
+function saveAndExport() {
+    // Remove contenteditable before export
+    document.body.classList.remove('editing');
+    document.querySelectorAll('[contenteditable]').forEach(function(el) {
+        el.removeAttribute('contenteditable');
+    });
+    document.getElementById('btn-edit').style.display = 'inline-block';
+    document.getElementById('btn-save').style.display = 'none';
+    document.getElementById('btn-cancel').style.display = 'none';
+    editMode = false;
+
+    // Clone the entire page HTML and export
+    var html = document.documentElement.outerHTML;
+    var blob = new Blob(['<!DOCTYPE html>\n' + html], {type: 'text/html;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'teaching-plan.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    alert('文件已导出！用导出的新文件替换旧文件即可。');
+}
+
+</script>
+
+</body></html>
