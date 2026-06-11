@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="zh-CN"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -82,6 +81,10 @@
         .branch { background: #FFF; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
         .branch-title { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
         .branch-items { font-size: 12px; color: var(--text-light); line-height: 1.8; }
+        /* 嵌入图片 */
+        .embed-img { max-width: 90%; display: block; margin: 14px auto; border-radius: 8px; border: 1px solid var(--border); }
+        .card .embed-img { max-width: 75%; }
+        .ref-box .embed-img { max-width: 95%; }
         .content-section { display: none; }
         .content-section.active { display: block; }
         .material-section { display: none; }
@@ -100,12 +103,12 @@
         body.editing .card p:focus, body.editing .card h3:focus, body.editing .card h4:focus, body.editing .quote-box:focus, body.editing .summary-box p:focus, body.editing .moral-box:focus, body.editing .step-block .step-q:focus, body.editing .step-block .step-reason:focus, body.editing .step-block .step-result:focus, body.editing .ref-box p:focus, body.editing .mat-card p:focus, body.editing .mat-card .mat-title:focus, body.editing .mat-card .mat-moral:focus, body.editing .method-card p:focus, body.editing .method-card h5:focus { outline: 2px solid var(--accent); background: #FFFFF0; }
     </style>
 </head>
-<body>
+<body class="">
 <div class="edit-hint">编辑模式已开启 — 点击任意文字即可修改，改完点"保存并导出"</div>
 <div class="edit-toolbar">
-    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()">编辑</button>
-    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display:none;">保存并导出</button>
-    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display:none;">取消</button>
+    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()" style="display: inline-block;">编辑</button>
+    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display: none;">保存并导出</button>
+    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display: none;">取消</button>
 </div>
 
 <div class="header">
@@ -120,7 +123,7 @@
             <div class="day-title expanded" data-day="d6" onclick="toggleDay(this)">D6 教学思路<span class="arrow">▶</span></div>
             <div class="module-list show" id="day-d6">
                 <div class="module-item active" data-target="d6-m1" onclick="switchModule(this)">模块一：导入<span class="time-tag">1min</span></div>
-                <div class="sub-item" data-target="d6-m1" onclick="switchModule(this)">狐狸"流量担当"引入</div>
+                <div class="sub-item active" data-target="d6-m1" onclick="switchModule(this)">狐狸"流量担当"引入</div>
                 <div class="module-item" data-target="d6-m2" onclick="switchModule(this)">模块二：内容梳理<span class="time-tag">10-12min</span></div>
                 <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">精读《狐狸和葡萄》</div>
                 <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">┗ 爱面子·自欺欺人</div>
@@ -133,8 +136,8 @@
             </div>
         </div>
         <div class="day-section">
-            <div class="day-title" data-day="d7" onclick="toggleDay(this)">D7 教学思路<span class="arrow">▶</span></div>
-            <div class="module-list" id="day-d7">
+            <div class="day-title expanded" data-day="d7" onclick="toggleDay(this)">D7 教学思路<span class="arrow">▶</span></div>
+            <div class="module-list show" id="day-d7">
                 <div class="module-item" data-target="d7-m1" onclick="switchModule(this)">模块一：回顾导入<span class="time-tag">1min</span></div>
                 <div class="sub-item" data-target="d7-m1" onclick="switchModule(this)">回顾问题 + 引出方法</div>
                 <div class="module-item" data-target="d7-m2" onclick="switchModule(this)">模块二：方法讲解<span class="time-tag">2-3min</span></div>
@@ -157,7 +160,7 @@
             <div class="content-section active" id="d6-m1">
                 <div class="section-title">模块一：导入（1min）</div>
                 <div class="card">
-                    <p>在《伊索寓言》这个动物故事王国里，狐狸绝对是当仁不让的"流量担当"。据统计，在两三百篇的《伊索寓言》中，以狐狸为主人公的寓言就多达二十九篇，占据了约十分之一的篇幅。这些故事中，狐狸的形象丰富多彩，它们或是狡猾多端，或是聪明机智，每一个故事都从不同角度展现了狐狸独特的性格魅力。</p>
+                    <p>在《伊索寓言》这个动物故事王国里，狐狸绝对是当仁不让的"流量担当"。据统计，在《伊索寓言》中，以狐狸为主人公的寓言就占据了约十分之一的篇幅。这些故事中，狐狸的形象丰富多彩，它们或是狡猾多端，或是聪明机智，每一个故事都从不同角度展现了狐狸独特的性格魅力。</p>
                     <p><strong>今天，我们就再来读两个新的狐狸寓言，看看这一次，狐狸又会展现出怎样的性格？又会带给我们什么启发？</strong></p>
                 </div>
             </div>
@@ -223,7 +226,7 @@
                 <div class="section-title">模块一：回顾导入（1min）</div>
                 <div class="card">
                     <h3>1. 回顾问题</h3>
-                    <p>我们已经读了不少《伊索寓言》中的狐狸故事——有《狐狸和葡萄》《断了尾巴的狐狸》，还有之前学过的《狐狸教狼钓鱼》《毛驴、狐狸和狮子》《狮子、狼和狐狸》《狐狸和乌鸦》《蝉和狐狸》……这些狐狸的形象有相同的，也有不同的。怎样才能更全面地了解《伊索寓言》里狐狸的形象特点呢？</p>
+                    <p>我们已经读了不少《伊索寓言》中的狐狸故事——有《狐狸和葡萄》《断了尾巴的狐狸》，还有之前学过的《狐狸教狼钓鱼》《毛驴、狐狸和狮子》……这些狐狸的形象有相同的，也有不同的。怎样才能更全面地了解《伊索寓言》里狐狸的形象特点呢？</p>
                 </div>
                 <div class="card">
                     <h3>2. 引出方法</h3>
@@ -245,6 +248,49 @@
                     <p>· <strong>中心节点：</strong>代表核心概念或问题</p>
                     <p>· <strong>一级分支：</strong>直接相关的子主题</p>
                     <p>· <strong>二级及以下分支：</strong>进一步细化的内容</p>
+                    <div class="mindmap-structure-img" style="margin:14px 0;text-align:center;">
+                        <svg viewBox="0 0 720 320" style="max-width:90%;height:auto;font-family:inherit;">
+                          <!-- center bubble -->
+                          <ellipse cx="360" cy="160" rx="56" ry="36" fill="#fff" stroke="#333" stroke-width="2"/>
+                          <text x="360" y="166" text-anchor="middle" font-size="16" fill="#333">主题</text>
+
+                          <!-- 6 main branches -->
+                          <g stroke="#333" stroke-width="2" fill="none">
+                            <path d="M310 142 Q220 100 130 70" />
+                            <path d="M310 160 Q220 160 130 160" />
+                            <path d="M310 178 Q220 220 130 250" />
+                            <path d="M410 142 Q500 100 590 70" />
+                            <path d="M410 160 Q500 160 590 160" />
+                            <path d="M410 178 Q500 220 590 250" />
+                          </g>
+                          <!-- 一级分支 labels -->
+                          <g font-size="13" fill="#333" text-anchor="middle">
+                            <text x="200" y="115">一级分支</text>
+                            <text x="200" y="155">一级分支</text>
+                            <text x="200" y="205">一级分支</text>
+                            <text x="520" y="115">一级分支</text>
+                            <text x="520" y="155">一级分支</text>
+                            <text x="520" y="205">一级分支</text>
+                          </g>
+                          <!-- 2nd level branches -->
+                          <g stroke="#888" stroke-width="1.2" fill="none">
+                            <path d="M120 70 L70 50" /><path d="M120 70 L70 90" />
+                            <path d="M120 160 L70 140" /><path d="M120 160 L70 180" />
+                            <path d="M120 250 L70 230" /><path d="M120 250 L70 270" />
+                            <path d="M600 70 L650 50" /><path d="M600 70 L650 90" />
+                            <path d="M600 160 L650 140" /><path d="M600 160 L650 180" />
+                            <path d="M600 250 L650 230" /><path d="M600 250 L650 270" />
+                          </g>
+                          <g font-size="11" fill="#666" text-anchor="middle">
+                            <text x="40" y="55">二级</text><text x="40" y="95">二级</text>
+                            <text x="40" y="145">二级</text><text x="40" y="185">三级</text>
+                            <text x="40" y="235">二级</text><text x="40" y="275">三级</text>
+                            <text x="680" y="55">二级</text><text x="680" y="95">二级</text>
+                            <text x="680" y="145">二级</text><text x="680" y="185">三级</text>
+                            <text x="680" y="235">二级</text><text x="680" y="275">三级</text>
+                          </g>
+                        </svg>
+                    </div>
                 </div>
                 <div class="card">
                     <h3>② 两个步骤</h3>
@@ -311,6 +357,9 @@
                     </div>
                 </div>
                 <div class="card">
+                    <img class="embed-img" src="w24-fox.png" alt="《伊索寓言》中的狐狸思维导图" />
+                </div>
+                <div class="card">
                     <h3>总结发现</h3>
                     <p>① 角色的形象特点是多面的，同一角色在不同故事中可能展现出不同的特点。</p>
                     <p>② 角色是为寓意服务的，作者根据想传达的不同道理，设计不同的形象。</p>
@@ -328,28 +377,7 @@
                 <div class="card">
                     <div class="ref-box">
                         <div class="ref-title">📝 参考答案</div>
-                        <p style="margin-bottom:10px;">以"老鼠"为中心，结合读过的寓言，从以下维度填写思维导图：</p>
-                        <div class="mindmap">
-                            <div style="text-align:center;margin-bottom:14px;"><span class="mindmap-center">老鼠的形象</span></div>
-                            <div class="mindmap-branches">
-                                <div class="branch">
-                                    <div class="branch-title">聪明、警惕</div>
-                                    <div class="branch-items">《猫和老鼠》<br>一眼识破猫装死的圈套，幽默揭穿骗局</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">朴实、知足</div>
-                                    <div class="branch-items">《城里老鼠和乡下老鼠》<br>乡下老鼠宁要平静生活，不贪城里享乐</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">感恩、重义</div>
-                                    <div class="branch-items">《狮子和报恩的老鼠》<br>咬断绳网，报答当初放它的狮子</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">善良、勇敢</div>
-                                    <div class="branch-items">《最完美的战胜》<br>不忍心趁机伤害落网的大象，反而救了它</div>
-                                </div>
-                            </div>
-                        </div>
+                        <img class="embed-img" src="w24-mouse.png" alt="寓言中的老鼠思维导图" />
                     </div>
                 </div>
             </div>
@@ -374,8 +402,9 @@
                 <div class="material-section active" id="mat-d6-m1">
                     <div class="mat-card">
                         <div class="mat-title">W24 导语 · 狐狸的故事（二）</div>
-                        <div class="mat-label">《伊索寓言》中的狐狸</div>
-                        <p>在《伊索寓言》里，狐狸是出镜最多的动物之一，多达二十九篇以它为主角。但你有没有发现，这些故事里的狐狸，性格并不总是一样的？有时它狡猾阴险、不择手段；有时又聪明机智、以弱胜强；有时甚至会因爱面子而自欺欺人。本周，我们来读两个新的狐狸故事，看看伊索又赋予了狐狸怎样的性格，想借它传达什么道理。</p>
+                        <div class="mat-label">为什么伊索这么爱写狐狸？</div>
+                        <p>古希腊山脉多、森林密，狐狸随处可见。古希腊人在打猎、农耕中观察发现：狐狸面对困境总能想出巧妙的办法，既有敏锐的洞察力，又有冷静的应对能力。在那个充满挑战的时代，智慧与生存能力是非常可贵的品质，所以古希腊人把狐狸视为<strong>智慧的象征</strong>。</p>
+                        <p>有意思的是，狐狸在寓言里时好时坏、时聪明时自私——它的多面性正反映了人性的复杂：同一种动物可以代表不同的人，就像同一个人在不同情境下也会有不同的表现。</p>
                     </div>
                 </div>
 
@@ -428,35 +457,7 @@
                 <div class="material-section" id="mat-d7-m3">
                     <div class="mat-card">
                         <div class="mat-title">方法示范 · 狐狸的形象特点</div>
-                        <div class="mindmap" style="padding:14px;">
-                            <div style="text-align:center;margin-bottom:12px;"><span class="mindmap-center" style="font-size:13px;padding:8px 18px;">狐狸的形象</span></div>
-                            <div class="mindmap-branches">
-                                <div class="branch">
-                                    <div class="branch-title">狡猾</div>
-                                    <div class="branch-items">《断了尾巴的狐狸》骗大家断尾<br>《狐狸教狼钓鱼》骗狼钓鱼</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">自私</div>
-                                    <div class="branch-items">《断了尾巴的狐狸》劝大家断尾掩盖自己<br>《毛驴、狐狸和狮子》出卖毛驴求生</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">自作聪明</div>
-                                    <div class="branch-items">《毛驴、狐狸和狮子》出卖毛驴反被狮子吃</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">机智</div>
-                                    <div class="branch-items">《狮子、狼和狐狸》面对诬陷用计谋反击</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">自欺欺人</div>
-                                    <div class="branch-items">《狐狸和葡萄》吃不到葡萄说葡萄酸</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">阴险狠毒</div>
-                                    <div class="branch-items">《狐狸教狼钓鱼》骗狼冻尾，叫人来逮狼</div>
-                                </div>
-                            </div>
-                        </div>
+                        <img class="embed-img" src="w24-fox.png" alt="《伊索寓言》中的狐狸思维导图" />
                     </div>
                 </div>
 
@@ -476,27 +477,7 @@
                         <div class="mat-label">题目</div>
                         <p>老鼠在不同的寓言故事中有着不同的性格特点。请你结合《伊索寓言》或《克雷洛夫寓言》的阅读经验，完成以下思维导图。</p>
                         <div class="mat-label">参考答案</div>
-                        <div class="mindmap" style="padding:12px;margin-top:8px;">
-                            <div style="text-align:center;margin-bottom:12px;"><span class="mindmap-center" style="font-size:13px;padding:8px 18px;">老鼠的形象</span></div>
-                            <div class="mindmap-branches">
-                                <div class="branch">
-                                    <div class="branch-title">聪明、警惕</div>
-                                    <div class="branch-items">《猫和老鼠》<br>识破猫装死的圈套</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">朴实、知足</div>
-                                    <div class="branch-items">《城里老鼠和乡下老鼠》<br>宁要平静，不贪享乐</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">感恩、重义</div>
-                                    <div class="branch-items">《狮子和报恩的老鼠》<br>咬断绳网报答狮子</div>
-                                </div>
-                                <div class="branch">
-                                    <div class="branch-title">善良、勇敢</div>
-                                    <div class="branch-items">《最完美的战胜》<br>放弃报复，救了落网的大象</div>
-                                </div>
-                            </div>
-                        </div>
+                        <img class="embed-img" src="w24-mouse.png" alt="寓言中的老鼠思维导图" />
                     </div>
                 </div>
 
@@ -557,5 +538,6 @@ function saveAndExport() {
     a.click();
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
