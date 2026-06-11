@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="zh-CN"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -96,12 +95,12 @@
         body.editing .card p:focus, body.editing .card h3:focus, body.editing .card h4:focus, body.editing .quote-box:focus, body.editing .summary-box p:focus, body.editing .moral-box:focus, body.editing .step-block .step-q:focus, body.editing .step-block .step-reason:focus, body.editing .step-block .step-result:focus, body.editing .ref-box p:focus, body.editing .mat-card p:focus, body.editing .mat-card .mat-title:focus, body.editing .mat-card .mat-moral:focus, body.editing .method-card p:focus, body.editing .method-card h5:focus { outline: 2px solid var(--accent); background: #FFFFF0; }
     </style>
 </head>
-<body>
+<body class="">
 <div class="edit-hint">编辑模式已开启 — 点击任意文字即可修改，改完点"保存并导出"</div>
 <div class="edit-toolbar">
-    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()">编辑</button>
-    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display:none;">保存并导出</button>
-    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display:none;">取消</button>
+    <button class="edit-btn primary" id="btn-edit" onclick="toggleEdit()" style="display: inline-block;">编辑</button>
+    <button class="edit-btn success" id="btn-save" onclick="saveAndExport()" style="display: none;">保存并导出</button>
+    <button class="edit-btn secondary" id="btn-cancel" onclick="cancelEdit()" style="display: none;">取消</button>
 </div>
 
 <div class="header">
@@ -115,7 +114,7 @@
         <div class="day-section">
             <div class="day-title expanded" data-day="d6" onclick="toggleDay(this)">D6 教学思路<span class="arrow">▶</span></div>
             <div class="module-list show" id="day-d6">
-                <div class="module-item active" data-target="d6-m1" onclick="switchModule(this)">模块一：导入<span class="time-tag">1min</span></div>
+                <div class="module-item" data-target="d6-m1" onclick="switchModule(this)">模块一：导入<span class="time-tag">1min</span></div>
                 <div class="sub-item" data-target="d6-m1" onclick="switchModule(this)">伊索寓言中的人物引入</div>
                 <div class="module-item" data-target="d6-m2" onclick="switchModule(this)">模块二：内容梳理<span class="time-tag">10-12min</span></div>
                 <div class="sub-item" data-target="d6-m2" onclick="switchModule(this)">精读《牧羊人和野山羊》</div>
@@ -131,8 +130,8 @@
             </div>
         </div>
         <div class="day-section">
-            <div class="day-title" data-day="d7" onclick="toggleDay(this)">D7 教学思路<span class="arrow">▶</span></div>
-            <div class="module-list" id="day-d7">
+            <div class="day-title expanded" data-day="d7" onclick="toggleDay(this)">D7 教学思路<span class="arrow">▶</span></div>
+            <div class="module-list show" id="day-d7">
                 <div class="module-item" data-target="d7-m1" onclick="switchModule(this)">模块一：回顾导入<span class="time-tag">1-2min</span></div>
                 <div class="sub-item" data-target="d7-m1" onclick="switchModule(this)">回顾问题 + 引出方法</div>
                 <div class="module-item" data-target="d7-m2" onclick="switchModule(this)">模块二：方法讲解与示范<span class="time-tag">5-7min</span></div>
@@ -140,8 +139,8 @@
                 <div class="sub-item" data-target="d7-m2" onclick="switchModule(this)">方法示范：两篇牧羊人故事对比</div>
                 <div class="module-item" data-target="d7-m3" onclick="switchModule(this)">模块三：真题演练<span class="time-tag">3-4min</span></div>
                 <div class="sub-item" data-target="d7-m3" onclick="switchModule(this)">《农夫和蛇》对比题</div>
-                <div class="module-item" data-target="d7-m4" onclick="switchModule(this)">模块四：总结与预告<span class="time-tag">1min</span></div>
-                <div class="sub-item" data-target="d7-m4" onclick="switchModule(this)">方法总结 + 下周预告</div>
+                <div class="module-item active" data-target="d7-m4" onclick="switchModule(this)">模块四：总结与预告<span class="time-tag">1min</span></div>
+                <div class="sub-item active" data-target="d7-m4" onclick="switchModule(this)">方法总结 + 下周预告</div>
             </div>
         </div>
     </div>
@@ -150,7 +149,7 @@
         <div class="content" id="content">
 
             <!-- D6 模块一：导入 -->
-            <div class="content-section active" id="d6-m1">
+            <div class="content-section" id="d6-m1">
                 <div class="section-title">模块一：导入（1min）</div>
                 <div class="card">
                     <p>之前我们读了很多《伊索寓言》里的动物故事，但其实《伊索寓言》里还有不少以人为主角的故事。伊索特别喜欢写那些普普通通的人——农夫、渔夫、商人等等，他们有时候因为善良、有时候因为贪心、有时候因为冲动，做出一些决定，结果往往出人意料。</p>
@@ -278,7 +277,7 @@
             </div>
 
             <!-- D7 模块四：总结与预告 -->
-            <div class="content-section" id="d7-m4">
+            <div class="content-section active" id="d7-m4">
                 <div class="section-title">模块四：总结与预告（1min）</div>
                 <div class="card">
                     <h3>1. 总结方法</h3>
@@ -298,11 +297,11 @@
             <div id="materials-content">
 
                 <!-- mat-d6-m1：导语 -->
-                <div class="material-section active" id="mat-d6-m1">
+                <div class="material-section" id="mat-d6-m1">
                     <div class="mat-card">
                         <div class="mat-title">W22 导语 · 人的故事</div>
                         <div class="mat-label">《伊索寓言》中的人物</div>
-                        <p>在《伊索寓言》中，除了形形色色的动物，伊索还写了许多普通人的故事。他笔下的人物多是牧羊人、农夫、渔夫这样的劳动者，他们的遭遇贴近生活，却藏着深刻的道理。这些人有时因为贪心，想得到不属于自己的东西；有时因为固执，把好心人的劝告当作耳旁风。最终，他们往往都要为自己的选择付出代价。本周，我们就来读两个关于牧羊人的故事，看看伊索是怎样刻画人性弱点的。</p>
+                        <p>在《伊索寓言》中，除了形形色色的动物，伊索还写了许多普通人的故事。他笔下的人物多是牧羊人、农夫、渔夫这样的劳动者，他们的遭遇贴近生活，却藏着深刻的道理。这些人有时因为贪心，想得到不属于自己的东西；有时因为固执，把好心人的劝告当作耳旁风。最终，他们往往都要为自己的选择付出代价。来看看伊索是怎样刻画人性弱点的吧！</p>
                     </div>
                 </div>
 
@@ -374,7 +373,7 @@
                 </div>
 
                 <!-- mat-d7-m4 -->
-                <div class="material-section" id="mat-d7-m4"></div>
+                <div class="material-section active" id="mat-d7-m4"></div>
 
             </div>
         </div>
@@ -430,5 +429,5 @@ function saveAndExport() {
     a.click();
 }
 </script>
-</body>
-</html>
+
+</body></html>
