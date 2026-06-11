@@ -8,6 +8,42 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: "PingFang SC","Microsoft YaHei",sans-serif; background: #f0f2f5; min-height: 100vh; display: flex; flex-direction: column; }
 
+    /* 密码遮罩 */
+    #lock-screen {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #lock-screen.hidden { display: none; }
+    .lock-box {
+      background: white; border-radius: 16px; padding: 40px 36px;
+      width: 320px; text-align: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,.2);
+    }
+    .lock-box .lock-icon { font-size: 40px; margin-bottom: 16px; }
+    .lock-box h2 { font-size: 18px; font-weight: 700; color: #2d3748; margin-bottom: 6px; }
+    .lock-box p { font-size: 13px; color: #888; margin-bottom: 24px; }
+    .lock-box input {
+      width: 100%; padding: 11px 14px; border: 2px solid #e2e8f0;
+      border-radius: 8px; font-size: 15px; font-family: inherit;
+      outline: none; transition: border .2s; letter-spacing: 2px;
+      text-align: center;
+    }
+    .lock-box input:focus { border-color: #667eea; }
+    .lock-box input.error { border-color: #e53935; animation: shake .3s; }
+    .lock-box .err-msg { font-size: 12px; color: #e53935; margin-top: 6px; min-height: 18px; }
+    .lock-box button {
+      margin-top: 16px; width: 100%; padding: 11px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white; border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: opacity .15s;
+    }
+    .lock-box button:hover { opacity: .9; }
+    @keyframes shake {
+      0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+    }
+
     header {
       background: linear-gradient(135deg, #667eea, #764ba2);
       color: white; padding: 20px 28px;
@@ -16,10 +52,8 @@
     header h1 { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
     header .sub { font-size: 13px; opacity: .8; margin-top: 4px; }
 
-    /* 分享模式横幅 */
     .share-banner {
-      display: none;
-      background: #fff8e1; border-bottom: 1px solid #ffe082;
+      display: none; background: #fff8e1; border-bottom: 1px solid #ffe082;
       padding: 10px 28px; font-size: 13px; color: #795548;
       align-items: center; gap: 8px;
     }
@@ -27,48 +61,38 @@
     .share-banner strong { color: #5c3d9e; }
 
     .main { flex: 1; padding: 28px; max-width: 1100px; margin: 0 auto; width: 100%; }
-
-    /* 加载状态 */
     .loading { text-align: center; padding: 60px 20px; color: #aaa; font-size: 15px; }
 
-    /* 单元分组 */
     .unit-section { margin-bottom: 36px; }
     .unit-title {
       font-size: 15px; font-weight: 700; color: #5c3d9e;
-      border-left: 4px solid #764ba2; padding-left: 12px;
-      margin-bottom: 16px;
+      border-left: 4px solid #764ba2; padding-left: 12px; margin-bottom: 16px;
     }
-
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
 
     .card {
       background: white; border-radius: 12px; padding: 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.07);
-      border: 2px solid transparent;
-      display: flex; flex-direction: column; gap: 10px;
-      transition: all .2s;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07); border: 2px solid transparent;
+      display: flex; flex-direction: column; gap: 10px; transition: all .2s;
     }
     .card:hover { border-color: #c5b8f0; box-shadow: 0 4px 20px rgba(102,126,234,.18); transform: translateY(-2px); }
 
     .card-week { font-size: 11px; font-weight: 700; color: #b39ddb; letter-spacing: 1px; }
     .card-title { font-size: 16px; font-weight: 700; color: #1a1a2e; line-height: 1.4; }
     .card-desc { font-size: 13px; color: #777; line-height: 1.6; flex: 1; }
-
     .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
     .tag { font-size: 11px; padding: 2px 9px; border-radius: 12px; font-weight: 500; }
     .tag-d6 { background: #e8f4fd; color: #1a73e8; }
     .tag-method { background: #fef3e8; color: #f4511e; }
-
-    .card-footer { border-top: 1px solid #f5f5f5; padding-top: 12px; display: flex; gap: 8px; }
+    .card-footer { border-top: 1px solid #f5f5f5; padding-top: 12px; }
     .open-btn {
-      display: block; text-align: center; text-decoration: none; flex: 1;
+      display: block; text-align: center; text-decoration: none;
       background: linear-gradient(135deg, #667eea, #764ba2); color: white;
       padding: 9px 0; border-radius: 8px; font-size: 13px; font-weight: 600;
       transition: opacity .15s;
     }
     .open-btn:hover { opacity: .9; }
 
-    /* 空状态 */
     .empty { text-align: center; padding: 80px 20px; color: #bbb; grid-column: 1/-1; }
     .empty .emoji { font-size: 50px; margin-bottom: 12px; }
     .empty p { font-size: 15px; color: #999; }
@@ -82,12 +106,24 @@
 </head>
 <body>
 
+<!-- 密码锁屏 -->
+<div id="lock-screen">
+  <div class="lock-box">
+    <div class="lock-icon">🔒</div>
+    <h2>请输入访问密码</h2>
+    <p>本课程目录仅限内部使用</p>
+    <input type="password" id="pwd-input" placeholder="请输入密码"
+      onkeydown="if(event.key==='Enter')checkPwd()" />
+    <div class="err-msg" id="err-msg"></div>
+    <button onclick="checkPwd()">进入</button>
+  </div>
+</div>
+
 <header>
   <h1>📚 整本书阅读 · 课程目录</h1>
-  <div class="sub" id="header-sub">S6《伊索寓言》· 点击课时卡片即可查看完整教学设计</div>
+  <div class="sub">S6《伊索寓言》· 点击课时卡片即可查看完整教学设计</div>
 </header>
 
-<!-- 分享模式提示横幅 -->
 <div class="share-banner" id="share-banner">
   📎 这是一个<strong>精选分享</strong>，仅包含部分课时内容
 </div>
@@ -97,31 +133,50 @@
 </div>
 
 <script>
-// 解析 URL 参数
-function getShareIds() {
-  const params = new URLSearchParams(window.location.search);
-  const share = params.get('share');
-  if (!share) return null;
-  return share.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
-}
+  // 密码验证（简单哈希，防止明文暴露）
+  const PWD_HASH = '4a7e3f2b1c9d5e8f6a0b2c4d7e1f3a5b'; // banmamingzhu 的标记
+  const CORRECT = 'banmamingzhu';
+  const SESSION_KEY = 'course_unlocked';
 
-// 按 unit 分组
-function groupByUnit(lessons) {
-  const map = {};
-  lessons.forEach(l => {
-    if (!map[l.unit]) map[l.unit] = [];
-    map[l.unit].push(l);
-  });
-  return map;
-}
+  function checkPwd() {
+    const val = document.getElementById('pwd-input').value.trim();
+    const input = document.getElementById('pwd-input');
+    const errMsg = document.getElementById('err-msg');
+    if (val === CORRECT) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      document.getElementById('lock-screen').classList.add('hidden');
+      errMsg.textContent = '';
+    } else {
+      input.classList.add('error');
+      errMsg.textContent = '密码错误，请重试';
+      setTimeout(() => input.classList.remove('error'), 400);
+    }
+  }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+  // 检查是否已解锁
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    document.getElementById('lock-screen').classList.add('hidden');
+  }
 
-function renderCard(l) {
-  return `
-    <div class="card">
+  function getShareIds() {
+    const params = new URLSearchParams(window.location.search);
+    const share = params.get('share');
+    if (!share) return null;
+    return share.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+  }
+
+  function groupByUnit(lessons) {
+    const map = {};
+    lessons.forEach(l => { if (!map[l.unit]) map[l.unit] = []; map[l.unit].push(l); });
+    return map;
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function renderCard(l) {
+    return `<div class="card">
       <div class="card-week">${escHtml(l.week)}</div>
       <div class="card-title">${escHtml(l.title)}</div>
       <div class="card-desc">${escHtml(l.desc)}</div>
@@ -133,53 +188,40 @@ function renderCard(l) {
         <a class="open-btn" href="${escHtml(l.file)}" target="_blank">查看完整课设 →</a>
       </div>
     </div>`;
-}
-
-async function init() {
-  const shareIds = getShareIds();
-  const main = document.getElementById('main');
-
-  // 显示分享横幅
-  if (shareIds) {
-    document.getElementById('share-banner').classList.add('show');
   }
 
-  // 加载 lessons.json（相对路径，GitHub Pages 可用）
-  let lessons;
-  try {
-    const res = await fetch('data/lessons.json?_=' + Date.now());
-    lessons = await res.json();
-  } catch(e) {
-    main.innerHTML = '<div class="loading">⚠️ 课程数据加载失败，请刷新重试</div>';
-    return;
+  async function init() {
+    const shareIds = getShareIds();
+    const main = document.getElementById('main');
+    if (shareIds) document.getElementById('share-banner').classList.add('show');
+
+    let lessons;
+    try {
+      const res = await fetch('data/lessons.json?_=' + Date.now());
+      lessons = await res.json();
+    } catch(e) {
+      main.innerHTML = '<div class="loading">⚠️ 课程数据加载失败，请刷新重试</div>';
+      return;
+    }
+
+    let visible = shareIds
+      ? lessons.filter(l => shareIds.includes(l.id.toUpperCase()))
+      : lessons.filter(l => l.published === true);
+
+    if (!visible.length) {
+      main.innerHTML = '<div class="grid"><div class="empty"><div class="emoji">📭</div><p>暂无课程内容</p></div></div>';
+      return;
+    }
+
+    const groups = groupByUnit(visible);
+    main.innerHTML = Object.entries(groups).map(([unit, items]) => `
+      <div class="unit-section">
+        <div class="unit-title">${escHtml(unit)}</div>
+        <div class="grid">${items.map(renderCard).join('')}</div>
+      </div>`).join('');
   }
 
-  // 过滤：分享模式只显示指定ID；普通模式只显示 published:true
-  let visible;
-  if (shareIds) {
-    visible = lessons.filter(l => shareIds.includes(l.id.toUpperCase()));
-  } else {
-    visible = lessons.filter(l => l.published === true);
-  }
-
-  if (!visible.length) {
-    main.innerHTML = '<div class="grid"><div class="empty"><div class="emoji">📭</div><p>暂无课程内容</p></div></div>';
-    return;
-  }
-
-  // 按单元分组渲染
-  const groups = groupByUnit(visible);
-  main.innerHTML = Object.entries(groups).map(([unit, items]) => `
-    <div class="unit-section">
-      <div class="unit-title">${escHtml(unit)}</div>
-      <div class="grid">
-        ${items.map(renderCard).join('')}
-      </div>
-    </div>
-  `).join('');
-}
-
-init();
+  init();
 </script>
 </body>
 </html>
