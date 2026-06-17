@@ -87,8 +87,8 @@
         .ref-box .embed-img { max-width: 95%; }
         .content-section { display: block; }
         .content-section + .content-section { border-top: 2px dashed var(--border); margin-top: 8px; padding-top: 8px; }
-        .material-section { display: none; }
-        .material-section.active { display: block; }
+        .material-section { display: block; }
+        .material-section + .material-section { border-top: 2px dashed var(--border); margin-top: 8px; padding-top: 8px; }
         @media (max-width: 1100px) { .materials { width: 560px; min-width: 560px; } }
         @media (max-width: 900px) { .container { flex-direction: column; } .sidebar { width: 100%; min-width: unset; height: auto; max-height: 35vh; position: relative; top: 0; } .main-area { flex-direction: column; height: auto; } .content { border-right: none; border-bottom: 1px solid var(--border); } .materials { width: 100%; min-width: unset; } }
         .edit-toolbar { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; gap: 10px; align-items: center; }
@@ -497,9 +497,8 @@ function switchModule(el) {
     document.querySelectorAll('[data-target="' + target + '"]').forEach(i => i.classList.add('active'));
     const section = document.getElementById(target);
     if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.querySelectorAll('.material-section').forEach(s => s.classList.remove('active'));
     const mat = document.getElementById('mat-' + target);
-    if (mat) mat.classList.add('active');
+    if (mat) mat.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function toggleDay(el) {
     const day = el.getAttribute('data-day');

@@ -76,8 +76,8 @@
         .method-card p { font-size: 12.5px; color: #2A4365; line-height: 1.7; margin-bottom: 4px; }
         .content-section { display: block; }
         .content-section + .content-section { border-top: 2px dashed var(--border); margin-top: 8px; padding-top: 8px; }
-        .material-section { display: none; }
-        .material-section.active { display: block; }
+        .material-section { display: block; }
+        .material-section + .material-section { border-top: 2px dashed var(--border); margin-top: 8px; padding-top: 8px; }
         .img-block { text-align: center; margin: 12px 0; }
         .img-block img { max-width: 100%; border-radius: 8px; }
         .img-caption { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
@@ -388,9 +388,8 @@ function switchModule(el) {
     document.querySelectorAll('[data-target="' + target + '"]').forEach(i => i.classList.add('active'));
     const section = document.getElementById(target);
     if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.querySelectorAll('.material-section').forEach(s => s.classList.remove('active'));
     const mat = document.getElementById('mat-' + target);
-    if (mat) mat.classList.add('active');
+    if (mat) mat.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function toggleDay(el) {
     const day = el.getAttribute('data-day');
