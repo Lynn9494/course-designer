@@ -85,8 +85,8 @@
         .embed-img { max-width: 90%; display: block; margin: 14px auto; border-radius: 8px; border: 1px solid var(--border); }
         .card .embed-img { max-width: 75%; }
         .ref-box .embed-img { max-width: 95%; }
-        .content-section { display: none; }
-        .content-section.active { display: block; }
+        .content-section { display: block; }
+        .content-section + .content-section { border-top: 2px dashed var(--border); margin-top: 8px; padding-top: 8px; }
         .material-section { display: none; }
         .material-section.active { display: block; }
         @media (max-width: 1100px) { .materials { width: 560px; min-width: 560px; } }
@@ -495,9 +495,8 @@ function switchModule(el) {
     if (!target) return;
     document.querySelectorAll('.module-item, .sub-item').forEach(i => i.classList.remove('active'));
     document.querySelectorAll('[data-target="' + target + '"]').forEach(i => i.classList.add('active'));
-    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     const section = document.getElementById(target);
-    if (section) section.classList.add('active');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     document.querySelectorAll('.material-section').forEach(s => s.classList.remove('active'));
     const mat = document.getElementById('mat-' + target);
     if (mat) mat.classList.add('active');
